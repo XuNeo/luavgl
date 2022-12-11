@@ -275,7 +275,7 @@ static int lugl_anim_create(lua_State *L)
   /* create obj->data->anims, if NULL, realloc if existing and find no slot
    */
   if (anims == NULL) {
-    anims = zalloc(sizeof(lugl_anim_handle_t));
+    anims = calloc(sizeof(lugl_anim_handle_t), 1);
     data->anims = anims;
     data->n_anim = 1;
   } else {
@@ -371,7 +371,6 @@ static int lugl_anim_set(lua_State *L)
 static void lugl_obj_anim_init(lv_obj_t *obj)
 {
   lugl_obj_data_t *data = obj->user_data;
-  DEBUGASSERT(data != NULL);
 
   data->anims = NULL;
   data->n_anim = 0;

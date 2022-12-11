@@ -1,6 +1,5 @@
 #pragma once
 
-#include <debug.h>
 #include <lua.h>
 #include <lvgl.h>
 

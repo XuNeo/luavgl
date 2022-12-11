@@ -49,7 +49,7 @@ static lugl_obj_data_t *lugl_obj_alloc_data(lua_State *L, lv_obj_t *obj)
    * This obj should not be gc'ed by lua, since it's not created by
    * lua
    */
-  lugl_obj_data_t *data = zalloc(sizeof(*data));
+  lugl_obj_data_t *data = calloc(sizeof(*data), 1);
   obj->user_data = data;
 
   lugl_obj_event_init(obj);

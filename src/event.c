@@ -27,7 +27,6 @@ static void lugl_obj_event_cb(lv_event_t *e)
   lua_State *L = e->user_data;
   if (L == NULL) {
     debug("Null user data, should be L.\n");
-    DEBUGASSERT(L);
   }
 
   lv_obj_t *obj = e->target;
@@ -118,7 +117,7 @@ static int lugl_obj_on_event(lua_State *L)
   /* create obj->data->events, if NULL, realloc if existing and find no slot
    */
   if (events == NULL) {
-    events = zalloc(sizeof(struct event_callback_s));
+    events = calloc(sizeof(struct event_callback_s), 1);
     if (events == NULL) {
       return luaL_error(L, "No memory.");
     }
@@ -154,7 +153,6 @@ static int lugl_obj_on_event(lua_State *L)
 static void lugl_obj_event_init(lv_obj_t *obj)
 {
   lugl_obj_data_t *data = obj->user_data;
-  DEBUGASSERT(data != NULL);
 
   data->n_events = 0;
 }
