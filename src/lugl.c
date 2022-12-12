@@ -294,6 +294,7 @@ int luaopen_lugl(lua_State* L)
 
     lugl_constants_init(L);
     lua_setfield(L, -2, "const");
-    dumpstack(L);
+
+    (void)dumpstack;
     return 1;
 }

@@ -236,7 +236,9 @@ static int lugl_font_create(lua_State *L)
   char *str, *name;
   const lv_font_t *font = NULL;
 
-  luaL_argexpected(L, lua_isstring(L, 1), 1, "string");
+  if (!lua_isstring(L, 1)) {
+    return luaL_argerror(L, 1, "expect string");
+  }
 
   /* size is optional, default to FONT_DEFAULT_SIZE */
   size = lua_tointeger(L, 2);

@@ -18,3 +18,6 @@ LUALIB_API lugl_ctx_t *lugl_context(lua_State *L);
 LUALIB_API void lugl_set_root(lua_State *L, lv_obj_t *root);
 LUALIB_API void lugl_set_font_extension(lua_State *L, make_font_cb make,
                                         delete_font_cb delete);
+
+/* on embedded device, you may want to call lib open manually. */
+int luaopen_lugl(lua_State* L);
