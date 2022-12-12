@@ -80,5 +80,13 @@ sudo apt install libsdl2-dev lua5.3 liblua5.3-dev
 
 Both lua5.3 and lua5.4 are supported. Versions below 5.2 has not been verified.
 
+#### Build and run
 
+```bash
+mkdir build
+cd build
+cmake ..
+make
+make run # use this one to run simulator
+```
 
