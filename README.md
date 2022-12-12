@@ -3,6 +3,10 @@ lua + lvgl = lugl
 
 lugl is currently under development. A flappy bird game is ready for showoff. See simulator instructions below.
 
+<p align="center">
+  <img src="https://i.ibb.co/nbgYvZW/flappybird.gif" />
+</p>
+
 ## Introduction
 
 lugl is a wrapper around lvgl core functions and widgets with class inherence in mind, which is lvgl trying to do in `C`. Lua makes widgets inherence smoothly.
