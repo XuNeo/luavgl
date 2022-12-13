@@ -293,7 +293,6 @@ int luaopen_lugl(lua_State* L)
     lugl_timer_init(L);
 
     lugl_constants_init(L);
-    lua_setfield(L, -2, "const");
 
     (void)dumpstack;
     return 1;

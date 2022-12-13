@@ -1,6 +1,5 @@
 local lvgl = require("lugl")
 local CONST = lvgl.const
-local OBJFLAG = CONST.obj_flag
 
 local MOVE_SPEED = 480 / 8000 -- 10s for 480 pixel, pixel per ms
 local PIXEL_PER_METER = 80
@@ -39,7 +38,7 @@ local function screenCreate(parent)
     else
         scr = lvgl.Object(nil, property)
     end
-    scr:clear_flag(OBJFLAG.SCROLLABLE | OBJFLAG.CLICKABLE)
+    scr:clear_flag(lvgl.FLAG.SCROLLABLE | lvgl.FLAG.CLICKABLE)
     return scr
 end
 
@@ -76,7 +75,7 @@ local function ImageScroll(root, src, animSpeed, y)
         start_value = 0,
         end_value = -480,
         time = 480 / animSpeed,
-        repeat_count = CONST.ANIM_REPEAT_INFINITE,
+        repeat_count = lvgl.ANIM_REPEAT_INFINITE,
         path = "linear",
         exec_cb = function(obj, value)
             img:set{
@@ -89,7 +88,7 @@ local function ImageScroll(root, src, animSpeed, y)
         end
     }
 
-    img:clear_flag(OBJFLAG.CLICKABLE)
+    img:clear_flag(lvgl.FLAG.CLICKABLE)
 
     return img
 end
@@ -307,7 +306,7 @@ local function Pipes(parent)
         start_value = 0,
         end_value = 480,
         time = 480 / MOVE_SPEED, -- MOVE_SPEED
-        repeat_count = CONST.ANIM_REPEAT_INFINITE,
+        repeat_count = lvgl.ANIM_REPEAT_INFINITE,
         path = "linear",
         exec_cb = function(obj, value)
             local x = pipes.preValue
@@ -414,7 +413,7 @@ local function Bird(parent, birdMovedCB)
         start_value = 0,
         end_value = 1000,
         time = 1000, -- 1000 ms
-        repeat_count = CONST.ANIM_REPEAT_INFINITE,
+        repeat_count = lvgl.ANIM_REPEAT_INFINITE,
         path = "linear",
         exec_cb = function(obj, tNow)
             -- we use anim to get current time, can calculate position based on force/velocity
@@ -481,18 +480,18 @@ end
 
 local function Background(root, bgEventCB)
     local bgLayer = screenCreate(root) -- background layer
-    bgLayer:add_flag(OBJFLAG.CLICKABLE) --  we accept event here
+    bgLayer:add_flag(lvgl.FLAG.CLICKABLE) --  we accept event here
 
     local bg = ImageScroll(bgLayer, RESOURCE_ROOT .. "bg_day.png", MOVE_SPEED * 0.4, 0)
     local pipes = Pipes(bgLayer)
     local land = ImageScroll(bgLayer, RESOURCE_ROOT .. "land.png", MOVE_SPEED, BOTTOM_Y)
 
-    bgLayer:onevent(CONST.event.PRESSED, function(msg)
-        bgEventCB(CONST.event.PRESSED)
+    bgLayer:onevent(lvgl.EVENT.PRESSED, function(msg)
+        bgEventCB(lvgl.EVENT.PRESSED)
     end)
 
-    bgLayer:onevent(CONST.event.RELEASED, function(msg)
-        bgEventCB(CONST.event.RELEASED)
+    bgLayer:onevent(lvgl.EVENT.RELEASED, function(msg)
+        bgEventCB(lvgl.EVENT.RELEASED)
     end)
 
     return {
@@ -507,15 +506,15 @@ end
 
 local function createPlayBtn(sysLayer, onEvent)
     local playBtn = Image(sysLayer, RESOURCE_ROOT .. "button_play.png").widget
-    playBtn:add_flag(OBJFLAG.CLICKABLE)
+    playBtn:add_flag(lvgl.FLAG.CLICKABLE)
     playBtn:set{
         align = {
-            align = CONST.align.CENTER,
+            align = lvgl.ALIGN.CENTER,
             y_ofs = 80
         }
     }
 
-    playBtn:onevent(CONST.event.PRESSED, onEvent)
+    playBtn:onevent(lvgl.EVENT.PRESSED, onEvent)
 
     return playBtn
 end
@@ -546,7 +545,7 @@ local function entry()
         scoreNow = score
     end
 
-    print("font:", CONST.builtin_font.MONTSERRAT_26)
+    print("font:", lvgl.builtin_font.MONTSERRAT_26)
     gameStart = function()
         if flagRunning then
             return
@@ -582,7 +581,7 @@ local function entry()
         local gameoverImg = Image(sysLayer, RESOURCE_ROOT .. "text_game_over.png").widget
         gameoverImg:set{
             align = {
-                align = CONST.align.TOP_MID,
+                align = lvgl.ALIGN.TOP_MID,
                 y_ofs = 100
             }
         }
@@ -604,7 +603,7 @@ local function entry()
         local scoreImg = Image(sysLayer, RESOURCE_ROOT .. "score.png").widget
         scoreImg:set{
             align = {
-                align = CONST.align.CENTER,
+                align = lvgl.ALIGN.CENTER,
                 y_ofs = -20,
                 x_ofs = 0
             }
@@ -619,7 +618,7 @@ local function entry()
             exec_cb = function(obj, value)
                 obj:set{
                     align = {
-                        align = CONST.align.CENTER,
+                        align = lvgl.ALIGN.CENTER,
                         x_ofs = value,
                         y_ofs = -20
                     }
@@ -629,9 +628,9 @@ local function entry()
 
         local scoreResultLabel = scoreImg:Label{
             text = string.format("%03d", scoreNow),
-            text_font = CONST.builtin_font.MONTSERRAT_22,
+            text_font = lvgl.builtin_font.MONTSERRAT_22,
             align = {
-                align = CONST.align.TOP_MID,
+                align = lvgl.ALIGN.TOP_MID,
                 x_ofs = 0,
                 y_ofs = 25
             }
@@ -639,9 +638,9 @@ local function entry()
 
         local scoreBestLabel = scoreImg:Label{
             text = string.format("%03d", scoreBest),
-            text_font = CONST.builtin_font.MONTSERRAT_22,
+            text_font = lvgl.builtin_font.MONTSERRAT_22,
             align = {
-                align = CONST.align.BOTTOM_MID,
+                align = lvgl.ALIGN.BOTTOM_MID,
                 x_ofs = 0,
                 y_ofs = -5
             }
@@ -677,7 +676,7 @@ local function entry()
             return
         end
 
-        if event == CONST.event.PRESSED then
+        if event == lvgl.EVENT.PRESSED then
             bird:pressed()
         else
             bird:released()
@@ -717,7 +716,7 @@ local function entry()
     local title = Image(sysLayer, RESOURCE_ROOT .. "title.png").widget
     title:set{
         align = {
-            align = CONST.align.TOP_MID,
+            align = lvgl.ALIGN.TOP_MID,
             y_ofs = 80
         }
     }
@@ -734,16 +733,16 @@ local function entry()
         local medal = Image(sysLayer, RESOURCE_ROOT .. "medals.png").widget
         medal:set{
             align = {
-                align = CONST.align.TOP_MID,
+                align = lvgl.ALIGN.TOP_MID,
                 y_ofs = 10,
                 x_ofs = -50
             }
         }
         scoreLabel = sysLayer:Label{
             text = " 000",
-            text_font = CONST.builtin_font.MONTSERRAT_28,
+            text_font = lvgl.builtin_font.MONTSERRAT_28,
             align = {
-                align = CONST.align.TOP_MID,
+                align = lvgl.ALIGN.TOP_MID,
                 x_ofs = 10,
                 y_ofs = 20
             }

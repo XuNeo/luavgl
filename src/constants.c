@@ -4,6 +4,8 @@
 static void lugl_event_code_init(lua_State* L)
 {
     lua_newtable(L);
+
+    lua_pushstring(L, "ALL"); lua_pushinteger(L, LV_EVENT_ALL); lua_settable(L, -3);
     lua_pushstring(L, "PRESSED"); lua_pushinteger(L, LV_EVENT_PRESSED); lua_settable(L, -3);
     lua_pushstring(L, "PRESSING"); lua_pushinteger(L, LV_EVENT_PRESSING); lua_settable(L, -3);
     lua_pushstring(L, "PRESS_LOST"); lua_pushinteger(L, LV_EVENT_PRESS_LOST); lua_settable(L, -3);
@@ -278,15 +280,14 @@ static void lugl_builtin_font_init(lua_State* L)
 /* clang-format on */
 static void lugl_constants_init(lua_State *L)
 {
-  lua_newtable(L);
   lugl_event_code_init(L);
-  lua_setfield(L, -2, "event");
+  lua_setfield(L, -2, "EVENT");
   lugl_obj_flag_init(L);
-  lua_setfield(L, -2, "obj_flag");
+  lua_setfield(L, -2, "FLAG");
   lugl_state_init(L);
-  lua_setfield(L, -2, "state");
+  lua_setfield(L, -2, "STATE");
   lugl_align_init(L);
-  lua_setfield(L, -2, "align");
+  lua_setfield(L, -2, "ALIGN");
   lugl_builtin_font_init(L);
   lua_setfield(L, -2, "builtin_font");
   lua_pushinteger(L, LV_ANIM_REPEAT_INFINITE);
