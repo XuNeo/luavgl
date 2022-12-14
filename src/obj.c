@@ -7,13 +7,6 @@
 #include "lugl.h"
 #include "private.h"
 
-struct obj_style_selector {
-  lv_obj_t *obj;
-  lv_style_selector_t selector;
-};
-
-static int obj_set_style_cb(lua_State *L, void *data);
-
 static int lugl_error(lua_State *L, const char *msg)
 {
   lua_pushnil(L);
@@ -124,7 +117,18 @@ static const lugl_value_setter_t obj_property_table[] = {
     {"align_to", SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align_to}},
 };
 
-static int obj_set_property_cb(lua_State *L, void *data)
+/**
+ * Set object property.
+ * Differ from set object style, this one is usually used to set widget
+ * property like lv_WIDGETNAME_set_src()
+ *
+ * Used internally.
+ *
+ * Expected stack:
+ * stack[-2]: key(property name)
+ * stack[-1]: value(could be any lua data)
+ */
+static int lugl_obj_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = lugl_set_property(L, obj, obj_property_table);
@@ -132,142 +136,18 @@ static int obj_set_property_cb(lua_State *L, void *data)
   if (ret == 0)
     return 0;
 
-  struct obj_style_selector obj_style = {.obj = obj, .selector = 0};
-
-  return obj_set_style_cb(L, &obj_style);
-}
-
-static void _lv_obj_set_style_bg_img_src(void *obj, lua_State *L,
-                                         lv_style_selector_t selector)
-{
-  const char *src = lugl_get_img_src(L, -1);
-  if (src == NULL)
-    return;
-
-  lv_obj_set_style_bg_img_src(obj, src, selector);
-}
-
-static void _lv_obj_set_style_arc_img_src(void *obj, lua_State *L,
-                                          lv_style_selector_t selector)
-{
-  const char *src = lugl_get_img_src(L, -1);
-  if (src == NULL)
-    return;
-
-  lv_obj_set_style_arc_img_src(obj, src, selector);
-}
-
-/* clang-format off */
-static const lugl_value_setter_t obj_style_table[] = {
-    { "width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_width } },
-    { "min_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_width } },
-    { "max_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_width } },
-    { "height", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_width } },
-    { "min_height", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_width } },
-    { "max_height", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_width } },
-    { "x", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_x } },
-    { "y", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_y } },
-    { "size", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_size } },
-    { "align", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_align } },
-    { "transform_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_transform_width } },
-    { "transform_height", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_transform_height } },
-    { "translate_x", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_translate_x } },
-    { "translate_y", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_translate_y } },
-    { "transform_zoom", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_transform_zoom } },
-    { "transform_angle", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_transform_angle } },
-    { "pad_all", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_all } },
-    { "pad_top", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_top } },
-    { "pad_bottom", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_bottom } },
-    { "pad_ver", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_ver } },
-    { "pad_left", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_left } },
-    { "pad_right", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_right } },
-    { "pad_hor", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_hor } },
-    { "pad_row", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_row } },
-    { "pad_column", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_column } },
-    { "pad_gap", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_pad_gap } },
-    { "bg_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_color } },
-    { "bg_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_opa } },
-    { "bg_grad_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_grad_color } },
-    { "bg_grad_dir", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_grad_dir } },
-    { "bg_main_stop", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_main_stop } },
-    { "bg_grad_stop", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_grad_stop } },
-    // { "bg_grad", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_grad } },
-    { "bg_dither_mode", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_dither_mode } },
-    { "bg_img_src", SETTER_TYPE_STACK, { .setter_stack_s = _lv_obj_set_style_bg_img_src } },
-    { "bg_img_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_img_opa } },
-    { "bg_img_recolor", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_img_recolor } },
-    { "bg_img_recolor_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_img_recolor_opa } },
-    { "bg_img_tiled", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_bg_img_tiled } },
-    { "border_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_border_color } },
-    { "border_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_border_opa } },
-    { "border_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_border_width } },
-    { "border_side", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_border_side } },
-    { "border_post", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_border_post } },
-    { "outline_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_outline_width } },
-    { "outline_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_outline_color } },
-    { "outline_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_outline_opa } },
-    { "outline_pad", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_outline_pad } },
-    { "shadow_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_shadow_width } },
-    { "shadow_ofs_x", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_shadow_ofs_x } },
-    { "shadow_ofs_y", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_shadow_ofs_y } },
-    { "shadow_spread", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_shadow_spread } },
-    { "shadow_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_shadow_color } },
-    { "shadow_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_shadow_opa } },
-    { "img_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_img_opa } },
-    { "img_recolor", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_img_recolor } },
-    { "img_recolor_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_img_recolor_opa } },
-    { "line_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_line_width } },
-    { "line_dash_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_line_dash_width } },
-    { "line_dash_gap", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_line_dash_gap } },
-    { "line_rounded", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_line_rounded } },
-    { "line_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_line_color } },
-    { "line_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_line_opa } },
-    { "arc_width", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_arc_width } },
-    { "arc_rounded", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_arc_rounded } },
-    { "arc_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_arc_color } },
-    { "arc_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_arc_opa } },
-    { "arc_img_src", SETTER_TYPE_STACK, { .setter_stack_s = _lv_obj_set_style_arc_img_src } },
-    { "text_color", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_text_color } },
-    { "text_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_text_opa } },
-    { "text_font", SETTER_TYPE_POINTER, { .setter_pointer_s = (setter_s_pointer_t)lv_obj_set_style_text_font } },
-    { "text_letter_space", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_text_letter_space } },
-    { "text_line_space", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_text_line_space } },
-    { "text_decor", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_text_decor } },
-    { "text_align", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_text_align } },
-    { "radius", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_radius } },
-    { "clip_corner", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_clip_corner } },
-    { "opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_opa } },
-    // { "color_filter_dsc", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_color_filter_dsc } },
-    { "color_filter_opa", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_color_filter_opa } },
-    { "anim_time", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_anim_time } },
-    { "anim_speed", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_anim_speed } },
-    // { "transition", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_transition } },
-    { "blend_mode", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_blend_mode } },
-    { "layout", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_layout } },
-    { "base_dir", SETTER_TYPE_INT, { .setter_s = (setter_s_int_t)lv_obj_set_style_base_dir } },
-};
-/* clang-format on */
-
-static int obj_set_style_cb(lua_State *L, void *data)
-{
-  struct obj_style_selector *obj_style = data;
-
-  int ret = lugl_set_obj_style(L, obj_style->obj, obj_style->selector,
-                               obj_style_table);
-
-  if (ret != 0) {
-    debug("failed\n");
-  }
-
-  return ret;
+  /* fallback to set obj local style, with default state. */
+  return lugl_obj_set_style_kv(L, obj, 0);
 }
 
 /**
  * @brief Set obj properties based on property table on stack top
+ *
+ * Internally used.
  */
 static inline void lugl_setup_obj(lua_State *L, lv_obj_t *obj)
 {
-  lugl_iterate(L, -1, obj_set_property_cb, obj);
+  lugl_iterate(L, -1, lugl_obj_set_property_kv, obj);
 }
 
 static int lugl_obj_add_userdata(lua_State *L, lv_obj_t *obj)
@@ -426,7 +306,7 @@ static int lugl_obj_set(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -439,51 +319,17 @@ static int lugl_obj_set(lua_State *L)
   return 0;
 }
 
-/**
- * obj:set_style(0, {x = 0, y = 0, bg_opa = 123})
- *
- */
-static int lugl_obj_set_style(lua_State *L)
-{
-  lv_obj_t *obj = lugl_check_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
-    return 0;
-  }
-
-  if (!lua_istable(L, 2)) {
-    luaL_argerror(L, 2, "expect a table on 2nd para.");
-    return 0;
-  }
-
-  int selector = 0;
-  if (!lua_isnoneornil(L, 3)) {
-    selector = lua_tointeger(L, 3);
-    lua_pop(L, 1); /* later we use stack[-1] to get table. */
-  }
-
-  if (!lua_istable(L, 2)) {
-    luaL_argerror(L, 2, "expect a table on 2nd para.");
-    return 0;
-  }
-
-  struct obj_style_selector obj_style = {.obj = obj, .selector = selector};
-
-  lugl_iterate(L, -1, obj_set_style_cb, &obj_style);
-  return 0;
-}
-
 static int lugl_obj_set_parent(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
   lv_obj_t *parent = lugl_check_obj(L, 2);
   if (parent == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -495,7 +341,7 @@ static int lugl_obj_get_screen(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -530,7 +376,7 @@ static int lugl_obj_get_state(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -549,7 +395,7 @@ static int lugl_obj_scroll_to(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -582,7 +428,7 @@ static int lugl_obj_is_scrolling(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -595,7 +441,7 @@ static int lugl_obj_is_visible(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -608,7 +454,7 @@ static int lugl_obj_add_flag(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 
@@ -622,7 +468,7 @@ static int lugl_obj_clear_flag(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
   }
 

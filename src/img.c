@@ -41,7 +41,7 @@ static const lugl_value_setter_t img_property_table[] = {
     {"pivot", SETTER_TYPE_STACK, {.setter_stack = _lv_img_set_pivot}},
 };
 
-static int img_set_property_cb(lua_State *L, void *data)
+static int lugl_img_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = lugl_set_property(L, obj, img_property_table);
@@ -51,7 +51,7 @@ static int img_set_property_cb(lua_State *L, void *data)
   }
 
   /* a base obj property? */
-  ret = obj_set_property_cb(L, obj);
+  ret = lugl_obj_set_property_kv(L, obj);
   if (ret != 0) {
     debug("unkown property for image.\n");
   }
@@ -91,7 +91,7 @@ static int lugl_img_set(lua_State *L)
   }
   lua_pop(L, 1);
 
-  lugl_iterate(L, -1, img_set_property_cb, obj);
+  lugl_iterate(L, -1, lugl_img_set_property_kv, obj);
 
   return 0;
 }

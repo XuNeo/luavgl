@@ -96,45 +96,6 @@ static int _lugl_set_property(lua_State *L, void *obj,
   return -1; /* property not found */
 }
 
-static int _lugl_set_obj_style(lua_State *L, lv_obj_t *obj,
-                               lv_style_selector_t selector,
-                               const lugl_value_setter_t table[], uint32_t len)
-{
-  const char *key = lua_tostring(L, -2);
-  if (key == NULL) {
-    debug("Null key, ignored.\n");
-    return -1;
-  }
-
-  for (int i = 0; i < len; i++) {
-    const lugl_value_setter_t *p = &table[i];
-    if (strcmp(key, p->key))
-      continue;
-
-    if (p->type == SETTER_TYPE_INT) {
-      int v;
-      if (lua_isboolean(L, -1)) {
-        v = lua_toboolean(L, -1);
-      } if (lua_isinteger(L, -1)) {
-        v = lua_tointeger(L, -1);
-      } else {
-        v = lua_tonumber(L, -1);
-      }
-      p->setter_s(obj, v, selector);
-    } else if (p->type == SETTER_TYPE_STACK) {
-      p->setter_stack_s(obj, L, selector);
-    } else if (p->type == SETTER_TYPE_POINTER) {
-      void *data = lua_touserdata(L, -1);
-      p->setter_pointer_s(obj, data, selector);
-    } else {
-      debug("unsupported type: %d\n", p->type);
-    }
-    return 0;
-  }
-
-  return -1; /* property not found */
-}
-
 static void lugl_iterate(lua_State *L, int index,
                          int (*cb)(lua_State *, void *), void *cb_para)
 {
@@ -157,4 +118,19 @@ static void lugl_iterate(lua_State *L, int index,
 static void _lv_dummy_set(void *obj, lua_State *L)
 {
   //
+}
+
+static int lugl_tointeger(lua_State *L, int idx)
+{
+  int v;
+  if (lua_isboolean(L, -1)) {
+    v = lua_toboolean(L, -1);
+  }
+  if (lua_isinteger(L, -1)) {
+    v = lua_tointeger(L, -1);
+  } else {
+    v = lua_tonumber(L, -1);
+  }
+
+  return v;
 }

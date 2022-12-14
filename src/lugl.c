@@ -13,6 +13,7 @@
 #include "img.c"
 #include "label.c"
 #include "obj.c"
+#include "style.c"
 #include "timer.c"
 #include "util.c"
 

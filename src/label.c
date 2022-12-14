@@ -36,7 +36,7 @@ static int label_set_property_cb(lua_State *L, void *data)
   }
 
   /* a base obj property? */
-  ret = obj_set_property_cb(L, obj);
+  ret = lugl_obj_set_property_kv(L, obj);
   if (ret != 0) {
     debug("unkown property for label.\n");
   }

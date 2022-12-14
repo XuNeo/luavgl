@@ -10,6 +10,7 @@
 
 /* clang-format off */
 #define debug(format, ...)
+// fprintf(stdout, "[lugl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 // syslog(LOG_DEBUG, "[lugl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 /* clang-format on */
 
@@ -23,9 +24,6 @@ typedef enum {
 } setter_type_t;
 
 typedef void (*setter_int_t)(void *, int);
-typedef void (*setter_s_int_t)(void *, int, lv_style_selector_t selector);
-typedef void (*setter_s_pointer_t)(void *, void *,
-                                   lv_style_selector_t selector);
 
 /* clang-format off */
 typedef struct {
@@ -35,34 +33,8 @@ typedef struct {
         void (*setter)(void*, int);
         void (*setter_stack)(void*, lua_State* L);
         void (*setter_pointer)(void*, void*);
-
-        void (*setter_s)(void*, int, lv_style_selector_t selector);
-        void (*setter_stack_s)(void*, lua_State* L, lv_style_selector_t selector);
-        void (*setter_pointer_s)(void*, void*, lv_style_selector_t selector);
     };
 } lugl_value_setter_t;
-/* clang-format on */
-
-typedef enum {
-  /* type can be regarded as int */
-  GETTER_TYPE_INT = 0,
-
-  /* type of data from stack */
-  GETTER_TYPE_STACK, /* parameter is on stack -1 */
-} getter_type_t;
-
-typedef void (*getter_int_t)(void *, int);
-typedef void (*getter_s_int_t)(void *, int, lv_style_selector_t selector);
-
-/* clang-format off */
-typedef struct {
-    const char* key;
-    setter_type_t type;
-    union {
-        int (*getter)(void*, int);
-        int (*getter_stack)(void*, lua_State* L);
-    };
-} lugl_value_getter_t;
 /* clang-format on */
 
 typedef struct lugl_anim_s {
@@ -133,11 +105,11 @@ static int _lugl_set_obj_style(lua_State *L, lv_obj_t *obj,
 #define lugl_set_property(L, obj, table)                                       \
   _lugl_set_property(L, obj, table, sizeof(table) / sizeof(table[0]))
 
-#define lugl_set_obj_style(L, obj, selector, table)                            \
-  _lugl_set_obj_style(L, obj, selector, table, sizeof(table) / sizeof(table[0]))
-
-static int obj_set_property_cb(lua_State *L, void *data);
+static int lugl_obj_set_property_kv(lua_State *L, void *data);
 
 const char *lugl_get_img_src(lua_State *L, int idx);
 
 static void _lv_dummy_set(void *obj, lua_State *L);
+
+static int lugl_tointeger(lua_State *L, int idx);
+static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t* obj, int selector);
