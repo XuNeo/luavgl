@@ -27,7 +27,7 @@ enum {
 
 static const struct style_map_s {
   const char *name;
-  lv_style_prop_t style;
+  lv_style_prop_t prop;
   style_type_t type;
 } g_style_map[] = {
     {"width", LV_STYLE_WIDTH, STYLE_TYPE_INT},
@@ -181,7 +181,7 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
     }
 
     if (p->type & STYLE_TYPE_SPECIAL) {
-      switch (p->style) {
+      switch (p->prop) {
         /* style combinations */
       case LV_STYLE_SIZE:
         lv_obj_set_local_style_prop(obj, LV_STYLE_WIDTH, value, selector);
@@ -228,8 +228,8 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
       }
 
       continue;
-    } else if (p->style < _LV_STYLE_LAST_BUILT_IN_PROP) {
-      lv_obj_set_local_style_prop(obj, p->style, value, selector);
+    } else if (p->prop < _LV_STYLE_LAST_BUILT_IN_PROP) {
+      lv_obj_set_local_style_prop(obj, p->prop, value, selector);
     } else {
       return luaL_error(L, "unknown style");
     }
