@@ -144,7 +144,7 @@ lugl.ANIM_REPEAT_INFINITE = 0xFFFF
     - property can be used to set any object style, like using `lv_obj_set_style`
 ]]
 --- @param parent? Object | nil
---- @param property? ObjStyle
+--- @param property? StyleProp
 --- @return Object
 function lugl.Object(parent, property)
 end
@@ -152,7 +152,7 @@ end
 ---
 --- Create Image on parent
 --- @param parent? Object | nil
---- @param property? ObjStyle
+--- @param property? StyleProp
 --- @return Image
 function lugl.Image(parent, property)
 end
@@ -160,7 +160,7 @@ end
 ---
 --- Create Label on parent
 --- @param parent? Object | nil
---- @param property? ObjStyle
+--- @param property? StyleProp
 --- @return Label
 function lugl.Label(parent, property)
 end
@@ -196,37 +196,41 @@ function lugl.Font(family, size, weight)
 end
 
 ---
+--- Create style
+--- @param p? StyleProp
+--- @return Style
+function lugl.Style(p)
+end
+
+---
 --- Basic lvgl object
 --- @class Object
 local obj = {}
 
 ---
 --- Create object on object
---- @overload fun():Object
---- @param property ObjStyle
+--- @param property? StyleProp
 --- @return Object
 function obj:Object(property)
 end
 
 ---
 --- Create image on object
---- @overload fun():Object
---- @param property ImageStyle
+--- @param property? ImageStyle
 --- @return Image
 function obj:Image(property)
 end
 
 ---
 --- Create image on object
---- @overload fun():Object
---- @param property ImageStyle
+--- @param property? ImageStyle
 --- @return Label
 function obj:Label(property)
 end
 
 ---
 --- Set object property
---- @param p ObjStyle
+--- @param p StyleProp
 ---
 function obj:set(p)
 end
@@ -292,6 +296,28 @@ end
 --- @param p ObjFlag
 --- @return nil
 function obj:clear_flag(p)
+end
+
+---
+--- add style to object
+--- @param s Style
+--- @param selector? integer
+--- @return nil
+function obj:add_style(s, selector)
+end
+
+---
+--- remove style from object
+--- @param s Style
+--- @param selector? integer
+--- @return nil
+function obj:remove_style(s, selector)
+end
+
+---
+--- remove all style from object
+--- @return nil
+function obj:remove_style_all()
 end
 
 ---
@@ -433,8 +459,26 @@ Font is a light userdata that can be uset to set style text_font.
 local font = {}
 
 ---
---- ObjStyle definition
+--- @class Style : lightuserdata
 ---
+local style = {}
+
+--- update style properties
+--- @param p StyleProp
+--- @return nil
+function style:set(p)
+end
+
+--- delete style, only delted style could be gc'ed
+--- @return nil
+function style:delete()
+end
+
+--- remove specified property from style
+--- @param p string property name from field of StyleProp
+--- @return nil
+function style:remove_prop(p)
+end
 
 ---
 --- Align parameter
@@ -449,8 +493,8 @@ local font = {}
 --- @field base Object
 --- @field x_ofs number
 
---- Object style
---- @class ObjStyle
+--- Style properties
+--- @class StyleProp
 --- @field w number
 --- @field width number
 --- @field min_width number
@@ -539,7 +583,7 @@ local font = {}
 ---
 
 --- Image style
---- @class ImageStyle :ObjStyle
+--- @class ImageStyle :StyleProp
 --- @field src string
 --- @field offset_x number offset of image
 --- @field offset_y number
@@ -550,7 +594,7 @@ local font = {}
 ---
 
 --- Label style
---- @class LabelStyle :ObjStyle
+--- @class LabelStyle :StyleProp
 --- @field text string
 
 ---
