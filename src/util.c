@@ -12,6 +12,8 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return "lv_img";
   else if (obj->class_p == &lv_label_class)
     return "lv_label";
+  else if (obj->class_p == &lv_textarea_class)
+    return "lv_textarea";
   else
     return NULL;
 }

@@ -17,11 +17,14 @@
 #include "timer.c"
 #include "util.c"
 
+#include "widgets/textarea.c"
+
 /* clang-format off */
-#define WIDGET_CREATE_FUNCTIONS         \
-    { "Object", lugl_obj_create },      \
-    { "Image", lugl_img_create },       \
-    { "Label", lugl_label_create }      \
+#define WIDGET_CREATE_FUNCTIONS                 \
+    { "Object", lugl_obj_create },              \
+    { "Image", lugl_img_create },               \
+    { "Label", lugl_label_create },             \
+    { "Textarea", lugl_textarea_create }        \
 /* clang-format on */
 
 static const struct luaL_Reg lugl_functions[] = {
@@ -83,6 +86,13 @@ static const luaL_Reg lugl_img_methods[] = {
 static const luaL_Reg lugl_label_methods[] = {
     // label.c
     { "set", lugl_label_set },
+
+    { NULL, NULL }
+};
+
+static const luaL_Reg lugl_textarea_methods[] = {
+    // widget/textarea.c
+    { "set", lugl_textarea_set },
 
     { NULL, NULL }
 };
@@ -175,6 +185,19 @@ static void lugl_label_init(lua_State* L)
 
     luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
     luaL_setfuncs(L, lugl_label_methods,
+                  0); /* should add obj methods firstly, so
+                       img methods could override it. */
+    lua_setfield(L, -2, "__index");
+
+    lua_pop(L, 1); /* pop __index table */
+}
+
+static void lugl_textarea_init(lua_State* L)
+{
+    luaL_newmetatable(L, "lv_textarea");
+
+    luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
+    luaL_setfuncs(L, lugl_textarea_methods,
                   0); /* should add obj methods firstly, so
                        img methods could override it. */
     lua_setfield(L, -2, "__index");
@@ -316,6 +339,7 @@ int luaopen_lugl(lua_State* L)
     lugl_obj_init(L);
     lugl_img_init(L);
     lugl_label_init(L);
+    lugl_textarea_init(L);
     lugl_anim_init(L);
     lugl_timer_init(L);
     lugl_style_init(L);
