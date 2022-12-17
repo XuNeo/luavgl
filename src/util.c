@@ -76,7 +76,7 @@ static int _lugl_set_property(lua_State *L, void *obj,
       int v;
       if (lua_isboolean(L, -1)) {
         v = lua_toboolean(L, -1);
-      } if (lua_isinteger(L, -1)) {
+      } else if (lua_isinteger(L, -1)) {
         v = lua_tointeger(L, -1);
       } else {
         v = lua_tonumber(L, -1);
