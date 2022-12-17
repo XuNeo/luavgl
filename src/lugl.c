@@ -58,6 +58,8 @@ static const luaL_Reg lugl_obj_methods[] = {
     { "add_flag", lugl_obj_add_flag },
     { "clear_flag", lugl_obj_clear_flag },
     { "add_style", lugl_obj_add_style },
+    { "remove_style", lugl_obj_remove_style },
+    { "remove_style_all", lugl_obj_remove_style_all },
 
     { "onevent", lugl_obj_on_event },
     { "anim", lugl_anim_create }, /* in lua, we only support add anim to obj */
@@ -110,6 +112,7 @@ static const luaL_Reg lugl_style_methods[] = {
     // style.c
     { "set", lugl_style_set },
     { "delete", lugl_style_delete },
+    { "remove_prop", lugl_style_remove_prop },
 
     { NULL, NULL }
 };

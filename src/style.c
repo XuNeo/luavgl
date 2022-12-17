@@ -325,6 +325,25 @@ static int lugl_style_create(lua_State *L)
   return 1;
 }
 
+/**
+ * style:remove_prop("width")
+ */
+static int lugl_style_remove_prop(lua_State *L)
+{
+  lugl_style_t *s = lugl_check_style(L, 1);
+  const char* name = lua_tostring(L, 2);
+
+  for (int i = 0; i < STYLE_MAP_LEN; i++) {
+    const struct style_map_s *p = &g_style_map[i];
+    if (strcmp(name, p->name) == 0) {
+      lv_style_remove_prop(&s->style, p->prop);
+    }
+  }
+
+  return luaL_error(L, "unknown prop name: %s", name);
+}
+
+
 static int lugl_style_delete(lua_State *L)
 {
   lugl_style_t *s = lugl_check_style(L, 1);
@@ -428,4 +447,30 @@ static int lugl_obj_add_style(lua_State*L)
   }
 
   lv_obj_add_style(obj, &s->style, selector);
+}
+
+/**
+ * obj:remove_style(style, 0)
+ */
+static int lugl_obj_remove_style(lua_State*L)
+{
+  lv_obj_t* obj = lugl_check_obj(L, 1);
+  lugl_style_t* s = lugl_check_style(L, 2);
+
+  int selector = 0;
+  if (!lua_isnoneornil(L, 3)) {
+    selector = lua_tointeger(L, 3);
+  }
+
+  lv_obj_remove_style(obj, &s->style, selector);
+}
+
+/**
+ * obj:remove_style_all()
+ */
+static int lugl_obj_remove_style_all(lua_State*L)
+{
+  lv_obj_t* obj = lugl_check_obj(L, 1);
+
+  lv_obj_remove_style_all(obj);
 }
