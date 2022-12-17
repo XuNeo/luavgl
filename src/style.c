@@ -373,6 +373,7 @@ static int lugl_style_remove_prop(lua_State *L)
     const struct style_map_s *p = &g_style_map[i];
     if (strcmp(name, p->name) == 0) {
       lv_style_remove_prop(&s->style, p->prop);
+      return 0;
     }
   }
 
