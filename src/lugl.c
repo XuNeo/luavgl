@@ -34,6 +34,7 @@ static const struct luaL_Reg lugl_functions[] = {
 
     { "Timer", lugl_timer_create },
     { "Font", lugl_font_create },
+    { "Style", lugl_style_create },
 
     { NULL, NULL },
 };
@@ -56,6 +57,7 @@ static const luaL_Reg lugl_obj_methods[] = {
     { "is_visible", lugl_obj_is_visible },
     { "add_flag", lugl_obj_add_flag },
     { "clear_flag", lugl_obj_clear_flag },
+    { "add_style", lugl_obj_add_style },
 
     { "onevent", lugl_obj_on_event },
     { "anim", lugl_anim_create }, /* in lua, we only support add anim to obj */
@@ -100,6 +102,14 @@ static const luaL_Reg lugl_timer_methods[] = {
     { "resume", lugl_timer_resume },
     { "delete", lugl_timer_delete },
     { "ready", lugl_timer_ready },
+
+    { NULL, NULL }
+};
+
+static const luaL_Reg lugl_style_methods[] = {
+    // style.c
+    { "set", lugl_style_set },
+    { "delete", lugl_style_delete },
 
     { NULL, NULL }
 };
@@ -193,6 +203,19 @@ static void lugl_timer_init(lua_State* L)
     lua_setfield(L, -2, "__gc");
 
     luaL_newlib(L, lugl_timer_methods); /* methods belong to this type */
+    lua_setfield(L, -2, "__index");
+
+    lua_pop(L, 1); /* pop __index table */
+}
+
+static void lugl_style_init(lua_State* L)
+{
+    luaL_newmetatable(L, "lv_style");
+
+    lua_pushcfunction(L, lugl_style_gc);
+    lua_setfield(L, -2, "__gc");
+
+    luaL_newlib(L, lugl_style_methods); /* methods belong to this type */
     lua_setfield(L, -2, "__index");
 
     lua_pop(L, 1); /* pop __index table */
@@ -292,6 +315,7 @@ int luaopen_lugl(lua_State* L)
     lugl_label_init(L);
     lugl_anim_init(L);
     lugl_timer_init(L);
+    lugl_style_init(L);
 
     lugl_constants_init(L);
 

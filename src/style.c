@@ -7,6 +7,10 @@
 #include "lugl.h"
 #include "private.h"
 
+typedef struct {
+  lv_style_t style;
+} lugl_style_t;
+
 typedef enum {
   STYLE_TYPE_INT = 1,
   STYLE_TYPE_COLOR,
@@ -24,6 +28,10 @@ enum {
   LV_STYLE_PAD_HOR,
   LV_STYLE_PAD_GAP,
 };
+
+/* callback made when style matched. */
+typedef void (*style_set_cb_t)(lv_style_prop_t prop, lv_style_value_t value,
+                               void *args);
 
 static const struct style_map_s {
   const char *name;
@@ -128,14 +136,30 @@ static const struct style_map_s {
 #define STYLE_MAP_LEN (sizeof(g_style_map) / sizeof(g_style_map[0]))
 
 /**
- * internal used API, called from obj:set_style
- * obj:set_property(key, value)
+ * lv_style
+ */
+
+static lugl_style_t *lugl_check_style(lua_State *L, int index)
+{
+  lugl_style_t *v = *(lugl_style_t **)luaL_checkudata(L, index, "lv_style");
+  return v;
+}
+
+static void lv_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
+                            void *args)
+{
+  lv_style_t *s = args;
+  lv_style_set_prop(s, prop, value);
+}
+
+/**
+ * internal used API, called from style:set()
  * key: stack[-2]
  * value: stack[-1]
  *
  * @return 0 if succeed, -1 if failed.
  */
-static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
+static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 {
   const char *key = lua_tostring(L, -2);
   if (key == NULL) {
@@ -184,30 +208,30 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
       switch (p->prop) {
         /* style combinations */
       case LV_STYLE_SIZE:
-        lv_obj_set_local_style_prop(obj, LV_STYLE_WIDTH, value, selector);
-        lv_obj_set_local_style_prop(obj, LV_STYLE_HEIGHT, value, selector);
+        cb(LV_STYLE_WIDTH, value, args);
+        cb(LV_STYLE_HEIGHT, value, args);
         break;
 
       case LV_STYLE_PAD_ALL:
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_TOP, value, selector);
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_BOTTOM, value, selector);
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_LEFT, value, selector);
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_RIGHT, value, selector);
+        cb(LV_STYLE_PAD_TOP, value, args);
+        cb(LV_STYLE_PAD_BOTTOM, value, args);
+        cb(LV_STYLE_PAD_LEFT, value, args);
+        cb(LV_STYLE_PAD_RIGHT, value, args);
         break;
 
       case LV_STYLE_PAD_VER:
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_TOP, value, selector);
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_BOTTOM, value, selector);
+        cb(LV_STYLE_PAD_TOP, value, args);
+        cb(LV_STYLE_PAD_BOTTOM, value, args);
         break;
 
       case LV_STYLE_PAD_HOR:
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_LEFT, value, selector);
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_RIGHT, value, selector);
+        cb(LV_STYLE_PAD_LEFT, value, args);
+        cb(LV_STYLE_PAD_RIGHT, value, args);
         break;
 
       case LV_STYLE_PAD_GAP:
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_ROW, value, selector);
-        lv_obj_set_local_style_prop(obj, LV_STYLE_PAD_COLUMN, value, selector);
+        cb(LV_STYLE_PAD_ROW, value, args);
+        cb(LV_STYLE_PAD_COLUMN, value, args);
         break;
 
         /* pointers needs to build from lua stack table */
@@ -229,7 +253,7 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
 
       continue;
     } else if (p->prop < _LV_STYLE_LAST_BUILT_IN_PROP) {
-      lv_obj_set_local_style_prop(obj, p->prop, value, selector);
+      cb(p->prop, value, args);
     } else {
       return luaL_error(L, "unknown style");
     }
@@ -240,8 +264,114 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
 }
 
 /**
- * obj:set_style(0, {x = 0, y = 0, bg_opa = 123})
+ * style:set({x = 0, y = 0, bg_opa = 123})
+ */
+static int lugl_style_set(lua_State *L)
+{
+  lugl_style_t *s = lugl_check_style(L, 1);
+
+  if (!lua_istable(L, 2)) {
+    luaL_argerror(L, 2, "expect a table on 2nd para.");
+    return 0;
+  }
+
+  lua_pushnil(L); /* nil as initial key to iterate through table */
+  while (lua_next(L, -2)) {
+    /* -1: value, -2: key */
+    if (!lua_isstring(L, -2)) {
+      /* we expect string as key, ignore it if not */
+      debug("ignore non-string key in table.\n");
+      lua_pop(L, 1);
+      continue;
+    }
+    lugl_set_style_kv(L, lv_style_set_cb, s);
+    lua_pop(L, 1); /* remove value, keep the key to continue. */
+  }
+
+  return 0;
+}
+
+/**
+ * lugl.Style({
+ *  bg_color = 0xff0000,
+ *  border_width = 1,
+ * })
  *
+ * For simplicity, style need to be manually deleted `style:delete()` in order
+ * to be gc'ed.
+ */
+static int lugl_style_create(lua_State *L)
+{
+  lugl_style_t *s = malloc(sizeof(lugl_style_t));
+  if (s == NULL) {
+    return luaL_error(L, "No memory.");
+  }
+
+  lv_style_init(&s->style);
+
+  *(void **)lua_newuserdata(L, sizeof(void *)) = s;
+  luaL_getmetatable(L, "lv_style");
+  lua_setmetatable(L, -2);
+
+  lua_pushlightuserdata(L, s);
+  lua_pushvalue(L, -2);
+  lua_rawset(L, LUA_REGISTRYINDEX);
+
+  lua_rotate(L, 1, 1); /* stack after: style-user-data, para */
+
+  lugl_style_set(L);
+
+  lua_pop(L, 1); /* remove parameter table */
+  return 1;
+}
+
+static int lugl_style_delete(lua_State *L)
+{
+  lugl_style_t *s = lugl_check_style(L, 1);
+
+  lua_pushlightuserdata(L, s);
+  lua_pushnil(L);
+  lua_rawset(L, LUA_REGISTRYINDEX);
+
+  return 1;
+}
+
+static int lugl_style_gc(lua_State *L)
+{
+  lugl_style_t *s = lugl_check_style(L, 1);
+  lv_style_reset(&s->style);
+  free(s);
+  debug("gc style:%p\n", s);
+  return 0;
+}
+
+/**
+ * lv_obj_style
+ */
+
+struct obj_style_s {
+  lv_obj_t *obj;
+  int selector;
+};
+
+static void obj_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
+                             void *args)
+{
+  struct obj_style_s *info = args;
+  lv_obj_set_local_style_prop(info->obj, prop, value, info->selector);
+}
+
+static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
+{
+  struct obj_style_s info = {
+      .obj = obj,
+      .selector = selector,
+  };
+  lugl_set_style_kv(L, obj_style_set_cb, &info);
+}
+
+/**
+ * obj:set_style({x = 0, y = 0, bg_opa = 123}, 0)
  */
 static int lugl_obj_set_style(lua_State *L)
 {
@@ -262,10 +392,10 @@ static int lugl_obj_set_style(lua_State *L)
     lua_pop(L, 1); /* later we use stack[-1] to get table. */
   }
 
-  if (!lua_istable(L, 2)) {
-    luaL_argerror(L, 2, "expect a table on 2nd para.");
-    return 0;
-  }
+  struct obj_style_s info = {
+      .obj = obj,
+      .selector = selector,
+  };
 
   lua_pushnil(L); /* nil as initial key to iterate through table */
   while (lua_next(L, -2)) {
@@ -276,9 +406,26 @@ static int lugl_obj_set_style(lua_State *L)
       lua_pop(L, 1);
       continue;
     }
-    lugl_obj_set_style_kv(L, obj, selector);
+
+    lugl_set_style_kv(L, lv_style_set_cb, &info);
     lua_pop(L, 1); /* remove value, keep the key to continue. */
   }
 
   return 0;
+}
+
+/**
+ * obj:add_style(style, 0)
+ */
+static int lugl_obj_add_style(lua_State*L)
+{
+  lv_obj_t* obj = lugl_check_obj(L, 1);
+  lugl_style_t* s = lugl_check_style(L, 2);
+
+  int selector = 0;
+  if (!lua_isnoneornil(L, 3)) {
+    selector = lua_tointeger(L, 3);
+  }
+
+  lv_obj_add_style(obj, &s->style, selector);
 }
