@@ -520,7 +520,7 @@ local font = {}
 --- @field arc_color number
 --- @field arc_opa number
 --- @field arc_img_src number
---- @field text_color number
+--- @field text_color number | string text color in hex number or #RGB or #RRGGBB format
 --- @field text_opa number
 --- @field text_font Font
 --- @field text_letter_space number

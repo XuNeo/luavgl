@@ -152,6 +152,20 @@ static void lv_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
   lv_style_set_prop(s, prop, value);
 }
 
+static uint8_t to_int(char c)
+{
+  if (c >= '0' && c <= '9')
+    return c - '0';
+
+  if (c >= 'A' && c <= 'F')
+    return c - 'A' + 10;
+
+  if (c >= 'a' && c <= 'f')
+    return c - 'a' + 10;
+
+  return -1;
+}
+
 /**
  * internal used API, called from style:set()
  * key: stack[-2]
@@ -186,8 +200,30 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     case STYLE_TYPE_COLOR:
       if (lua_type(L, -1) == LUA_TSTRING) {
         /* support #RGB and #RRGGBB */
-        const char *c = lua_tostring(L, -1);
-        (void)c; /* @todo */
+        const char *s = lua_tostring(L, -1);
+        if (s == NULL) {
+          return luaL_error(L, "unknown color.");
+        }
+
+        int len = strlen(s);
+        if (len == 4 && s[0] == '#') {
+          /* #RGB */
+          int r = to_int(s[1]);
+          r |= r << 4;
+          int g = to_int(s[2]);
+          g |= g << 4;
+          int b = to_int(s[3]);
+          b |= b << 4;
+          value.color = lv_color_make(r, g, b);
+        } else if (len == 7 && s[0] == '#') {
+          /* #RRGGBB */
+          int r = (to_int(s[1]) << 4) | to_int(s[2]);
+          int g = (to_int(s[3]) << 4) | to_int(s[4]);
+          int b = (to_int(s[5]) << 4) | to_int(s[6]);
+          value.color = lv_color_make(r, g, b);
+        } else {
+          return luaL_error(L, "unknown color format.");
+        }
       } else {
         v = lugl_tointeger(L, -1);
         value.color = lv_color_hex(v); /* make to lv_color_t */
@@ -331,7 +367,7 @@ static int lugl_style_create(lua_State *L)
 static int lugl_style_remove_prop(lua_State *L)
 {
   lugl_style_t *s = lugl_check_style(L, 1);
-  const char* name = lua_tostring(L, 2);
+  const char *name = lua_tostring(L, 2);
 
   for (int i = 0; i < STYLE_MAP_LEN; i++) {
     const struct style_map_s *p = &g_style_map[i];
@@ -342,7 +378,6 @@ static int lugl_style_remove_prop(lua_State *L)
 
   return luaL_error(L, "unknown prop name: %s", name);
 }
-
 
 static int lugl_style_delete(lua_State *L)
 {
@@ -436,10 +471,10 @@ static int lugl_obj_set_style(lua_State *L)
 /**
  * obj:add_style(style, 0)
  */
-static int lugl_obj_add_style(lua_State*L)
+static int lugl_obj_add_style(lua_State *L)
 {
-  lv_obj_t* obj = lugl_check_obj(L, 1);
-  lugl_style_t* s = lugl_check_style(L, 2);
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lugl_style_t *s = lugl_check_style(L, 2);
 
   int selector = 0;
   if (!lua_isnoneornil(L, 3)) {
@@ -452,10 +487,10 @@ static int lugl_obj_add_style(lua_State*L)
 /**
  * obj:remove_style(style, 0)
  */
-static int lugl_obj_remove_style(lua_State*L)
+static int lugl_obj_remove_style(lua_State *L)
 {
-  lv_obj_t* obj = lugl_check_obj(L, 1);
-  lugl_style_t* s = lugl_check_style(L, 2);
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lugl_style_t *s = lugl_check_style(L, 2);
 
   int selector = 0;
   if (!lua_isnoneornil(L, 3)) {
@@ -468,9 +503,9 @@ static int lugl_obj_remove_style(lua_State*L)
 /**
  * obj:remove_style_all()
  */
-static int lugl_obj_remove_style_all(lua_State*L)
+static int lugl_obj_remove_style_all(lua_State *L)
 {
-  lv_obj_t* obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_check_obj(L, 1);
 
   lv_obj_remove_style_all(obj);
 }
