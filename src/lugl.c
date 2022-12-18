@@ -96,6 +96,7 @@ static const luaL_Reg lugl_label_methods[] = {
 static const luaL_Reg lugl_textarea_methods[] = {
     // widget/textarea.c
     { "set", lugl_textarea_set },
+    { "get_text", lugl_textarea_get_text },
 
     { NULL, NULL }
 };

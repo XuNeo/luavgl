@@ -78,7 +78,7 @@ static int lugl_textarea_set_property_kv(lua_State *L, void *data)
   /* a base obj property? */
   ret = lugl_obj_set_property_kv(L, obj);
   if (ret != 0) {
-    debug("unkown property for textarea.\n");
+    debug("unkown property for textarea: %s\n", lua_tostring(L, -2));
   }
 
   return -1;
@@ -105,4 +105,20 @@ static int lugl_textarea_set(lua_State *L)
   lugl_iterate(L, -1, lugl_textarea_set_property_kv, obj);
 
   return 0;
+}
+
+/**
+ * obj:get_text()
+ */
+static int lugl_textarea_get_text(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "obj could already been delted.");
+    return 0;
+  }
+
+  lua_pushstring(L, lv_textarea_get_text(obj));
+
+  return 1;
 }
