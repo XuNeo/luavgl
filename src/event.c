@@ -32,9 +32,12 @@ static void lugl_obj_event_cb(lv_event_t *e)
   lv_obj_t *obj = e->target;
 
   lugl_obj_data_t *data = obj->user_data;
+  if (data == NULL)
+    return;
+
   int ref = LUA_NOREF;
   for (int i = 0; i < data->n_events; i++) {
-    if (data->events[i].code == e->code) {
+    if (data->events[i].code == LV_EVENT_ALL || data->events[i].code == e->code) {
       ref = data->events[i].ref;
       break;
     }
@@ -45,11 +48,10 @@ static void lugl_obj_event_cb(lv_event_t *e)
     return;
   }
 
-  int nargs = push_event_data(L, e->code);
+  lua_pushinteger(L, e->code);
+  int nargs = push_event_data(L, e->code) + 1;
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
-  if (nargs) {
-    lua_insert(L, -1 - nargs);
-  }
+  lua_insert(L, -1 - nargs);
 
   lua_call(L, nargs, 0);
 }

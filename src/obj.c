@@ -274,6 +274,7 @@ static int lugl_obj_delete(lua_State *L)
     non_native = data->non_native;
     lugl_obj_remove_event_all(L, obj);
     free(data);
+    obj->user_data = NULL;
   }
 
   if (non_native) {
