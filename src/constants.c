@@ -277,6 +277,13 @@ static void lugl_builtin_font_init(lua_State* L)
 #endif
 }
 
+static int lugl_LV_PCT(lua_State*L)
+{
+    int pct = lua_tointeger(L, 1);
+    lua_pushinteger(L, LV_PCT(pct));
+    return 1;
+}
+
 /* clang-format on */
 static void lugl_constants_init(lua_State *L)
 {
@@ -294,4 +301,9 @@ static void lugl_constants_init(lua_State *L)
   lua_setfield(L, -2, "ANIM_REPEAT_INFINITE");
   lua_pushinteger(L, LV_ANIM_PLAYTIME_INFINITE);
   lua_setfield(L, -2, "ANIM_PLAYTIME_INFINITE");
+
+  lua_pushcfunction(L, lugl_LV_PCT);
+  lua_setfield(L, -2, "PCT");
+  lua_pushinteger(L, LV_SIZE_CONTENT);
+  lua_setfield(L, -2, "SIZE_CONTENT");
 }
