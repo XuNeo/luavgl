@@ -152,7 +152,7 @@ end
 ---
 --- Create Image on parent
 --- @param parent? Object | nil
---- @param property? StyleProp
+--- @param property? ImageStyle
 --- @return Image
 function lugl.Image(parent, property)
 end
@@ -160,7 +160,7 @@ end
 ---
 --- Create Label on parent
 --- @param parent? Object | nil
---- @param property? StyleProp
+--- @param property? LabelStyle
 --- @return Label
 function lugl.Label(parent, property)
 end
@@ -223,7 +223,7 @@ end
 
 ---
 --- Create image on object
---- @param property? ImageStyle
+--- @param property? LabelStyle
 --- @return Label
 function obj:Label(property)
 end
@@ -523,7 +523,7 @@ end
 --- @field pad_row number
 --- @field pad_column number
 --- @field pad_gap number
---- @field bg_color number
+--- @field bg_color number | string text color in hex number or #RGB or #RRGGBB format
 --- @field bg_opa number
 --- @field bg_grad_color number
 --- @field bg_grad_dir number
@@ -535,20 +535,20 @@ end
 --- @field bg_img_recolor number
 --- @field bg_img_recolor_opa number
 --- @field bg_img_tiled number
---- @field border_color number
+--- @field border_color number | string
 --- @field border_opa number
 --- @field border_width number
 --- @field border_side number
 --- @field border_post number
 --- @field outline_width number
---- @field outline_color number
+--- @field outline_color number | string
 --- @field outline_opa number
 --- @field outline_pad number
 --- @field shadow_width number
 --- @field shadow_ofs_x number
 --- @field shadow_ofs_y number
 --- @field shadow_spread number
---- @field shadow_color number
+--- @field shadow_color number | string
 --- @field shadow_opa number
 --- @field img_opa number
 --- @field img_recolor number
@@ -557,14 +557,14 @@ end
 --- @field line_dash_width number
 --- @field line_dash_gap number
 --- @field line_rounded number
---- @field line_color number
+--- @field line_color number | string
 --- @field line_opa number
 --- @field arc_width number
 --- @field arc_rounded number
---- @field arc_color number
+--- @field arc_color number | string
 --- @field arc_opa number
 --- @field arc_img_src number
---- @field text_color number | string text color in hex number or #RGB or #RRGGBB format
+--- @field text_color number | string
 --- @field text_opa number
 --- @field text_font Font
 --- @field text_letter_space number
