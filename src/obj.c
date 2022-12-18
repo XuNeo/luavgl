@@ -280,7 +280,6 @@ static int lugl_obj_delete(lua_State *L)
     lv_obj_del(obj);
   }
 
-  udata = lua_touserdata(L, 1);
   *udata = NULL;
 
   lua_pop(L, 1); /* remove the userdata para */
@@ -382,6 +381,42 @@ static int lugl_obj_get_screen(lua_State *L)
 
   return 1;
 }
+
+static int lugl_obj_get_parent(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "obj could already been deleted.");
+    return 0;
+  }
+
+  lv_obj_t *parent = lv_obj_get_parent(obj);
+
+  /* check if userdata is added to this obj, so lua can access it. */
+  lua_pushlightuserdata(L, parent);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (lua_isnil(L, -1)) {
+    if (parent->user_data) {
+      /* oops, user_data has been used by native code */
+      return lugl_error(L,
+                        "Cannot return native object that user_data is used.");
+    }
+
+    /**
+     * obj has no userdata, add one.
+     * @todo memleak here, since we'll never known when it's deleted.
+     *
+     * This obj should not be gc'ed by lua, since it's not created by
+     * lua.
+     */
+    lugl_obj_data_t *data = lugl_obj_alloc_data(L, parent);
+    data->non_native = true;
+    return lugl_obj_add_userdata(L, parent);
+  }
+
+  return 1;
+}
+
 
 static int lugl_obj_get_state(lua_State *L)
 {
