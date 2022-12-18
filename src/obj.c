@@ -232,15 +232,26 @@ static int lugl_obj_create(lua_State *L)
 
 static int lugl_obj_delete(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, -1); /* could reentry, so use -1 */
-  if (obj == NULL)
+  lv_obj_t *obj;
+  void **udata;
+
+  /**
+   * Some widget may create child obj that doesn't below to lua. Ignore them
+   * and report no error.
+   */
+  if (!(udata = lua_touserdata(L, -1))) {
     return 0;
+  }
+
+  if (!(obj = *(lv_obj_t **)udata)) {
+    /* could be already deleted, but not gc'ed */
+    return 0;
+  }
 
   uint32_t cnt = lv_obj_get_child_cnt(obj);
 
   for (int i = cnt - 1; i >= 0; i--) {
     lv_obj_t *child = lv_obj_get_child(obj, i);
-
     lua_checkstack(L, 2);
     lua_pushlightuserdata(L, child);
     lua_rawget(L, LUA_REGISTRYINDEX);
@@ -269,7 +280,7 @@ static int lugl_obj_delete(lua_State *L)
     lv_obj_del(obj);
   }
 
-  void **udata = lua_touserdata(L, 1);
+  udata = lua_touserdata(L, 1);
   *udata = NULL;
 
   lua_pop(L, 1); /* remove the userdata para */
