@@ -293,10 +293,11 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     } else {
       return luaL_error(L, "unknown style");
     }
+
+    return 0;
   }
 
-  /* OK */
-  return 0;
+  return -1;
 }
 
 /**
@@ -422,7 +423,8 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
       .obj = obj,
       .selector = selector,
   };
-  lugl_set_style_kv(L, obj_style_set_cb, &info);
+
+  return lugl_set_style_kv(L, obj_style_set_cb, &info);
 }
 
 /**
