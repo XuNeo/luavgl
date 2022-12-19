@@ -98,10 +98,6 @@ static void lugl_iterate(lua_State *L, int index,
 static int _lugl_set_property(lua_State *L, void *obj,
                               const lugl_value_setter_t table[], uint32_t len);
 
-static int _lugl_set_obj_style(lua_State *L, lv_obj_t *obj,
-                               lv_style_selector_t selector,
-                               const lugl_value_setter_t table[], uint32_t len);
-
 #define lugl_set_property(L, obj, table)                                       \
   _lugl_set_property(L, obj, table, sizeof(table) / sizeof(table[0]))
 

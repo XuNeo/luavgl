@@ -241,7 +241,7 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     }
 
     if (p->type & STYLE_TYPE_SPECIAL) {
-      switch (p->prop) {
+      switch ((int)p->prop) {
         /* style combinations */
       case LV_STYLE_SIZE:
         cb(LV_STYLE_WIDTH, value, args);
@@ -483,6 +483,8 @@ static int lugl_obj_add_style(lua_State *L)
   }
 
   lv_obj_add_style(obj, &s->style, selector);
+
+  return 0;
 }
 
 /**
@@ -499,6 +501,7 @@ static int lugl_obj_remove_style(lua_State *L)
   }
 
   lv_obj_remove_style(obj, &s->style, selector);
+  return 0;
 }
 
 /**
@@ -509,4 +512,5 @@ static int lugl_obj_remove_style_all(lua_State *L)
   lv_obj_t *obj = lugl_check_obj(L, 1);
 
   lv_obj_remove_style_all(obj);
+  return 0;
 }
