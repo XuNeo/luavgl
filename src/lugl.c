@@ -304,11 +304,11 @@ LUALIB_API void lugl_set_root(lua_State* L, lv_obj_t* root)
 }
 
 LUALIB_API void lugl_set_font_extension(lua_State* L, make_font_cb make,
-                                        delete_font_cb delete)
+                                        delete_font_cb d)
 {
     lugl_ctx_t* ctx = lugl_context(L);
     ctx->make_font = make;
-    ctx->delete_font = delete;
+    ctx->delete_font = d;
 }
 
 static int root_gc(lua_State* L)
