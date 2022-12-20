@@ -208,3 +208,27 @@ static int lugl_get_img_size(lua_State *L)
 
   return 2;
 }
+
+static const luaL_Reg lugl_img_methods[] = {
+    // img.c
+    {"set", lugl_img_set},
+
+    {"set_src", lugl_img_set_src},
+    {"set_offset", lugl_img_set_offset},
+    {"set_pivot", lugl_img_set_pivot},
+    {"get_img_size", lugl_get_img_size},
+
+    {NULL, NULL},
+};
+
+static void lugl_img_init(lua_State *L)
+{
+  luaL_newmetatable(L, "lv_img");
+
+  lugl_new_objlib(L);
+  luaL_setfuncs(L, lugl_img_methods, 0); /* should add obj methods firstly, so
+                                            img methods could override it. */
+  lua_setfield(L, -2, "__index");
+
+  lua_pop(L, 1); /* pop __index table */
+}

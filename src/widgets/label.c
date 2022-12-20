@@ -26,8 +26,12 @@ static const lugl_value_setter_t label_property_table[] = {
     {"text", SETTER_TYPE_STACK, {.setter_stack = _lv_label_set_txt}},
     {"long_mode", 0, {.setter = (setter_int_t)lv_label_set_long_mode}},
     {"recolor", 0, {.setter = (setter_int_t)lv_label_set_recolor}},
-    {"text_selection_start", 0, {.setter = (setter_int_t)lv_label_set_text_selection_start}},
-    {"text_selection_end", 0, {.setter = (setter_int_t)lv_label_set_text_selection_end}},
+    {"text_selection_start",
+     0,
+     {.setter = (setter_int_t)lv_label_set_text_selection_start}},
+    {"text_selection_end",
+     0,
+     {.setter = (setter_int_t)lv_label_set_text_selection_end}},
 };
 
 static int label_set_property_cb(lua_State *L, void *data)
@@ -71,38 +75,38 @@ static int lugl_label_set(lua_State *L)
   return 0;
 }
 
-static int lugl_label_get_text(lua_State* L)
+static int lugl_label_get_text(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   lua_pushstring(L, lv_label_get_text(obj));
   return 1;
 }
 
-static int lugl_label_get_long_mode(lua_State* L)
+static int lugl_label_get_long_mode(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   lua_pushinteger(L, lv_label_get_long_mode(obj));
   return 1;
 }
 
-static int lugl_label_get_recolor(lua_State* L)
+static int lugl_label_get_recolor(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   lua_pushinteger(L, lv_label_get_recolor(obj));
   return 1;
 }
 
-static int lugl_label_ins_text(lua_State* L)
+static int lugl_label_ins_text(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   uint32_t pos = lugl_tointeger(L, 2);
-  const char* txt = lua_tostring(L, 3);
+  const char *txt = lua_tostring(L, 3);
 
   lv_label_ins_text(obj, pos, txt);
   return 0;
 }
 
-static int lugl_label_cut_text(lua_State* L)
+static int lugl_label_cut_text(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   uint32_t pos = lugl_tointeger(L, 2);
@@ -110,4 +114,28 @@ static int lugl_label_cut_text(lua_State* L)
 
   lv_label_cut_text(obj, pos, cnt);
   return 0;
+}
+
+static const luaL_Reg lugl_label_methods[] = {
+    // label.c
+    {"set", lugl_label_set},
+    {"get_text", lugl_label_get_text},
+    {"get_long_mode", lugl_label_get_long_mode},
+    {"get_recolor", lugl_label_get_recolor},
+    {"get_recolor", lugl_label_get_recolor},
+    {"ins_text", lugl_label_ins_text},
+    {"cut_text", lugl_label_cut_text},
+
+    {NULL, NULL},
+};
+
+static void lugl_label_init(lua_State *L)
+{
+  luaL_newmetatable(L, "lv_label");
+
+  lugl_new_objlib(L);
+  luaL_setfuncs(L, lugl_label_methods, 0);
+  lua_setfield(L, -2, "__index");
+
+  lua_pop(L, 1); /* pop __index table */
 }

@@ -14,7 +14,7 @@ static int lugl_keyboard_create(lua_State *L)
 
 static void _lv_keyboard_set_textarea(void *obj, lua_State *L)
 {
-  lv_obj_t* ta = lugl_check_obj(L, -1);
+  lv_obj_t *ta = lugl_check_obj(L, -1);
   if (ta->class_p != &lv_textarea_class) {
     luaL_argerror(L, -1, "expect textarea obj");
     return;
@@ -69,4 +69,22 @@ static int lugl_keyboard_set(lua_State *L)
   lugl_iterate(L, -1, lugl_keyboard_set_property_kv, obj);
 
   return 0;
+}
+
+static const luaL_Reg lugl_keyboard_methods[] = {
+    // widget/textarea.c
+    {"set", lugl_keyboard_set},
+
+    {NULL, NULL},
+};
+
+static void lugl_keyboard_init(lua_State *L)
+{
+  luaL_newmetatable(L, "lv_keyboard");
+
+  lugl_new_objlib(L);
+  luaL_setfuncs(L, lugl_keyboard_methods, 0);
+  lua_setfield(L, -2, "__index");
+
+  lua_pop(L, 1); /* pop __index table */
 }

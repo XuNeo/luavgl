@@ -122,3 +122,22 @@ static int lugl_textarea_get_text(lua_State *L)
 
   return 1;
 }
+
+static const luaL_Reg lugl_textarea_methods[] = {
+    // widget/textarea.c
+    {"set", lugl_textarea_set},
+    {"get_text", lugl_textarea_get_text},
+
+    {NULL, NULL},
+};
+
+static void lugl_textarea_init(lua_State *L)
+{
+  luaL_newmetatable(L, "lv_textarea");
+
+  lugl_new_objlib(L);
+  luaL_setfuncs(L, lugl_textarea_methods, 0);
+  lua_setfield(L, -2, "__index");
+
+  lua_pop(L, 1); /* pop __index table */
+}

@@ -10,15 +10,11 @@
 #include "constants.c"
 #include "event.c"
 #include "font.c"
-#include "img.c"
-#include "label.c"
 #include "obj.c"
 #include "style.c"
 #include "timer.c"
 #include "util.c"
 
-#include "widgets/keyboard.c"
-#include "widgets/textarea.c"
 #include "widgets/widgets.c"
 
 /* clang-format off */
@@ -79,46 +75,6 @@ static void lugl_new_objlib(lua_State* L)
 {
   luaL_newlib(L, lugl_obj_methods);
 }
-
-static const luaL_Reg lugl_img_methods[] = {
-    // img.c
-    { "set", lugl_img_set },
-
-    { "set_src", lugl_img_set_src },
-    { "set_offset", lugl_img_set_offset },
-    { "set_pivot", lugl_img_set_pivot },
-    { "get_img_size", lugl_get_img_size },
-
-    { NULL, NULL }
-};
-
-static const luaL_Reg lugl_label_methods[] = {
-    // label.c
-    { "set", lugl_label_set },
-    { "get_text", lugl_label_get_text },
-    { "get_long_mode", lugl_label_get_long_mode },
-    { "get_recolor", lugl_label_get_recolor },
-    { "get_recolor", lugl_label_get_recolor },
-    { "ins_text", lugl_label_ins_text },
-    { "cut_text", lugl_label_cut_text },
-
-    { NULL, NULL }
-};
-
-static const luaL_Reg lugl_textarea_methods[] = {
-    // widget/textarea.c
-    { "set", lugl_textarea_set },
-    { "get_text", lugl_textarea_get_text },
-
-    { NULL, NULL }
-};
-
-static const luaL_Reg lugl_keyboard_methods[] = {
-    // widget/textarea.c
-    { "set", lugl_keyboard_set },
-
-    { NULL, NULL }
-};
 
 static const luaL_Reg lugl_anim_methods[] = {
     // anim.c
@@ -188,52 +144,6 @@ static void lugl_obj_init(lua_State* L)
     luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
     lua_setfield(L, -2, "__index");
     lua_pop(L, 1);
-}
-
-static void lugl_img_init(lua_State* L)
-{
-    luaL_newmetatable(L, "lv_img");
-
-    luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
-    luaL_setfuncs(L, lugl_img_methods, 0); /* should add obj methods firstly, so
-                                              img methods could override it. */
-    lua_setfield(L, -2, "__index");
-
-    lua_pop(L, 1); /* pop __index table */
-}
-
-static void lugl_label_init(lua_State* L)
-{
-    luaL_newmetatable(L, "lv_label");
-
-    luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
-    luaL_setfuncs(L, lugl_label_methods,
-                  0);
-    lua_setfield(L, -2, "__index");
-
-    lua_pop(L, 1); /* pop __index table */
-}
-
-static void lugl_textarea_init(lua_State* L)
-{
-    luaL_newmetatable(L, "lv_textarea");
-
-    luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
-    luaL_setfuncs(L, lugl_textarea_methods, 0);
-    lua_setfield(L, -2, "__index");
-
-    lua_pop(L, 1); /* pop __index table */
-}
-
-static void lugl_keyboard_init(lua_State* L)
-{
-    luaL_newmetatable(L, "lv_keyboard");
-
-    luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
-    luaL_setfuncs(L, lugl_keyboard_methods, 0);
-    lua_setfield(L, -2, "__index");
-
-    lua_pop(L, 1); /* pop __index table */
 }
 
 static void lugl_anim_init(lua_State* L)
@@ -368,10 +278,7 @@ int luaopen_lugl(lua_State* L)
     }
 
     lugl_obj_init(L);
-    lugl_img_init(L);
     lugl_label_init(L);
-    lugl_textarea_init(L);
-    lugl_keyboard_init(L);
     lugl_widgets_init(L);
     lugl_anim_init(L);
     lugl_timer_init(L);
