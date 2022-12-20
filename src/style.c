@@ -198,36 +198,7 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
       value.num = v;
       break;
     case STYLE_TYPE_COLOR:
-      if (lua_type(L, -1) == LUA_TSTRING) {
-        /* support #RGB and #RRGGBB */
-        const char *s = lua_tostring(L, -1);
-        if (s == NULL) {
-          return luaL_error(L, "unknown color.");
-        }
-
-        int len = strlen(s);
-        if (len == 4 && s[0] == '#') {
-          /* #RGB */
-          int r = to_int(s[1]);
-          r |= r << 4;
-          int g = to_int(s[2]);
-          g |= g << 4;
-          int b = to_int(s[3]);
-          b |= b << 4;
-          value.color = lv_color_make(r, g, b);
-        } else if (len == 7 && s[0] == '#') {
-          /* #RRGGBB */
-          int r = (to_int(s[1]) << 4) | to_int(s[2]);
-          int g = (to_int(s[3]) << 4) | to_int(s[4]);
-          int b = (to_int(s[5]) << 4) | to_int(s[6]);
-          value.color = lv_color_make(r, g, b);
-        } else {
-          return luaL_error(L, "unknown color format.");
-        }
-      } else {
-        v = lugl_tointeger(L, -1);
-        value.color = lv_color_hex(v); /* make to lv_color_t */
-      }
+      value.color = lugl_tocolor(L, -1);
       break;
     case STYLE_TYPE_POINTER:
       value.ptr = lua_touserdata(L, -1);

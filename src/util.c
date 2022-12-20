@@ -16,6 +16,8 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return "lv_textarea";
   else if (obj->class_p == &lv_keyboard_class)
     return "lv_keyboard";
+  else if (obj->class_p == &lv_led_class)
+    return "lv_led";
   else
     return NULL;
 }
@@ -86,6 +88,13 @@ static int _lugl_set_property(lua_State *L, void *obj,
         v = lua_tonumber(L, -1);
       }
       p->setter(obj, v);
+    } else if (p->type == SETTER_TYPE_COLOR) {
+      /* color */
+      lv_color_t color = lugl_tocolor(L, -1);
+      p->setter(obj, color.full);
+    } else if (p->type == SETTER_TYPE_IMGSRC) {
+      /* img src */
+      p->setter_pointer(obj, (void *)lugl_get_img_src(L, -1));
     } else if (p->type == SETTER_TYPE_STACK) {
       p->setter_stack(obj, L);
     } else if (p->type == SETTER_TYPE_POINTER) {
@@ -137,4 +146,58 @@ static int lugl_tointeger(lua_State *L, int idx)
   }
 
   return v;
+}
+
+static lv_color_t lugl_tocolor(lua_State *L, int idx)
+{
+  lv_color_t color = {0};
+  if (lua_type(L, idx) == LUA_TSTRING) {
+    /* support #RGB and #RRGGBB */
+    const char *s = lua_tostring(L, -1);
+    if (s == NULL) {
+      luaL_error(L, "unknown color.");
+      return color;
+    }
+
+    int len = strlen(s);
+    if (len == 4 && s[0] == '#') {
+      /* #RGB */
+      int r = to_int(s[1]);
+      r |= r << 4;
+      int g = to_int(s[2]);
+      g |= g << 4;
+      int b = to_int(s[3]);
+      b |= b << 4;
+      color = lv_color_make(r, g, b);
+    } else if (len == 7 && s[0] == '#') {
+      /* #RRGGBB */
+      int r = (to_int(s[1]) << 4) | to_int(s[2]);
+      int g = (to_int(s[3]) << 4) | to_int(s[4]);
+      int b = (to_int(s[5]) << 4) | to_int(s[6]);
+      color = lv_color_make(r, g, b);
+    } else {
+      luaL_error(L, "unknown color format.");
+      return color;
+    }
+  } else {
+    color = lv_color_hex(lugl_tointeger(L, idx)); /* make to lv_color_t */
+  }
+
+  return color;
+}
+
+static const char *lugl_get_img_src(lua_State *L, int idx)
+{
+  const char *src = NULL;
+  if (lua_isuserdata(L, idx)) {
+    src = lua_touserdata(L, idx);
+    debug("set img src to user data: %p\n", src);
+  } else if (lua_isstring(L, idx)) {
+    src = lua_tostring(L, idx);
+  } else {
+    debug("img src should be string or userdata.\n");
+    return NULL;
+  }
+
+  return src;
 }

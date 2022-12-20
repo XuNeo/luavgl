@@ -177,28 +177,12 @@ static int lugl_img_set_pivot(lua_State *L)
   return 0;
 }
 
-const char *lugl_get_img_src(lua_State *L, int idx)
-{
-  const char *src = NULL;
-  if (lua_isuserdata(L, idx)) {
-    src = lua_touserdata(L, idx);
-    debug("set img src to user data: %p\n", src);
-  } else if (lua_isstring(L, idx)) {
-    src = lua_tostring(L, idx);
-  } else {
-    debug("img src should be string or userdata.\n");
-    return NULL;
-  }
-
-  return src;
-}
-
 /**
  * return image size w, h
  * img:get_img_size() -- get size of this image
  * img:get_img_size("src") -- get size of img "src"
  */
-const int lugl_get_img_size(lua_State *L)
+static int lugl_get_img_size(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {

@@ -17,10 +17,12 @@
 typedef enum {
   /* type can be regarded as int */
   SETTER_TYPE_INT = 0,
+  SETTER_TYPE_COLOR,
 
   /* type of data from stack */
   SETTER_TYPE_STACK,   /* parameter is on stack -1 */
   SETTER_TYPE_POINTER, /* parameter from lightuserdata, a pointer */
+  SETTER_TYPE_IMGSRC,
 } setter_type_t;
 
 typedef void (*setter_int_t)(void *, int);
@@ -103,9 +105,12 @@ static int _lugl_set_property(lua_State *L, void *obj,
 
 static int lugl_obj_set_property_kv(lua_State *L, void *data);
 
-const char *lugl_get_img_src(lua_State *L, int idx);
+static const char *lugl_get_img_src(lua_State *L, int idx);
 
 static void _lv_dummy_set(void *obj, lua_State *L);
 
 static int lugl_tointeger(lua_State *L, int idx);
 static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t* obj, int selector);
+static lv_color_t lugl_tocolor(lua_State *L, int idx);
+
+static void lugl_new_objlib(lua_State* L);

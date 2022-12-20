@@ -136,6 +136,17 @@ static void lugl_align_init(lua_State* L)
     lua_pushstring(L, "OUT_RIGHT_BOTTOM"); lua_pushinteger(L, LV_ALIGN_OUT_RIGHT_BOTTOM); lua_settable(L, -3);
 }
 
+static void lugl_label_const_init(lua_State* L)
+{
+    lua_newtable(L);
+
+    lua_pushstring(L, "LONG_WRAP"); lua_pushinteger(L, LV_LABEL_LONG_WRAP); lua_settable(L, -3);
+    lua_pushstring(L, "LONG_DOT"); lua_pushinteger(L, LV_LABEL_LONG_DOT); lua_settable(L, -3);
+    lua_pushstring(L, "LONG_SCROLL"); lua_pushinteger(L, LV_LABEL_LONG_SCROLL); lua_settable(L, -3);
+    lua_pushstring(L, "LONG_SCROLL_CIRCULAR"); lua_pushinteger(L, LV_LABEL_LONG_SCROLL_CIRCULAR); lua_settable(L, -3);
+    lua_pushstring(L, "LONG_CLIP"); lua_pushinteger(L, LV_LABEL_LONG_CLIP); lua_settable(L, -3);
+
+}
 static void lugl_builtin_font_init(lua_State* L)
 {
     lua_newtable(L);
@@ -301,6 +312,9 @@ static void lugl_constants_init(lua_State *L)
   lua_setfield(L, -2, "ANIM_REPEAT_INFINITE");
   lua_pushinteger(L, LV_ANIM_PLAYTIME_INFINITE);
   lua_setfield(L, -2, "ANIM_PLAYTIME_INFINITE");
+
+  lugl_label_const_init(L);
+  lua_setfield(L, -2, "LABEL");
 
   lua_pushcfunction(L, lugl_LV_PCT);
   lua_setfield(L, -2, "PCT");

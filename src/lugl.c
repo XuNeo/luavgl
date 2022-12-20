@@ -19,6 +19,7 @@
 
 #include "widgets/keyboard.c"
 #include "widgets/textarea.c"
+#include "widgets/widgets.c"
 
 /* clang-format off */
 #define WIDGET_CREATE_FUNCTIONS                 \
@@ -74,6 +75,11 @@ static const luaL_Reg lugl_obj_methods[] = {
     { NULL, NULL },
 };
 
+static void lugl_new_objlib(lua_State* L)
+{
+  luaL_newlib(L, lugl_obj_methods);
+}
+
 static const luaL_Reg lugl_img_methods[] = {
     // img.c
     { "set", lugl_img_set },
@@ -89,6 +95,12 @@ static const luaL_Reg lugl_img_methods[] = {
 static const luaL_Reg lugl_label_methods[] = {
     // label.c
     { "set", lugl_label_set },
+    { "get_text", lugl_label_get_text },
+    { "get_long_mode", lugl_label_get_long_mode },
+    { "get_recolor", lugl_label_get_recolor },
+    { "get_recolor", lugl_label_get_recolor },
+    { "ins_text", lugl_label_ins_text },
+    { "cut_text", lugl_label_cut_text },
 
     { NULL, NULL }
 };
@@ -360,6 +372,7 @@ int luaopen_lugl(lua_State* L)
     lugl_label_init(L);
     lugl_textarea_init(L);
     lugl_keyboard_init(L);
+    lugl_widgets_init(L);
     lugl_anim_init(L);
     lugl_timer_init(L);
     lugl_style_init(L);

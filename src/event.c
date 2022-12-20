@@ -37,7 +37,8 @@ static void lugl_obj_event_cb(lv_event_t *e)
 
   int ref = LUA_NOREF;
   for (int i = 0; i < data->n_events; i++) {
-    if (data->events[i].code == LV_EVENT_ALL || data->events[i].code == e->code) {
+    if (data->events[i].code == LV_EVENT_ALL ||
+        data->events[i].code == e->code) {
       ref = data->events[i].ref;
       break;
     }
@@ -56,8 +57,8 @@ static void lugl_obj_event_cb(lv_event_t *e)
   lua_call(L, nargs, 0);
 }
 
-static volatile void lugl_obj_remove_event(lua_State *L, lv_obj_t *obj,
-                                           struct event_callback_s *event)
+static void lugl_obj_remove_event(lua_State *L, lv_obj_t *obj,
+                                  struct event_callback_s *event)
 {
   luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
   event->code = -1; /* mark it as unused. */
