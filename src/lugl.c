@@ -17,15 +17,6 @@
 
 #include "widgets/widgets.c"
 
-/* clang-format off */
-#define WIDGET_CREATE_FUNCTIONS                 \
-    { "Object", lugl_obj_create },              \
-    { "Image", lugl_img_create },               \
-    { "Label", lugl_label_create },             \
-    { "Textarea", lugl_textarea_create },       \
-    { "Keyboard", lugl_keyboard_create }        \
-/* clang-format on */
-
 static const struct luaL_Reg lugl_functions[] = {
     /* widget create using lvgl.table, has parent of root */
     WIDGET_CREATE_FUNCTIONS,

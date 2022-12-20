@@ -66,7 +66,6 @@ static int lugl_led_get_brightness(lua_State *L)
 }
 
 static const luaL_Reg lugl_led_methods[] = {
-    // img.c
     { "set", lugl_led_set },
 
     { "get_brightness", lugl_led_get_brightness },
@@ -79,8 +78,7 @@ static void lugl_led_init(lua_State* L)
     luaL_newmetatable(L, "lv_led");
 
     lugl_new_objlib(L);
-    luaL_setfuncs(L, lugl_led_methods, 0); /* should add obj methods firstly, so
-                                              img methods could override it. */
+    luaL_setfuncs(L, lugl_led_methods, 0);
     lua_setfield(L, -2, "__index");
 
     lua_pop(L, 1); /* pop __index table */

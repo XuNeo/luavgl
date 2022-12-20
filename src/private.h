@@ -114,3 +114,4 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t* obj, int selector);
 static lv_color_t lugl_tocolor(lua_State *L, int idx);
 
 static void lugl_new_objlib(lua_State* L);
+static int lugl_obj_add_userdata(lua_State *L, lv_obj_t *obj);

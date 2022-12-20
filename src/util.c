@@ -18,6 +18,12 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return "lv_keyboard";
   else if (obj->class_p == &lv_led_class)
     return "lv_led";
+  else if (obj->class_p == &lv_list_text_class)
+    return "lv_label";
+  else if (obj->class_p == &lv_list_btn_class)
+    return "lv_btn";
+  else if (obj->class_p == &lv_list_class)
+    return "lv_list";
   else
     return NULL;
 }
