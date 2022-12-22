@@ -300,6 +300,15 @@ end
 function lugl.Keyboard(parent, property)
 end
 
+
+---
+--- Create Led Widget on parent
+--- @param parent? Object | nil
+--- @param property? LedStyle
+--- @return Led
+function lugl.Led(parent, property)
+end
+
 ---
 --- Create List Widget on parent
 --- @param parent? Object | nil
@@ -383,6 +392,13 @@ end
 --- @param property? KeyboardStyle
 --- @return Keyboard
 function obj:Keyboard(property)
+end
+
+---
+--- Create Led Widget on parent
+--- @param property? LedStyle
+--- @return Led
+function obj:Led(property)
 end
 
 ---
@@ -662,6 +678,37 @@ local keyboard = {}
 function keyboard:set(p)
 end
 
+---
+--- LED widget
+---@class Led: Object
+---
+local led = {}
+
+--- LED set method
+--- @param p LedStyle
+--- @return nil
+function led:set(p)
+end
+
+--- LED set to ON
+--- @return nil
+function led:on()
+end
+
+--- LED set to OFF
+--- @return nil
+function led:off()
+end
+
+--- toggle LED status
+--- @return nil
+function led:toggle()
+end
+
+--- get LED brightness
+--- @return integer
+function led:get_brightness()
+end
 
 ---
 --- List widget
@@ -925,6 +972,11 @@ end
 --- @field textarea Textarea textarea object
 --- @field mode KeyboardMode
 --- @field popovers boolean Show the button title in a popover when pressed.
+
+--- Led style
+--- @class LedStyle :StyleProp
+--- @field color integer|string color of led
+--- @field brightness integer brightness in range of 0..255
 
 --- List style
 --- @class ListStyle :StyleProp

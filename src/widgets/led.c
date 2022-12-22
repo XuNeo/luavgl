@@ -16,9 +16,6 @@ static int lugl_led_create(lua_State *L)
 static const lugl_value_setter_t led_property_table[] = {
     {"color", SETTER_TYPE_COLOR, {.setter = (setter_int_t)lv_led_set_color}},
     {"brightness", 0, {.setter = (setter_int_t)lv_led_set_brightness}},
-    {"on", 0, {.setter = (setter_int_t)lv_led_on}},
-    {"off", 0, {.setter = (setter_int_t)lv_led_off}},
-    {"toggle", 0, {.setter = (setter_int_t)lv_led_toggle}},
 };
 /* clang-format on */
 
@@ -58,6 +55,42 @@ static int lugl_led_set(lua_State *L)
   return 0;
 }
 
+static int lugl_led_on(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "obj could already been delted.");
+    return 0;
+  }
+
+  lv_led_on(obj);
+  return 0;
+}
+
+static int lugl_led_off(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "obj could already been delted.");
+    return 0;
+  }
+
+  lv_led_off(obj);
+  return 0;
+}
+
+static int lugl_led_toggle(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "obj could already been delted.");
+    return 0;
+  }
+
+  lv_led_toggle(obj);
+  return 0;
+}
+
 static int lugl_led_get_brightness(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
@@ -67,6 +100,9 @@ static int lugl_led_get_brightness(lua_State *L)
 
 static const luaL_Reg lugl_led_methods[] = {
     { "set", lugl_led_set },
+    { "on", lugl_led_on },
+    { "off", lugl_led_off },
+    { "toggle", lugl_led_toggle },
 
     { "get_brightness", lugl_led_get_brightness },
 
