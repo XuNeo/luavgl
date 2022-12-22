@@ -7,41 +7,6 @@ lugl = {}
 
 --- constans table. Note that value listed here is only for linter.
 
---- object flag for obj:add_flag obj:clear_flag
---- @enum ObjFlag
-lugl.FLAG = {
-    PRESSED = 0,
-    HIDDEN = 0,
-    CLICKABLE = 0,
-    CLICK_FOCUSABLE = 0,
-    CHECKABLE = 0,
-    SCROLLABLE = 0,
-    SCROLL_ELASTIC = 0,
-    SCROLL_MOMENTUM = 0,
-    SCROLL_ONE = 0,
-    SCROLL_CHAIN_HOR = 0,
-    SCROLL_CHAIN_VER = 0,
-    SCROLL_CHAIN = 0,
-    SCROLL_ON_FOCUS = 0,
-    SCROLL_WITH_ARROW = 0,
-    SNAPPABLE = 0,
-    PRESS_LOCK = 0,
-    EVENT_BUBBLE = 0,
-    GESTURE_BUBBLE = 0,
-    ADV_HITTEST = 0,
-    IGNORE_LAYOUT = 0,
-    FLOATING = 0,
-    OVERFLOW_VISIBLE = 0,
-    LAYOUT_1 = 0,
-    LAYOUT_2 = 0,
-    WIDGET_1 = 0,
-    WIDGET_2 = 0,
-    USER_1 = 0,
-    USER_2 = 0,
-    USER_3 = 0,
-    USER_4 = 0,
-}
-
 --- @enum ObjEvent
 lugl.EVENT = {
     ALL = 0,
@@ -91,6 +56,59 @@ lugl.EVENT = {
     GET_SELF_SIZE = 0,
 }
 
+--- object flag for obj:add_flag obj:clear_flag
+--- @enum ObjFlag
+lugl.FLAG = {
+    PRESSED = 0,
+    HIDDEN = 0,
+    CLICKABLE = 0,
+    CLICK_FOCUSABLE = 0,
+    CHECKABLE = 0,
+    SCROLLABLE = 0,
+    SCROLL_ELASTIC = 0,
+    SCROLL_MOMENTUM = 0,
+    SCROLL_ONE = 0,
+    SCROLL_CHAIN_HOR = 0,
+    SCROLL_CHAIN_VER = 0,
+    SCROLL_CHAIN = 0,
+    SCROLL_ON_FOCUS = 0,
+    SCROLL_WITH_ARROW = 0,
+    SNAPPABLE = 0,
+    PRESS_LOCK = 0,
+    EVENT_BUBBLE = 0,
+    GESTURE_BUBBLE = 0,
+    ADV_HITTEST = 0,
+    IGNORE_LAYOUT = 0,
+    FLOATING = 0,
+    OVERFLOW_VISIBLE = 0,
+    LAYOUT_1 = 0,
+    LAYOUT_2 = 0,
+    WIDGET_1 = 0,
+    WIDGET_2 = 0,
+    USER_1 = 0,
+    USER_2 = 0,
+    USER_3 = 0,
+    USER_4 = 0,
+}
+
+--- @enum ObjState
+lugl.STATE = {
+    DEFAULT = 0,
+    CHECKED = 0,
+    FOCUSED = 0,
+    FOCUS_KEY = 0,
+    EDITED = 0,
+    HOVERED = 0,
+    PRESSED = 0,
+    SCROLLED = 0,
+    DISABLED = 0,
+    USER_1 = 0,
+    USER_2 = 0,
+    USER_3 = 0,
+    USER_4 = 0,
+    ANY = 0,
+}
+
 --- @enum ObjAlignMode
 lugl.ALIGN = {
     DEFAULT = 0,
@@ -117,25 +135,113 @@ lugl.ALIGN = {
     OUT_RIGHT_BOTTOM = 0,
 }
 
---- @enum ObjState
-lugl.STATE = {
-    DEFAULT = 0,
-    CHECKED = 0,
-    FOCUSED = 0,
-    FOCUS_KEY = 0,
-    EDITED = 0,
-    HOVERED = 0,
-    PRESSED = 0,
-    SCROLLED = 0,
-    DISABLED = 0,
-    USER_1 = 0,
-    USER_2 = 0,
-    USER_3 = 0,
-    USER_4 = 0,
-    ANY = 0,
+--- @class BuiltinFont
+lugl.BUILTIN_FONT = {
+    MONTSERRAT_8 = 0,
+    MONTSERRAT_10 = 0,
+    MONTSERRAT_12 = 0,
+    MONTSERRAT_14 = 0,
+    MONTSERRAT_16 = 0,
+    MONTSERRAT_18 = 0,
+    MONTSERRAT_20 = 0,
+    MONTSERRAT_22 = 0,
+    MONTSERRAT_24 = 0,
+    MONTSERRAT_26 = 0,
+    MONTSERRAT_28 = 0,
+    MONTSERRAT_30 = 0,
+    MONTSERRAT_32 = 0,
+    MONTSERRAT_34 = 0,
+    MONTSERRAT_36 = 0,
+    MONTSERRAT_38 = 0,
+    MONTSERRAT_40 = 0,
+    MONTSERRAT_42 = 0,
+    MONTSERRAT_44 = 0,
+    MONTSERRAT_46 = 0,
+    MONTSERRAT_48 = 0,
+    MONTSERRAT_12_SUBPX = 0,
+    MONTSERRAT_28_COMPRESSED = 0,
+    DEJAVU_16_PERSIAN_HEBREW = 0,
+    SIMSUN_16_CJK = 0,
+    UNSCII_8 = 0,
+    UNSCII_16 = 0,
 }
 
-lugl.ANIM_REPEAT_INFINITE = 0xFFFF
+--- @enum LABEL
+lugl.LABEL = {
+    LONG_WRAP = 0,
+    LONG_DOT = 0,
+    LONG_SCROLL = 0,
+    LONG_SCROLL_CIRCULAR = 0,
+    LONG_CLIP = 0,
+}
+
+--- @enum SCR_LOAD_ANIM
+lugl.SCR_LOAD_ANIM = {
+    NONE = 0,
+    OVER_LEFT = 0,
+    OVER_RIGHT = 0,
+    OVER_TOP = 0,
+    OVER_BOTTOM = 0,
+    MOVE_LEFT = 0,
+    MOVE_RIGHT = 0,
+    MOVE_TOP = 0,
+    MOVE_BOTTOM = 0,
+    FADE_IN = 0,
+    FADE_ON = 0,
+    FADE_OUT = 0,
+    OUT_LEFT = 0,
+    OUT_RIGHT = 0,
+    OUT_TOP = 0,
+    OUT_BOTTOM = 0,
+}
+
+--- @enum ScrollbarMode
+lugl.SCROLLBAR_MODE = {
+    OFF = 0,
+    ON = 0,
+    ACTIVE = 0,
+    AUTO = 0,
+}
+
+--- @enum Dir
+lugl.DIR = {
+    NONE = 0,
+    LEFT = 0,
+    RIGHT = 0,
+    TOP = 0,
+    BOTTOM = 0,
+    HOR = 0,
+    VER = 0,
+    ALL = 0,
+}
+
+lugl.ANIM_REPEAT_INFINITE = 0
+lugl.ANIM_PLAYTIME_INFINITE = 0
+lugl.SIZE_CONTENT = 0
+lugl.RADIUS_CIRCLE = 0
+lugl.COORD_MAX = 0
+lugl.COORD_MIN = 0
+lugl.IMG_ZOOM_NONE = 0
+lugl.BTNMATRIX_BTN_NONE = 0
+lugl.CHART_POINT_NONE = 0
+lugl.DROPDOWN_POS_LAST = 0
+lugl.LABEL_DOT_NUM = 0
+lugl.LABEL_POS_LAST = 0
+lugl.LABEL_TEXT_SELECTION_OFF = 0
+lugl.TABLE_CELL_NONE = 0
+lugl.TEXTAREA_CURSOR_LAST = 0
+
+--- return a opacity value in lvgl unit(0..255)
+---@param p integer opacity value in range of 0..100
+---@return integer
+function lugl.OPA(p)
+end
+
+--- return a layout in percent
+---@param p integer
+---@return integer
+function lugl.PCT(p)
+end
 
 ---
 --[[
@@ -163,6 +269,22 @@ end
 --- @param property? LabelStyle
 --- @return Label
 function lugl.Label(parent, property)
+end
+
+---
+--- Create Textarea Widget on parent
+--- @param parent? Object | nil
+--- @param property? TextareaStyle
+--- @return Textarea
+function lugl.Textarea(parent, property)
+end
+
+---
+--- Create List Widget on parent
+--- @param parent? Object | nil
+--- @param property? LabelStyle
+--- @return List
+function lugl.List(parent, property)
 end
 
 ---
@@ -226,6 +348,20 @@ end
 --- @param property? LabelStyle
 --- @return Label
 function obj:Label(property)
+end
+
+---
+--- Create Textarea Widget on parent
+--- @param property? TextareaStyle
+--- @return Textarea
+function obj:Textarea(parent, property)
+end
+
+---
+--- Create List on object
+--- @param property? ListStyle
+--- @return List
+function obj:List(property)
 end
 
 ---
@@ -320,6 +456,78 @@ end
 function obj:remove_style_all()
 end
 
+---scroll obj by x,y
+---@param x integer
+---@param y integer
+---@param anim_en? boolean
+function obj:scroll_by(x, y, anim_en)
+end
+
+---scroll obj by x,y
+---@param x integer
+---@param y integer
+---@param anim_en boolean
+function obj:scroll_by_bounded(x, y, anim_en)
+end
+
+--- Scroll to an object until it becomes visible on its parent
+---@param anim_en? boolean
+function obj:scroll_to_view(anim_en)
+end
+
+--- Scroll to an object until it becomes visible on its parent
+--- Do the same on the parent's parent, and so on.
+--- Therefore the object will be scrolled into view even it has nested scrollable parents
+---@param anim_en? boolean
+function obj:scroll_to_view_recursive(anim_en)
+end
+
+---scroll obj by x,y, low level APIs
+---@param x integer
+---@param y integer
+---@param anim_en boolean
+function obj:scroll_by_raw(x, y, anim_en)
+end
+
+---Invalidate the area of the scrollbars
+function obj:scrollbar_invalidate()
+end
+
+---Checked if the content is scrolled "in" and adjusts it to a normal position.
+---@param anim_en boolean
+function obj:readjust_scroll(anim_en)
+end
+
+---If object is editable
+---@return boolean
+function obj:is_editable()
+end
+
+--- class group def
+---@return boolean
+function obj:is_group_def()
+end
+
+--- Test whether the and object is positioned by a layout or not
+---@return boolean
+function obj:is_layout_positioned()
+end
+
+--- Mark the object for layout update.
+---@return nil
+function obj:mark_layout_as_dirty()
+end
+
+--- Align an object to the center on its parent. same as obj:set{align={align = lugl.ALIGN.CENTER}}
+---@return nil
+function obj:center()
+end
+
+--- Align an object to the center on its parent. same as obj:set{align={align = lugl.ALIGN.CENTER}}
+---@return nil
+function obj:invalidate()
+end
+
 ---
 --- Object event callback. `para` is not used for now.
 --- @alias EventCallback fun(event: ObjEvent, para: any): nil
@@ -398,6 +606,54 @@ function label:set(p)
 end
 
 ---
+--- Textarea widget
+---@class Textarea: Object
+---
+local textarea = {}
+
+--- Textarea set method
+--- @param p TextareaStyle
+--- @return nil
+function textarea:set(p)
+end
+
+--- get textarea text
+--- @return string
+function textarea:get_text(p)
+end
+
+---
+--- List widget
+---@class List: Object
+---
+local list = {}
+
+--- List set method
+--- @param p ListStyle
+--- @return nil
+function list:set(p)
+end
+
+--- add text to list
+--- @param text string
+--- @return Label
+function list:add_text(text)
+end
+
+--- add button to list
+--- @param icon ImgSrc | nil
+--- @param text? string
+--- @return Object a button object
+function list:add_btn(icon, text)
+end
+
+--- get list button text
+--- @param btn Object
+--- @return string
+function list:get_btn_text(btn)
+end
+
+---
 --- Anim
 ---@class Anim
 ---
@@ -453,7 +709,7 @@ end
 --[[
 Font is a light userdata that can be uset to set style text_font.
 ]]
---- @class Font : lightuserdata
+--- @class Font : BuiltinFont
 ---
 
 local font = {}
@@ -582,6 +838,20 @@ end
 --- @field base_dir number
 ---
 
+--- Object style
+--- @class ObjectStyle :StyleProp
+--- @field x integer
+--- @field y integer
+--- @field w integer
+--- @field h integer
+--- @field align Align
+--- @field align_to AlignTo
+--- @field scrollbar_mode ScrollbarMode
+--- @field scroll_dir Dir
+--- @field scroll_snap_x integer
+--- @field scroll_snap_y integer
+---
+
 --- Image style
 --- @class ImageStyle :StyleProp
 --- @field src string
@@ -596,6 +866,22 @@ end
 --- Label style
 --- @class LabelStyle :StyleProp
 --- @field text string
+
+--- Textarea style
+--- @class TextareaStyle :StyleProp
+--- @field text string
+--- @field placeholder string
+--- @field cursor integer cursor position
+--- @field password_mode boolean enable password
+--- @field one_line boolean enable one line mode
+--- @field password_bullet string Set the replacement characters to show in password mode
+--- @field accepted_chars string DO NOT USE. Set a list of characters. Only these characters will be accepted by the text area E.g. "+-.,0123456789"
+--- @field max_length integer Set max length of a Text Area.
+--- @field password_show_time integer Set how long show the password before changing it to '*'
+
+
+--- List style
+--- @class ListStyle :StyleProp
 
 ---
 --- Anim(for object) parameter
@@ -615,5 +901,9 @@ end
 --- @field period number timer period in ms unit
 --- @field repeat_count number | -1 |
 ---
+
+
+---
+--- @alias ImgSrc string | lightuserdata
 
 return lugl

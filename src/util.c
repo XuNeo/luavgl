@@ -131,7 +131,7 @@ static void _lv_dummy_set(void *obj, lua_State *L)
 
 static int lugl_tointeger(lua_State *L, int idx)
 {
-  int v;
+  int v = 0;
   if (lua_isboolean(L, -1)) {
     v = lua_toboolean(L, -1);
   } else if (lua_isinteger(L, -1)) {

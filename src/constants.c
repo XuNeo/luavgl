@@ -310,6 +310,28 @@ static void lugl_scr_load_anim_init(lua_State* L)
   lua_pushstring(L, "OUT_BOTTOM"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_BOTTOM); lua_settable(L, -3);
 }
 
+static void lugl_scrollbar_mode_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "OFF"); lua_pushinteger(L, LV_SCROLLBAR_MODE_OFF); lua_settable(L, -3);
+  lua_pushstring(L, "ON"); lua_pushinteger(L, LV_SCROLLBAR_MODE_ON); lua_settable(L, -3);
+  lua_pushstring(L, "ACTIVE"); lua_pushinteger(L, LV_SCROLLBAR_MODE_ACTIVE); lua_settable(L, -3);
+  lua_pushstring(L, "AUTO"); lua_pushinteger(L, LV_SCROLLBAR_MODE_AUTO); lua_settable(L, -3);
+}
+
+static void lugl_dir_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "NONE"); lua_pushinteger(L, LV_DIR_NONE); lua_settable(L, -3);
+  lua_pushstring(L, "LEFT"); lua_pushinteger(L, LV_DIR_LEFT); lua_settable(L, -3);
+  lua_pushstring(L, "RIGHT"); lua_pushinteger(L, LV_DIR_RIGHT); lua_settable(L, -3);
+  lua_pushstring(L, "TOP"); lua_pushinteger(L, LV_DIR_TOP); lua_settable(L, -3);
+  lua_pushstring(L, "BOTTOM"); lua_pushinteger(L, LV_DIR_BOTTOM); lua_settable(L, -3);
+  lua_pushstring(L, "HOR"); lua_pushinteger(L, LV_DIR_HOR); lua_settable(L, -3);
+  lua_pushstring(L, "VER"); lua_pushinteger(L, LV_DIR_VER); lua_settable(L, -3);
+  lua_pushstring(L, "ALL"); lua_pushinteger(L, LV_DIR_ALL); lua_settable(L, -3);
+}
+
 static int lugl_LV_PCT(lua_State*L)
 {
   int pct = lua_tointeger(L, 1);
@@ -341,23 +363,29 @@ static void lugl_constants_init(lua_State *L)
   lugl_align_init(L);
   lua_setfield(L, -2, "ALIGN");
   lugl_builtin_font_init(L);
-  lua_setfield(L, -2, "builtin_font");
+  lua_setfield(L, -2, "BUILTIN_FONT");
+  lugl_label_const_init(L);
+  lua_setfield(L, -2, "LABEL");
+  lugl_scr_load_anim_init(L);
+  lua_setfield(L, -2, "SCR_LOAD_ANIM");
+  lugl_scrollbar_mode_init(L);
+  lua_setfield(L, -2, "SCROLLBAR_MODE");
+  lugl_dir_init(L);
+  lua_setfield(L, -2, "DIR");
+
+  /* miscellaneous. */
+
   lua_pushinteger(L, LV_ANIM_REPEAT_INFINITE);
   lua_setfield(L, -2, "ANIM_REPEAT_INFINITE");
   lua_pushinteger(L, LV_ANIM_PLAYTIME_INFINITE);
   lua_setfield(L, -2, "ANIM_PLAYTIME_INFINITE");
-
-  lugl_label_const_init(L);
-  lua_setfield(L, -2, "LABEL");
-
-  lugl_scr_load_anim_init(L);
-  lua_setfield(L, -2, "SCR_LOAD_ANIM");
 
   lua_pushcfunction(L, lugl_LV_OPA);
   lua_setfield(L, -2, "OPA");
 
   lua_pushcfunction(L, lugl_LV_PCT);
   lua_setfield(L, -2, "PCT");
+
   lua_pushinteger(L, LV_SIZE_CONTENT);
   lua_setfield(L, -2, "SIZE_CONTENT");
 

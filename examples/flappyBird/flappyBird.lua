@@ -545,7 +545,7 @@ local function entry()
         scoreNow = score
     end
 
-    print("font:", lvgl.builtin_font.MONTSERRAT_26)
+    print("font:", lvgl.BUILTIN_FONT.MONTSERRAT_26)
     gameStart = function()
         if flagRunning then
             return
@@ -628,7 +628,7 @@ local function entry()
 
         local scoreResultLabel = scoreImg:Label{
             text = string.format("%03d", scoreNow),
-            text_font = lvgl.builtin_font.MONTSERRAT_22,
+            text_font = lvgl.BUILTIN_FONT.MONTSERRAT_22,
             align = {
                 align = lvgl.ALIGN.TOP_MID,
                 x_ofs = 0,
@@ -638,7 +638,7 @@ local function entry()
 
         local scoreBestLabel = scoreImg:Label{
             text = string.format("%03d", scoreBest),
-            text_font = lvgl.builtin_font.MONTSERRAT_22,
+            text_font = lvgl.BUILTIN_FONT.MONTSERRAT_22,
             align = {
                 align = lvgl.ALIGN.BOTTOM_MID,
                 x_ofs = 0,
@@ -740,7 +740,7 @@ local function entry()
         }
         scoreLabel = sysLayer:Label{
             text = " 000",
-            text_font = lvgl.builtin_font.MONTSERRAT_28,
+            text_font = lvgl.BUILTIN_FONT.MONTSERRAT_28,
             align = {
                 align = lvgl.ALIGN.TOP_MID,
                 x_ofs = 10,

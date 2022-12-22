@@ -73,12 +73,21 @@ static int lugl_list_add_btn(lua_State *L)
   return 1;
 }
 
+static int lugl_get_btn_text(lua_State *L)
+{
+  lv_obj_t *list = lugl_check_obj(L, 1);
+  lv_obj_t *btn = lugl_check_obj(L, 2);
+
+  lua_pushstring(L, lv_list_get_btn_text(list, btn));
+  return 1;
+}
+
 static const luaL_Reg lugl_list_methods[] = {
     {"set", lugl_list_set},
 
     {"add_text", lugl_list_add_text},
     {"add_btn", lugl_list_add_btn},
-    {"get_btn_text", lugl_list_add_btn},
+    {"get_btn_text", lugl_get_btn_text},
 
     {NULL, NULL},
 };

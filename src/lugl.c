@@ -59,7 +59,6 @@ static const luaL_Reg lugl_obj_methods[] = {
     { "scroll_to_view", lugl_obj_scroll_to_view },
     { "scroll_to_view_recursive", lugl_obj_scroll_to_view_recursive },
     { "scroll_by_raw", lugl_obj_scroll_by_raw },
-    { "is_scrolling", lugl_obj_is_scrolling },
     { "scrollbar_invalidate", lugl_obj_scrollbar_invalidate },
     { "readjust_scroll", lugl_obj_readjust_scroll },
     { "is_editable", lugl_obj_is_editable },

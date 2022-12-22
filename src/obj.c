@@ -517,6 +517,9 @@ static int lugl_obj_clear_flag(lua_State *L)
   return 0;
 }
 
+/**
+ * obj:scroll_by(x, y, anim_en)
+ */
 static int lugl_obj_scroll_by(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
@@ -613,7 +616,7 @@ static int lugl_obj_scrollbar_invalidate(lua_State *L)
   }
 
   lv_obj_scrollbar_invalidate(obj);
-  return 1;
+  return 0;
 }
 
 static int lugl_obj_readjust_scroll(lua_State *L)
@@ -626,7 +629,7 @@ static int lugl_obj_readjust_scroll(lua_State *L)
 
   int anim_en = lugl_tointeger(L, 2);
   lv_obj_readjust_scroll(obj, anim_en);
-  return 1;
+  return 0;
 }
 
 static int lugl_obj_is_editable(lua_State *L)
@@ -674,7 +677,7 @@ static int lugl_obj_mark_layout_as_dirty(lua_State *L)
   }
 
   lv_obj_mark_layout_as_dirty(obj);
-  return 1;
+  return 0;
 }
 
 static int lugl_obj_center(lua_State *L)
@@ -686,7 +689,7 @@ static int lugl_obj_center(lua_State *L)
   }
 
   lv_obj_center(obj);
-  return 1;
+  return 0;
 }
 
 static int lugl_obj_invalidate(lua_State *L)
@@ -698,7 +701,7 @@ static int lugl_obj_invalidate(lua_State *L)
   }
 
   lv_obj_invalidate(obj);
-  return 1;
+  return 0;
 }
 
 static int lugl_obj_gc(lua_State *L)
