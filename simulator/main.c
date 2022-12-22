@@ -15,15 +15,9 @@
 
 #include <lugl.h>
 
-#define debug(format, ...) fprintf(stdout, "[lua] " format, ##__VA_ARGS__)
-#define info(format, ...) fprintf(stdout, "[lua] " format, ##__VA_ARGS__)
-#define warn(format, ...) fprintf(stdout, "[lua] " format, ##__VA_ARGS__)
-#define error(format, ...) fprintf(stderr, "[lua] " format, ##__VA_ARGS__)
-
 typedef struct {
   lua_State *L;
   lv_obj_t *root;
-  bool closing;
 } lua_context_t;
 
 typedef struct {
@@ -156,13 +150,13 @@ static int msghandler(lua_State *L)
   lv_obj_set_width(label, LV_PCT(80));
   lv_obj_center(label);
 
-  error("trace back: \n%s\n", msg);
+  printf("trace back: \n%s\n", msg);
   return 0; /* return no trace, since we already processed it. */
 }
 
 static int lua_panic(lua_State *L)
 {
-  error("LUA panic:\n%s\n", lua_tostring(L, -1));
+  printf("LUA panic:\n%s\n", lua_tostring(L, -1));
   return 0; /* return to Lua to abort */
 }
 
@@ -176,7 +170,7 @@ static int pmain(lua_State *L)
 
   lua_lugl_args_t *args = lua_touserdata(L, 2);
   if (args == NULL || args->root == NULL) {
-    error("Null root object.\n");
+    printf("Null root object.\n");
     return 0;
   }
 
@@ -188,7 +182,7 @@ static int pmain(lua_State *L)
    */
   char *path = strdup(script);
   if (path == NULL) {
-    debug("no memory.\n");
+    printf("no memory.\n");
     return 0;
   }
 
@@ -200,7 +194,7 @@ static int pmain(lua_State *L)
     }
   }
 
-  info("script path: %s\n", path);
+  printf("script path: %s\n", path);
   lua_pushstring(L, path);
   lua_setglobal(L, "RESOURCE_ROOT");
   free(path);
@@ -235,14 +229,14 @@ lua_context_t *lua_load_script(const char *script, lua_lugl_args_t *args)
   int ret, status;
   /* create the thread to run script. */
   if (script == NULL) {
-    error("args error.\n");
+    printf("args error.\n");
     return NULL;
   }
 
   printf("run script: %s\n", script);
   lua_State *L = luaL_newstate(); /* create state */
   if (L == NULL) {
-    error("no mem for lua state.\n");
+    printf("no mem for lua state.\n");
     return NULL;
   }
 
@@ -254,15 +248,15 @@ lua_context_t *lua_load_script(const char *script, lua_lugl_args_t *args)
   report(L, status);
   if (!ret || status != LUA_OK) {
     /* This should never happen */
-    error("pcall failed.\n");
+    printf("pcall failed.\n");
     lua_close(L);
     return NULL;
   }
 
-  /* script may fail, but miwear lua continues until page destoried. */
+  /* script may fail, but we continue until page destoried. */
   lua_context_t *luactx = calloc(sizeof(*luactx), 1);
   if (luactx == NULL) {
-    error("no memory.\n");
+    printf("no memory.\n");
     goto lua_exit;
   }
 
@@ -281,6 +275,7 @@ int lua_terminate(lua_context_t *luactx)
   lua_State *L = luactx->L;
 
   lua_close(L);
+  free(luactx);
   return 0;
 }
 
