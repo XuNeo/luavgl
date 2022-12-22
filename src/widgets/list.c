@@ -66,7 +66,7 @@ static int lugl_list_add_text(lua_State *L)
 static int lugl_list_add_btn(lua_State *L)
 {
   lv_obj_t *list = lugl_check_obj(L, 1);
-  const void *icon = lugl_get_img_src(L, 2);
+  const void *icon = lugl_toimgsrc(L, 2);
   const char *str = lua_tostring(L, 3);
   lv_obj_t *obj = lv_list_add_btn(list, icon, str);
   lugl_obj_add_userdata(L, obj);

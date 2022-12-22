@@ -4,6 +4,9 @@
 #include "lugl.h"
 #include "private.h"
 
+/**
+ * check object class and return metatable name.
+ */
 static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
 {
   if (obj->class_p == &lv_obj_class)
@@ -28,20 +31,6 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return NULL;
 }
 
-static int lugl_arg_type_error(lua_State *L, int index, const char *fmt)
-{
-  const char *msg;
-  const char *typearg; /* name for the type of the actual argument */
-  if (luaL_getmetafield(L, index, "__name") == LUA_TSTRING)
-    typearg = lua_tostring(L, -1); /* use the given type name */
-  else if (lua_type(L, index) == LUA_TLIGHTUSERDATA)
-    typearg = "light userdata"; /* special name for messages */
-  else
-    typearg = luaL_typename(L, index); /* standard name */
-  msg = lua_pushfstring(L, fmt, typearg);
-  return luaL_argerror(L, index, msg);
-}
-
 static int lugl_is_callable(lua_State *L, int index)
 {
   if (luaL_getmetafield(L, index, "__call") != LUA_TNIL) {
@@ -58,13 +47,14 @@ static void lugl_check_callable(lua_State *L, int index)
   if (lugl_is_callable(L, index))
     return;
 
-  lugl_arg_type_error(L, index, "function or callable table expected, got %s");
+  luaL_argerror(L, index, "function or callable table expected");
 }
 
 static int lugl_check_continuation(lua_State *L, int index)
 {
   if (lua_isnoneornil(L, index))
     return LUA_NOREF;
+
   lugl_check_callable(L, index);
   lua_pushvalue(L, index);
   return luaL_ref(L, LUA_REGISTRYINDEX);
@@ -100,7 +90,7 @@ static int _lugl_set_property(lua_State *L, void *obj,
       p->setter(obj, color.full);
     } else if (p->type == SETTER_TYPE_IMGSRC) {
       /* img src */
-      p->setter_pointer(obj, (void *)lugl_get_img_src(L, -1));
+      p->setter_pointer(obj, (void *)lugl_toimgsrc(L, -1));
     } else if (p->type == SETTER_TYPE_STACK) {
       p->setter_stack(obj, L);
     } else if (p->type == SETTER_TYPE_POINTER) {
@@ -144,8 +134,7 @@ static int lugl_tointeger(lua_State *L, int idx)
   int v;
   if (lua_isboolean(L, -1)) {
     v = lua_toboolean(L, -1);
-  }
-  if (lua_isinteger(L, -1)) {
+  } else if (lua_isinteger(L, -1)) {
     v = lua_tointeger(L, -1);
   } else {
     v = lua_tonumber(L, -1);
@@ -192,7 +181,7 @@ static lv_color_t lugl_tocolor(lua_State *L, int idx)
   return color;
 }
 
-static const char *lugl_get_img_src(lua_State *L, int idx)
+static const char* lugl_toimgsrc(lua_State *L, int idx)
 {
   const char *src = NULL;
   if (lua_isuserdata(L, idx)) {

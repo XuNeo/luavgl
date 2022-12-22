@@ -107,7 +107,7 @@ static int lugl_img_set_src(lua_State *L)
     return 0;
   }
 
-  const char *src = lugl_get_img_src(L, 2);
+  const char *src = lugl_toimgsrc(L, 2);
   if (src != NULL) {
     lv_img_set_src(obj, src);
   }
@@ -194,7 +194,7 @@ static int lugl_get_img_size(lua_State *L)
   if (lua_isnoneornil(L, 2)) {
     src = lv_img_get_src(obj);
   } else {
-    src = lugl_get_img_src(L, 2);
+    src = lugl_toimgsrc(L, 2);
   }
 
   lv_img_header_t header;

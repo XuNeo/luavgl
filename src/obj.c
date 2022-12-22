@@ -115,6 +115,11 @@ static const lugl_value_setter_t obj_property_table[] = {
     {"h", 0, {.setter = (setter_int_t)lv_obj_set_height}},
     {"align", SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align}},
     {"align_to", SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align_to}},
+
+    {"scrollbar_mode", 0, {.setter = (setter_int_t)lv_obj_set_scrollbar_mode}},
+    {"scroll_dir", 0, {.setter = (setter_int_t)lv_obj_set_scroll_dir}},
+    {"scroll_snap_x", 0, {.setter = (setter_int_t)lv_obj_set_scroll_snap_x}},
+    {"scroll_snap_y", 0, {.setter = (setter_int_t)lv_obj_set_scroll_snap_y}},
 };
 
 /**
@@ -266,18 +271,18 @@ static int lugl_obj_delete(lua_State *L)
 
   lugl_obj_remove_all_anim_int(L, obj);
 
-  bool non_native = true;
+  bool native = true; /* object created from C */
   lugl_obj_data_t *data = obj->user_data;
 
   /* children is already been removed. */
   if (data) {
-    non_native = data->non_native;
+    native = !data->non_native;
     lugl_obj_remove_event_all(L, obj);
     free(data);
     obj->user_data = NULL;
   }
 
-  if (non_native) {
+  if (!native) {
     lv_obj_del(obj);
   }
 
@@ -310,14 +315,14 @@ static int lugl_obj_clean(lua_State *L)
 
 /**
  * set the property of object like x, y, w, h etc.
- * #1: obj: lightuserdata
+ * #1: obj: userdata
  * #2: {k = v} key: string, choose from x, y, w, h, value: any
  */
 static int lugl_obj_set(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -334,13 +339,13 @@ static int lugl_obj_set_parent(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
   lv_obj_t *parent = lugl_check_obj(L, 2);
   if (parent == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -352,7 +357,7 @@ static int lugl_obj_get_screen(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -387,7 +392,7 @@ static int lugl_obj_get_parent(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -423,7 +428,7 @@ static int lugl_obj_get_state(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -442,7 +447,7 @@ static int lugl_obj_scroll_to(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -471,24 +476,11 @@ static int lugl_obj_scroll_to(lua_State *L)
   return 0;
 }
 
-static int lugl_obj_is_scrolling(lua_State *L)
-{
-  lv_obj_t *obj = lugl_check_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
-    return 0;
-  }
-
-  lua_pushboolean(L, lv_obj_is_scrolling(obj));
-
-  return 1;
-}
-
 static int lugl_obj_is_visible(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -501,7 +493,7 @@ static int lugl_obj_add_flag(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -515,7 +507,7 @@ static int lugl_obj_clear_flag(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -523,6 +515,190 @@ static int lugl_obj_clear_flag(lua_State *L)
   lv_obj_clear_flag(obj, flag);
 
   return 0;
+}
+
+static int lugl_obj_scroll_by(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  int x = lugl_tointeger(L, 2);
+  int y = lugl_tointeger(L, 3);
+  int anim_en = lugl_tointeger(L, 4);
+
+  lv_obj_scroll_by(obj, x, y, anim_en);
+  return 0;
+}
+
+static int lugl_obj_scroll_by_bounded(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  int dx = lugl_tointeger(L, 2);
+  int dy = lugl_tointeger(L, 3);
+  int anim_en = lugl_tointeger(L, 4);
+
+  lv_obj_scroll_by_bounded(obj, dx, dy, anim_en);
+  return 0;
+}
+
+static int lugl_obj_scroll_to_view(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  int anim_en = lugl_tointeger(L, 2);
+
+  lv_obj_scroll_to_view(obj, anim_en);
+  return 0;
+}
+
+static int lugl_obj_scroll_to_view_recursive(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  int anim_en = lugl_tointeger(L, 2);
+
+  lv_obj_scroll_to_view_recursive(obj, anim_en);
+  return 0;
+}
+
+static int lugl_obj_scroll_by_raw(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  int x = lugl_tointeger(L, 2);
+  int y = lugl_tointeger(L, 3);
+
+  _lv_obj_scroll_by_raw(obj, x, y);
+  return 0;
+}
+
+static int lugl_obj_is_scrolling(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lua_pushboolean(L, lv_obj_is_scrolling(obj));
+  return 1;
+}
+
+static int lugl_obj_scrollbar_invalidate(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_obj_scrollbar_invalidate(obj);
+  return 1;
+}
+
+static int lugl_obj_readjust_scroll(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  int anim_en = lugl_tointeger(L, 2);
+  lv_obj_readjust_scroll(obj, anim_en);
+  return 1;
+}
+
+static int lugl_obj_is_editable(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lua_pushboolean(L, lv_obj_is_editable(obj));
+  return 1;
+}
+
+static int lugl_obj_is_group_def(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lua_pushboolean(L, lv_obj_is_group_def(obj));
+  return 1;
+}
+
+static int lugl_obj_is_layout_positioned(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lua_pushboolean(L, lv_obj_is_layout_positioned(obj));
+  return 1;
+}
+
+static int lugl_obj_mark_layout_as_dirty(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_obj_mark_layout_as_dirty(obj);
+  return 1;
+}
+
+static int lugl_obj_center(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_obj_center(obj);
+  return 1;
+}
+
+static int lugl_obj_invalidate(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_obj_invalidate(obj);
+  return 1;
 }
 
 static int lugl_obj_gc(lua_State *L)

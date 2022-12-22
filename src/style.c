@@ -204,7 +204,7 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
       value.ptr = lua_touserdata(L, -1);
       break;
     case STYLE_TYPE_IMGSRC:
-      value.ptr = lugl_get_img_src(L, -1);
+      value.ptr = lugl_toimgsrc(L, -1);
       break;
     default:
       /* error, unkown type */

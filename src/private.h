@@ -89,7 +89,6 @@ static void lugl_obj_remove_event_all(lua_State *L, lv_obj_t *obj);
 static int lugl_obj_remove_all_anim_int(lua_State *L, lv_obj_t *obj);
 
 /* util functions */
-static int lugl_arg_type_error(lua_State *L, int index, const char *fmt);
 static int lugl_is_callable(lua_State *L, int index);
 static void lugl_check_callable(lua_State *L, int index);
 static int lugl_check_continuation(lua_State *L, int index);
@@ -105,7 +104,7 @@ static int _lugl_set_property(lua_State *L, void *obj,
 
 static int lugl_obj_set_property_kv(lua_State *L, void *data);
 
-static const char *lugl_get_img_src(lua_State *L, int idx);
+static const char *lugl_toimgsrc(lua_State *L, int idx);
 
 static void _lv_dummy_set(void *obj, lua_State *L);
 
