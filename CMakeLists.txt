@@ -1,28 +1,25 @@
 cmake_minimum_required(VERSION 3.1)
 project(lugl LANGUAGES C VERSION 0.0.1)
+option(BUILD_SIMULATOR "Build lvgl simulator with lugl support" OFF)
+option(FIND_LUA_PACKAGE "Find lua package" ON) # may manually set LUA_INCLUDE_DIR
 
-find_package(Lua)
+if (FIND_LUA_PACKAGE)
+    find_package(Lua)
+endif(FIND_LUA_PACKAGE)
 
-set(CMAKE_C_FLAGS "-g")
-
-MESSAGE(STATUS "LUA_INCLUDE_DIR: " ${LUA_INCLUDE_DIR})
-MESSAGE(STATUS "LVGL_INCLUDE_DIR: " ${LVGL_INCLUDE_DIR})
-
-set(LUA_LIB_SRCS "src/lugl.c")
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/simulator)
-
-include_directories(${LUA_INCLUDE_DIR})
-
-include_directories(deps/lvgl)
-add_subdirectory(deps/lvgl)
-
-add_library(lugl STATIC ${LUA_LIB_SRCS})
-target_link_libraries(lugl lvgl)
+add_library(lugl STATIC "src/lugl.c")
 target_include_directories(lugl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-# add_library(lugl MODULE ${LUA_LIB_SRCS})
-# set_target_properties(lugl PROPERTIES PREFIX "")
+target_include_directories(lugl PRIVATE ${LUA_INCLUDE_DIR}) # need lua.h, lauxlib.h
+target_include_directories(lugl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps/lvgl) # need lvgl.h
+target_include_directories(lugl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/simulator) # need lv_conf.h
 
-add_subdirectory(deps/lv_drivers)
-add_subdirectory(simulator)
+if (BUILD_SIMULATOR)
+    find_package(SDL2 REQUIRED SDL2)
+    include_directories(${SDL2_INCLUDE_DIRS})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/simulator) # need lv_conf.h and lv_drv_conf.h
+
+    add_subdirectory(deps/lvgl)
+    add_subdirectory(deps/lv_drivers)
+    add_subdirectory(simulator)
+endif(BUILD_SIMULATOR)
