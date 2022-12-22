@@ -332,6 +332,23 @@ static void lugl_dir_init(lua_State* L)
   lua_pushstring(L, "ALL"); lua_pushinteger(L, LV_DIR_ALL); lua_settable(L, -3);
 }
 
+static void lugl_keyboard_mode_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "TEXT_LOWER"); lua_pushinteger(L, LV_KEYBOARD_MODE_TEXT_LOWER); lua_settable(L, -3);
+  lua_pushstring(L, "TEXT_UPPER"); lua_pushinteger(L, LV_KEYBOARD_MODE_TEXT_UPPER); lua_settable(L, -3);
+  lua_pushstring(L, "SPECIAL"); lua_pushinteger(L, LV_KEYBOARD_MODE_SPECIAL); lua_settable(L, -3);
+  lua_pushstring(L, "NUMBER"); lua_pushinteger(L, LV_KEYBOARD_MODE_NUMBER); lua_settable(L, -3);
+  lua_pushstring(L, "USER_1"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_1); lua_settable(L, -3);
+  lua_pushstring(L, "USER_2"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_2); lua_settable(L, -3);
+  lua_pushstring(L, "USER_3"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_3); lua_settable(L, -3);
+  lua_pushstring(L, "USER_4"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_4); lua_settable(L, -3);
+
+#if LV_USE_ARABIC_PERSIAN_CHARS == 1
+  lua_pushstring(L, "TEXT_ARABIC"); lua_pushinteger(L, LV_KEYBOARD_MODE_TEXT_ARABIC); lua_settable(L, -3);
+#endif
+}
+
 static int lugl_LV_PCT(lua_State*L)
 {
   int pct = lua_tointeger(L, 1);
@@ -372,6 +389,8 @@ static void lugl_constants_init(lua_State *L)
   lua_setfield(L, -2, "SCROLLBAR_MODE");
   lugl_dir_init(L);
   lua_setfield(L, -2, "DIR");
+  lugl_keyboard_mode_init(L);
+  lua_setfield(L, -2, "KEYBOARD_MODE");
 
   /* miscellaneous. */
 

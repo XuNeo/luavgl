@@ -215,6 +215,19 @@ lugl.DIR = {
     ALL = 0,
 }
 
+--- @enum KeyboardMode
+lugl.KEYBOARD_MODE = {
+    TEXT_LOWER = 0,
+    TEXT_UPPER = 0,
+    SPECIAL = 0,
+    NUMBER = 0,
+    USER_1 = 0,
+    USER_2 = 0,
+    USER_3 = 0,
+    USER_4 = 0,
+    TEXT_ARABIC = 0,
+}
+
 lugl.ANIM_REPEAT_INFINITE = 0
 lugl.ANIM_PLAYTIME_INFINITE = 0
 lugl.SIZE_CONTENT = 0
@@ -277,6 +290,14 @@ end
 --- @param property? TextareaStyle
 --- @return Textarea
 function lugl.Textarea(parent, property)
+end
+
+---
+--- Create Keyboard Widget on parent
+--- @param parent? Object | nil
+--- @param property? KeyboardStyle
+--- @return Keyboard
+function lugl.Keyboard(parent, property)
 end
 
 ---
@@ -354,7 +375,14 @@ end
 --- Create Textarea Widget on parent
 --- @param property? TextareaStyle
 --- @return Textarea
-function obj:Textarea(parent, property)
+function obj:Textarea(property)
+end
+
+---
+--- Create Keyboard Widget on parent
+--- @param property? KeyboardStyle
+--- @return Keyboard
+function obj:Keyboard(property)
 end
 
 ---
@@ -623,6 +651,19 @@ function textarea:get_text(p)
 end
 
 ---
+--- Keyboard widget
+---@class Keyboard: Object based on btnmatrix object
+---
+local keyboard = {}
+
+--- Keyboard set method
+--- @param p KeyboardStyle
+--- @return nil
+function keyboard:set(p)
+end
+
+
+---
 --- List widget
 ---@class List: Object
 ---
@@ -879,6 +920,11 @@ end
 --- @field max_length integer Set max length of a Text Area.
 --- @field password_show_time integer Set how long show the password before changing it to '*'
 
+--- Keyboard style
+--- @class KeyboardStyle :StyleProp
+--- @field textarea Textarea textarea object
+--- @field mode KeyboardMode
+--- @field popovers boolean Show the button title in a popover when pressed.
 
 --- List style
 --- @class ListStyle :StyleProp
