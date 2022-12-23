@@ -1,15 +1,13 @@
 local lvgl = require("lugl")
 local CONST = lvgl.const
 
-local MOVE_SPEED = 480 / 8000 -- 10s for 480 pixel, pixel per ms
+local MOVE_SPEED = 480 / 8000 -- 8s for 480 pixel, pixel per ms
 local PIXEL_PER_METER = 80
 local TOP_Y = 20
 local BOTTOM_Y = 480 - 112
 local PIPE_COUNT = 5
 local PIPE_GAP = 100
 local PIPE_SPACE = 120
-
--- local RESOURCE_ROOT = "/data/app/watchface/builtin/lua_watchface/lua/"
 
 local function randomY()
     return math.random(TOP_Y + 30, BOTTOM_Y - 50 - 50)
@@ -19,7 +17,6 @@ local function screenCreate(parent)
     local property = {
         w = 480,
         h = 480,
-        -- bg_color = 0x00000,
         bg_opa = 0,
         border_width = 0,
         pad_all = 0
@@ -30,7 +27,6 @@ local function screenCreate(parent)
         scr = parent:Object{
             w = 480,
             h = 480,
-            -- bg_color = 0x00000,
             bg_opa = 0,
             border_width = 0,
             pad_all = 0
@@ -486,11 +482,11 @@ local function Background(root, bgEventCB)
     local pipes = Pipes(bgLayer)
     local land = ImageScroll(bgLayer, "/flappyBird/land.png", MOVE_SPEED, BOTTOM_Y)
 
-    bgLayer:onevent(lvgl.EVENT.PRESSED, function(msg)
+    bgLayer:onevent(lvgl.EVENT.PRESSED, function(obj, code)
         bgEventCB(lvgl.EVENT.PRESSED)
     end)
 
-    bgLayer:onevent(lvgl.EVENT.RELEASED, function(msg)
+    bgLayer:onevent(lvgl.EVENT.RELEASED, function(obj, code)
         bgEventCB(lvgl.EVENT.RELEASED)
     end)
 
@@ -648,7 +644,7 @@ local function entry()
         scoreNow = 0
 
         local playBtn;
-        playBtn = createPlayBtn(sysLayer, function()
+        playBtn = createPlayBtn(sysLayer, function(obj, code)
             if debouncing then
                 return
             end

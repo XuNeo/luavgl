@@ -3,25 +3,6 @@
 #include "lugl.h"
 #include "private.h"
 
-/* Processes a result and pushes the data onto the stack
-   returns the number of items pushed */
-static int push_event_data(lua_State *L, lv_event_code_t event)
-{
-  switch (event) {
-  case LV_EVENT_PRESSED:
-    /* code */
-    lua_pushstring(L, "pressed");
-    return 1;
-    break;
-
-  default:
-    return 0;
-    break;
-  }
-
-  return 0;
-}
-
 static void lugl_obj_event_cb(lv_event_t *e)
 {
   lua_State *L = e->user_data;
@@ -49,11 +30,15 @@ static void lugl_obj_event_cb(lv_event_t *e)
     return;
   }
 
+  lua_pushlightuserdata(L, obj);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+
   lua_pushinteger(L, e->code);
-  int nargs = push_event_data(L, e->code) + 1;
+  int nargs = 2;
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_insert(L, -1 - nargs);
 
+  /* args: obj, code */
   lua_call(L, nargs, 0);
 }
 

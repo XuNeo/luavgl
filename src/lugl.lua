@@ -7,7 +7,7 @@ lugl = {}
 
 --- constans table. Note that value listed here is only for linter.
 
---- @enum ObjEvent
+--- @enum ObjEventCode
 lugl.EVENT = {
     ALL = 0,
     PRESSED = 0,
@@ -581,10 +581,10 @@ end
 
 ---
 --- Object event callback. `para` is not used for now.
---- @alias EventCallback fun(event: ObjEvent, para: any): nil
+--- @alias EventCallback fun(obj:Object, code: ObjEventCode): nil
 ---
 --- set object event callback
---- @param code ObjEvent
+--- @param code ObjEventCode
 --- @param cb EventCallback
 --- @return nil
 function obj:onevent(code, cb)
