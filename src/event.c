@@ -12,15 +12,17 @@ static void lugl_obj_event_cb(lv_event_t *e)
 
   lv_obj_t *obj = e->target;
 
-  lugl_obj_data_t *data = obj->user_data;
-  if (data == NULL)
+  lua_pushlightuserdata(L, obj);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  lugl_obj_t *lobj = lugl_to_lobj(L, -1);
+  if (lobj == NULL || lobj->obj == NULL)
     return;
 
   int ref = LUA_NOREF;
-  for (int i = 0; i < data->n_events; i++) {
-    if (data->events[i].code == LV_EVENT_ALL ||
-        data->events[i].code == e->code) {
-      ref = data->events[i].ref;
+  for (int i = 0; i < lobj->n_events; i++) {
+    if (lobj->events[i].code == LV_EVENT_ALL ||
+        lobj->events[i].code == e->code) {
+      ref = lobj->events[i].ref;
       break;
     }
   }
@@ -57,7 +59,8 @@ static int lugl_obj_on_event(lua_State *L)
 {
   bool remove_all; /* if third parameter is noneornil, remove all events. */
 
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lugl_obj_t *lobj = lugl_to_lobj(L, 1);
+  lv_obj_t *obj = lobj->obj;
   if (obj == NULL) {
     luaL_argerror(L, 1, "expect obj userdata.\n");
     return 0;
@@ -70,13 +73,12 @@ static int lugl_obj_on_event(lua_State *L)
   }
 
   remove_all = lua_isnoneornil(L, 3);
-  lugl_obj_data_t *data = obj->user_data;
 
   /* check if event code already added, find a slot to store this callback */
   int slot = 0;
-  if (data && data->events) {
-    for (; slot < data->n_events; slot++) {
-      struct event_callback_s *event = &data->events[slot];
+  if (lobj && lobj->events) {
+    for (; slot < lobj->n_events; slot++) {
+      struct event_callback_s *event = &lobj->events[slot];
       if (event->code == code) { /* same event can only be added once. */
         lugl_obj_remove_event(L, obj, event);
         if (remove_all)
@@ -95,14 +97,9 @@ static int lugl_obj_on_event(lua_State *L)
   if (remove_all) /* no need to add, just return */
     return 0;
 
-  /* create obj->user_data if NULL */
-  if (data == NULL) {
-    data = lugl_obj_alloc_data(L, obj);
-  }
+  struct event_callback_s *events = lobj->events;
 
-  struct event_callback_s *events = data->events;
-
-  /* create obj->data->events, if NULL, realloc if existing and find no slot
+  /* create obj->lobj->events, if NULL, realloc if existing and find no slot
    */
   if (events == NULL) {
     events = calloc(sizeof(struct event_callback_s), 1);
@@ -110,19 +107,19 @@ static int lugl_obj_on_event(lua_State *L)
       return luaL_error(L, "No memory.");
     }
 
-    data->events = events;
-    data->n_events = 1;
+    lobj->events = events;
+    lobj->n_events = 1;
   } else {
     /* realloc? */
-    if (slot && slot == data->n_events) {
+    if (slot && slot == lobj->n_events) {
       struct event_callback_s *_events;
-      _events = realloc(data->events, (data->n_events + 1) * sizeof(*_events));
+      _events = realloc(lobj->events, (lobj->n_events + 1) * sizeof(*_events));
       if (_events == NULL) {
         return luaL_error(L, "No memory.");
       }
       events = _events;
-      data->n_events++; /* now we have +1 event */
-      data->events = events;
+      lobj->n_events++; /* now we have +1 event */
+      lobj->events = events;
     }
     /* else: we have found a slot to reuse, use it. */
   }
@@ -157,34 +154,28 @@ static int lugl_obj_on_pressed(lua_State *L)
   return lugl_obj_on_event(L);
 }
 
-static void lugl_obj_event_init(lv_obj_t *obj)
-{
-  lugl_obj_data_t *data = obj->user_data;
-
-  data->n_events = 0;
-}
+static void lugl_obj_event_init(lugl_obj_t *lobj) { lobj->n_events = 0; }
 
 /**
  * Remove all events added, and free memory of events
  */
-static void lugl_obj_remove_event_all(lua_State *L, lv_obj_t *obj)
+static void lugl_obj_remove_event_all(lua_State *L, lugl_obj_t *lobj)
 {
-  lugl_obj_data_t *data = obj->user_data;
-  if (data == NULL || data->events == NULL) {
+  if (lobj == NULL || lobj->events == NULL) {
     return;
   }
 
-  struct event_callback_s *events = data->events;
+  struct event_callback_s *events = lobj->events;
 
   int i = 0;
-  for (; i < data->n_events; i++) {
-    struct event_callback_s *event = &data->events[i];
+  for (; i < lobj->n_events; i++) {
+    struct event_callback_s *event = &lobj->events[i];
     if (event->code != -1) {
-      lugl_obj_remove_event(L, obj, event);
+      lugl_obj_remove_event(L, lobj->obj, event);
     }
   }
 
   free(events);
-  data->n_events = 0;
-  data->events = NULL;
+  lobj->n_events = 0;
+  lobj->events = NULL;
 }

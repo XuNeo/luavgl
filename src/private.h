@@ -56,6 +56,7 @@ typedef struct lugl_anim_s {
 } lugl_anim_t;
 
 typedef lugl_anim_t *lugl_anim_handle_t;
+
 struct event_callback_s {
   lv_event_code_t code;
   struct _lv_event_dsc_t *dsc;
@@ -64,29 +65,29 @@ struct event_callback_s {
 
 /* Ref for userdata and event callbacks */
 typedef struct {
-  lua_State *L;    /* anim callcall can not get L directly. */
-  lv_obj_t *obj;   /* back points to object */
-  bool non_native; /* this object is not created by lua */
+  lv_obj_t *obj;
+  bool lua_created; /* this object is created from lua */
 
   int n_anim;
   int n_events;
   lugl_anim_handle_t *anims; /* store handler to anim */
   struct event_callback_s *events;
-} lugl_obj_data_t;
+} lugl_obj_t;
 
 static void dumpstack(lua_State *L);
 static const char *lugl_class_to_metatable_name(lv_obj_t *obj);
 
+static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj);
+static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx);
 static lv_obj_t *lugl_check_obj(lua_State *L, int index);
 
 static int lugl_obj_create_helper(lua_State *L,
                                   lv_obj_t *(*create)(lv_obj_t *parent));
 
-static lugl_obj_data_t *lugl_obj_alloc_data(lua_State *L, lv_obj_t *obj);
-static void lugl_obj_event_init(lv_obj_t *obj);
-static void lugl_obj_anim_init(lv_obj_t *obj);
-static void lugl_obj_remove_event_all(lua_State *L, lv_obj_t *obj);
-static int lugl_obj_remove_all_anim_int(lua_State *L, lv_obj_t *obj);
+static void lugl_obj_event_init(lugl_obj_t *lobj);
+static void lugl_obj_anim_init(lugl_obj_t *lobj);
+static void lugl_obj_remove_event_all(lua_State *L, lugl_obj_t *obj);
+static int lugl_obj_remove_all_anim_int(lua_State *L, lugl_obj_t *lobj);
 
 /* util functions */
 static int lugl_is_callable(lua_State *L, int index);
@@ -109,8 +110,7 @@ static const char *lugl_toimgsrc(lua_State *L, int idx);
 static void _lv_dummy_set(void *obj, lua_State *L);
 
 static int lugl_tointeger(lua_State *L, int idx);
-static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t* obj, int selector);
+static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector);
 static lv_color_t lugl_tocolor(lua_State *L, int idx);
 
-static void lugl_new_objlib(lua_State* L);
-static int lugl_obj_add_userdata(lua_State *L, lv_obj_t *obj);
+static void lugl_new_objlib(lua_State *L);

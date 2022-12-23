@@ -31,6 +31,35 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return NULL;
 }
 
+static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx)
+{
+  lugl_obj_t *lobj = lua_touserdata(L, idx);
+  if (lobj == NULL) {
+    goto fail;
+  }
+
+  if (lobj->obj == NULL) {
+    /* could be already deleted, but not gc'ed */
+    return NULL;
+  }
+
+  return lobj;
+
+fail:
+  debug("arg not lv_obj userdata.\n");
+  luaL_argerror(L, idx, "Expected lv_obj userdata");
+  return NULL;
+}
+
+static lv_obj_t *lugl_check_obj(lua_State *L, int idx)
+{
+  lugl_obj_t *lobj = lugl_to_lobj(L, idx);
+  if (lobj == NULL)
+    return NULL;
+
+  return lobj->obj;
+}
+
 static int lugl_is_callable(lua_State *L, int index)
 {
   if (luaL_getmetafield(L, index, "__call") != LUA_TNIL) {
@@ -181,7 +210,7 @@ static lv_color_t lugl_tocolor(lua_State *L, int idx)
   return color;
 }
 
-static const char* lugl_toimgsrc(lua_State *L, int idx)
+static const char *lugl_toimgsrc(lua_State *L, int idx)
 {
   const char *src = NULL;
   if (lua_isuserdata(L, idx)) {

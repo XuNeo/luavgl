@@ -30,7 +30,7 @@ static void lugl_anim_exec_cb(void *var, int32_t value)
   lua_call(L, 2, 0);
 }
 
-static inline void lugl_obj_remove_anim(lua_State *L, lv_obj_t *obj,
+static inline void lugl_obj_remove_anim(lua_State *L, lugl_obj_t *lobj,
                                         lugl_anim_t *a)
 {
   if (a->ref == LUA_NOREF) {
@@ -50,21 +50,19 @@ static inline void lugl_obj_remove_anim(lua_State *L, lv_obj_t *obj,
 
   a->ref = LUA_NOREF;
 
-  /* change anim handle in obj->anims to NULL */
-
-  lugl_obj_data_t *data = a->obj->user_data;
+  /* change anim handle in lobj->anims to NULL */
 
   /* find a slot to store this anim */
   int slot = 0;
-  for (; slot < data->n_anim; slot++) {
-    lugl_anim_handle_t anim = data->anims[slot];
+  for (; slot < lobj->n_anim; slot++) {
+    lugl_anim_handle_t anim = lobj->anims[slot];
     if (anim == a) {
-      data->anims[slot] = NULL;
+      lobj->anims[slot] = NULL;
       return;
     }
   }
 
-  debug("cannot find anim in obj->user_data.\n");
+  debug("cannot find anim in lobj->anims.\n");
 }
 
 /* could be called: 1. manually delete anim. 2. anim done, 3. manually stop
@@ -236,7 +234,8 @@ static int lugl_anim_create(lua_State *L)
 {
   bool remove_all; /* if third parameter is noneornil, remove all anims. */
 
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lugl_obj_t *lobj = lugl_to_lobj(L, 1);
+  lv_obj_t *obj = lobj->obj;
   if (obj == NULL) {
     return luaL_argerror(L, 1, "expect obj userdata.\n");
   }
@@ -246,15 +245,13 @@ static int lugl_anim_create(lua_State *L)
     luaL_argerror(L, 2, "expect anim para in table");
   }
 
-  lugl_obj_data_t *data = obj->user_data;
-
   /* find a slot to store this anim */
   int slot = 0;
-  if (data && data->anims) {
-    for (; slot < data->n_anim; slot++) {
-      lugl_anim_handle_t anim = data->anims[slot];
+  if (lobj && lobj->anims) {
+    for (; slot < lobj->n_anim; slot++) {
+      lugl_anim_handle_t anim = lobj->anims[slot];
       if (remove_all) {
-        lugl_obj_remove_anim(L, obj, anim);
+        lugl_obj_remove_anim(L, lobj, anim);
       } else if (anim == NULL) {
         /* this callback has been removed, thus, we can use this
          * slot */
@@ -266,30 +263,25 @@ static int lugl_anim_create(lua_State *L)
   if (remove_all) /* no need to add, just return */
     return 0;
 
-  /* create obj->user_data if NULL */
-  if (data == NULL) {
-    data = lugl_obj_alloc_data(L, obj);
-  }
+  lugl_anim_handle_t *anims = lobj->anims;
 
-  lugl_anim_handle_t *anims = data->anims;
-
-  /* create obj->data->anims, if NULL, realloc if existing and find no slot
+  /* create lobj->anims, if NULL, realloc if existing and find no slot
    */
   if (anims == NULL) {
     anims = calloc(sizeof(lugl_anim_handle_t), 1);
-    data->anims = anims;
-    data->n_anim = 1;
+    lobj->anims = anims;
+    lobj->n_anim = 1;
   } else {
     /* realloc? */
-    if (slot && slot == data->n_anim) {
+    if (slot && slot == lobj->n_anim) {
       lugl_anim_handle_t *_anims;
-      _anims = realloc(data->anims, (data->n_anim + 1) * sizeof(*_anims));
+      _anims = realloc(lobj->anims, (lobj->n_anim + 1) * sizeof(*_anims));
       if (_anims == NULL) {
         return luaL_error(L, "No memory.");
       }
       anims = _anims;
-      data->n_anim++; /* now we have +1 anim */
-      data->anims = anims;
+      lobj->n_anim++; /* now we have +1 anim */
+      lobj->anims = anims;
     }
     /* else: we have found a slot to reuse, use it. */
   }
@@ -368,35 +360,31 @@ static int lugl_anim_set(lua_State *L)
   return 0;
 }
 
-/* init obj->user_data anim field */
-static void lugl_obj_anim_init(lv_obj_t *obj)
+static void lugl_obj_anim_init(lugl_obj_t *lobj)
 {
-  lugl_obj_data_t *data = obj->user_data;
-
-  data->anims = NULL;
-  data->n_anim = 0;
+  lobj->anims = NULL;
+  lobj->n_anim = 0;
 }
 
-static int lugl_obj_remove_all_anim_int(lua_State *L, lv_obj_t *obj)
+static int lugl_obj_remove_all_anim_int(lua_State *L, lugl_obj_t *lobj)
 {
   debug("obj: %p\n", obj);
 
-  lugl_obj_data_t *data = obj->user_data;
-  if (data == NULL || data->anims == NULL) {
+  if (lobj == NULL || lobj->anims == NULL) {
     return 0;
   }
 
   int i = 0;
-  for (; i < data->n_anim; i++) {
-    lugl_anim_handle_t anim = data->anims[i];
+  for (; i < lobj->n_anim; i++) {
+    lugl_anim_handle_t anim = lobj->anims[i];
     if (anim != NULL)
-      lugl_obj_remove_anim(L, obj, anim);
+      lugl_obj_remove_anim(L, lobj, anim);
     /* else, it's an empty slot, anim already removed */
   }
 
-  free(data->anims);
-  data->n_anim = 0;
-  data->anims = NULL;
+  free(lobj->anims);
+  lobj->n_anim = 0;
+  lobj->anims = NULL;
 
   return 0;
 }
@@ -407,10 +395,9 @@ static int lugl_obj_remove_all_anim_int(lua_State *L, lv_obj_t *obj)
 static int lugl_obj_remove_all_anim(lua_State *L)
 {
   debug("\n");
+  lugl_obj_t *lobj = lugl_to_lobj(L, 1);
 
-  lv_obj_t *obj = lugl_check_obj(L, 1);
-
-  lugl_obj_remove_all_anim_int(L, obj);
+  lugl_obj_remove_all_anim_int(L, lobj);
   return 0;
 }
 
@@ -454,7 +441,11 @@ static int lugl_anim_delete(lua_State *L)
   debug("\n");
   lugl_anim_t *a = lugl_check_anim(L, -1);
 
-  lugl_obj_remove_anim(L, a->obj, a);
+  lua_pushlightuserdata(L, a->obj);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  lugl_obj_t *lobj = lugl_to_lobj(L, -1);
+  lua_pop(L, 1);
+  lugl_obj_remove_anim(L, lobj, a);
 
   return 0;
 }

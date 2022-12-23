@@ -14,45 +14,6 @@ static int lugl_error(lua_State *L, const char *msg)
   return 2;
 }
 
-static lv_obj_t *lugl_check_obj(lua_State *L, int index)
-{
-  lv_obj_t *obj;
-  void *udata;
-  if (!(udata = lua_touserdata(L, index))) {
-    goto fail;
-  }
-
-  if (!(obj = *(lv_obj_t **)udata)) {
-    /* could be already deleted, but not gc'ed */
-    return NULL;
-  }
-
-  return obj;
-fail:
-  debug("arg not lv_obj userdata.\n");
-  luaL_argerror(L, index, "Expected lv_obj userdata");
-  return NULL;
-}
-
-static lugl_obj_data_t *lugl_obj_alloc_data(lua_State *L, lv_obj_t *obj)
-{
-  /**
-   * obj has no userdata, add one.
-   *
-   * This obj should not be gc'ed by lua, since it's not created by
-   * lua
-   */
-  lugl_obj_data_t *data = calloc(sizeof(*data), 1);
-  obj->user_data = data;
-
-  lugl_obj_event_init(obj);
-  lugl_obj_anim_init(obj);
-  data->non_native = true;
-  data->obj = obj;
-  data->L = L;
-  return data;
-}
-
 static void _lv_obj_set_align(void *obj, lua_State *L)
 {
   if (!lua_istable(L, -1)) {
@@ -89,7 +50,7 @@ static void _lv_obj_set_align_to(void *obj, lua_State *L)
   lua_pop(L, 1);
 
   lua_getfield(L, -1, "base");
-  lv_obj_t *base = lugl_check_obj(L, -1);
+  lv_obj_t *base = lugl_to_lobj(L, -1)->obj;
   lua_pop(L, 1);
   if (base == NULL) {
     luaL_argerror(L, -1, "base is not lua obj");
@@ -154,23 +115,27 @@ static inline void lugl_setup_obj(lua_State *L, lv_obj_t *obj)
   lugl_iterate(L, -1, lugl_obj_set_property_kv, obj);
 }
 
-static int lugl_obj_add_userdata(lua_State *L, lv_obj_t *obj)
+static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj)
 {
+  lugl_obj_t *lobj;
+
   const char *meta = lugl_class_to_metatable_name(obj);
   debug("create %s: %p\n", meta, obj);
-  *(void **)lua_newuserdata(L, sizeof(void *)) = obj;
+  lobj = lua_newuserdata(L, sizeof(*lobj));
   luaL_getmetatable(L, meta);
   lua_setmetatable(L, -2);
 
-  /**
-   * @todo add userdata to registry using obj as key,
-   * to avoid userdata from being gc. Need to confirm this behavior.
-   */
+  memset(lobj, 0, sizeof(*lobj));
+  lugl_obj_anim_init(lobj);
+  lugl_obj_event_init(lobj);
+  lobj->obj = obj;
+
+  /* registry[obj] = lobj */
   lua_pushlightuserdata(L, obj);
   lua_pushvalue(L, -2);
   lua_rawset(L, LUA_REGISTRYINDEX);
 
-  return 1;
+  return lobj;
 }
 
 /**
@@ -203,7 +168,7 @@ static int lugl_obj_create_helper(lua_State *L,
   lua_remove(L, 1);
 
   lv_obj_t *obj = create(parent);
-  lugl_obj_add_userdata(L, obj);
+  lugl_new_obj(L, obj)->lua_created = true;
 
   if (!lua_istable(L, -2)) {
     /* no need to call setup */
@@ -236,26 +201,25 @@ static int lugl_obj_create(lua_State *L)
 
 static int lugl_obj_delete(lua_State *L)
 {
-  lv_obj_t *obj;
-  void **udata;
+  lugl_obj_t *lobj;
 
   /**
    * Some widget may create child obj that doesn't below to lua. Ignore them
    * and report no error.
    */
-  if (!(udata = lua_touserdata(L, -1))) {
+  if (!(lobj = lua_touserdata(L, -1))) {
     return 0;
   }
 
-  if (!(obj = *(lv_obj_t **)udata)) {
+  if (lobj->obj == NULL) {
     /* could be already deleted, but not gc'ed */
     return 0;
   }
 
-  uint32_t cnt = lv_obj_get_child_cnt(obj);
+  uint32_t cnt = lv_obj_get_child_cnt(lobj->obj);
 
   for (int i = cnt - 1; i >= 0; i--) {
-    lv_obj_t *child = lv_obj_get_child(obj, i);
+    lv_obj_t *child = lv_obj_get_child(lobj->obj, i);
     lua_checkstack(L, 2);
     lua_pushlightuserdata(L, child);
     lua_rawget(L, LUA_REGISTRYINDEX);
@@ -264,28 +228,18 @@ static int lugl_obj_delete(lua_State *L)
 
   lua_checkstack(L, 2);
   /* remove userdata from registry. */
-  lua_pushlightuserdata(L, obj);
+  lua_pushlightuserdata(L, lobj->obj);
   lua_pushnil(L);
   lua_rawset(L, LUA_REGISTRYINDEX);
 
-  lugl_obj_remove_all_anim_int(L, obj);
+  lugl_obj_remove_all_anim_int(L, lobj);
+  lugl_obj_remove_event_all(L, lobj);
 
-  bool native = true; /* object created from C */
-  lugl_obj_data_t *data = obj->user_data;
-
-  /* children is already been removed. */
-  if (data) {
-    native = !data->non_native;
-    lugl_obj_remove_event_all(L, obj);
-    free(data);
-    obj->user_data = NULL;
+  if (lobj->lua_created) {
+    lv_obj_del(lobj->obj);
   }
 
-  if (!native) {
-    lv_obj_del(obj);
-  }
-
-  *udata = NULL;
+  lobj->obj = NULL;
 
   lua_pop(L, 1); /* remove the userdata para */
   return 0;
@@ -379,23 +333,12 @@ static int lugl_obj_get_screen(lua_State *L)
   /* check if userdata is added to this obj, so lua can access it. */
   lua_pushlightuserdata(L, screen);
   lua_rawget(L, LUA_REGISTRYINDEX);
-  if (lua_isnil(L, -1)) {
-    if (screen->user_data) {
-      /* oops, user_data has been used by native code */
-      return lugl_error(L,
-                        "Cannot return native object that user_data is used.");
-    }
 
-    /**
-     * obj has no userdata, add one.
-     * @todo memleak here, since we'll never known when it's deleted.
-     *
-     * This obj should not be gc'ed by lua, since it's not created by
-     * lua.
-     */
-    lugl_obj_data_t *data = lugl_obj_alloc_data(L, screen);
-    data->non_native = true;
-    return lugl_obj_add_userdata(L, screen);
+  if (lua_isnil(L, -1)) {
+    /* create lugl object and attach screen on it. */
+    lugl_obj_t *lobj = lugl_new_obj(L, screen);
+    /* mark it's non-lua created, thus cannot be deleted by lua */
+    lobj->lua_created = false;
   }
 
   return 1;
@@ -415,22 +358,10 @@ static int lugl_obj_get_parent(lua_State *L)
   lua_pushlightuserdata(L, parent);
   lua_rawget(L, LUA_REGISTRYINDEX);
   if (lua_isnil(L, -1)) {
-    if (parent->user_data) {
-      /* oops, user_data has been used by native code */
-      return lugl_error(L,
-                        "Cannot return native object that user_data is used.");
-    }
-
-    /**
-     * obj has no userdata, add one.
-     * @todo memleak here, since we'll never known when it's deleted.
-     *
-     * This obj should not be gc'ed by lua, since it's not created by
-     * lua.
-     */
-    lugl_obj_data_t *data = lugl_obj_alloc_data(L, parent);
-    data->non_native = true;
-    return lugl_obj_add_userdata(L, parent);
+    /* create lugl object and attach screen on it. */
+    lugl_obj_t *lobj = lugl_new_obj(L, parent);
+    /* mark it's non-lua created, thus cannot be deleted by lua */
+    lobj->lua_created = false;
   }
 
   return 1;

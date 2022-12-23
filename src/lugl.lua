@@ -569,12 +569,12 @@ end
 function obj:mark_layout_as_dirty()
 end
 
---- Align an object to the center on its parent. same as obj:set{align={align = lugl.ALIGN.CENTER}}
+--- Align an object to the center on its parent. same as obj:set{align={type = lugl.ALIGN.CENTER}}
 ---@return nil
 function obj:center()
 end
 
---- Align an object to the center on its parent. same as obj:set{align={align = lugl.ALIGN.CENTER}}
+--- Align an object to the center on its parent. same as obj:set{align={type = lugl.ALIGN.CENTER}}
 ---@return nil
 function obj:invalidate()
 end
