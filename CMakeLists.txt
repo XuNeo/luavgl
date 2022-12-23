@@ -18,6 +18,7 @@ if (BUILD_SIMULATOR)
     find_package(SDL2 REQUIRED SDL2)
     include_directories(${SDL2_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/simulator) # need lv_conf.h and lv_drv_conf.h
+    add_compile_definitions(LUGL_EXAMPLE_DIR="${CMAKE_SOURCE_DIR}/examples")
 
     add_subdirectory(deps/lvgl)
     add_subdirectory(deps/lv_drivers)

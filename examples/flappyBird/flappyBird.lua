@@ -127,8 +127,8 @@ local function Frames(parent, src, fps)
 end
 
 local function Pipe(parent)
-    local up = Image(parent, RESOURCE_ROOT .. "pipe_up.png")
-    local down = Image(parent, RESOURCE_ROOT .. "pipe_down.png")
+    local up = Image(parent, "/flappyBird/pipe_up.png")
+    local down = Image(parent, "/flappyBird/pipe_down.png")
     local pipe = {
         up = up.widget,
         down = down.widget,
@@ -351,7 +351,7 @@ end
 local function Bird(parent, birdMovedCB)
     -- create bird Frame(sprite) in 5FPS
     local bird = Frames(parent,
-        {RESOURCE_ROOT .. "bird1.png", RESOURCE_ROOT .. "bird2.png", RESOURCE_ROOT .. "bird3.png"}, 5)
+        {"/flappyBird/bird1.png", "/flappyBird/bird2.png", "/flappyBird/bird3.png"}, 5)
 
     local function birdVarInit()
         bird.x = 240 - bird.w // 2
@@ -482,9 +482,9 @@ local function Background(root, bgEventCB)
     local bgLayer = screenCreate(root) -- background layer
     bgLayer:add_flag(lvgl.FLAG.CLICKABLE) --  we accept event here
 
-    local bg = ImageScroll(bgLayer, RESOURCE_ROOT .. "bg_day.png", MOVE_SPEED * 0.4, 0)
+    local bg = ImageScroll(bgLayer, "/flappyBird/bg_day.png", MOVE_SPEED * 0.4, 0)
     local pipes = Pipes(bgLayer)
-    local land = ImageScroll(bgLayer, RESOURCE_ROOT .. "land.png", MOVE_SPEED, BOTTOM_Y)
+    local land = ImageScroll(bgLayer, "/flappyBird/land.png", MOVE_SPEED, BOTTOM_Y)
 
     bgLayer:onevent(lvgl.EVENT.PRESSED, function(msg)
         bgEventCB(lvgl.EVENT.PRESSED)
@@ -505,7 +505,7 @@ local function SysLayer(root)
 end
 
 local function createPlayBtn(sysLayer, onEvent)
-    local playBtn = Image(sysLayer, RESOURCE_ROOT .. "button_play.png").widget
+    local playBtn = Image(sysLayer, "/flappyBird/button_play.png").widget
     playBtn:add_flag(lvgl.FLAG.CLICKABLE)
     playBtn:set{
         align = {
@@ -578,7 +578,7 @@ local function entry()
             scoreBest = scoreNow
         end
 
-        local gameoverImg = Image(sysLayer, RESOURCE_ROOT .. "text_game_over.png").widget
+        local gameoverImg = Image(sysLayer, "/flappyBird/text_game_over.png").widget
         gameoverImg:set{
             align = {
                 type = lvgl.ALIGN.TOP_MID,
@@ -600,7 +600,7 @@ local function entry()
             end
         }
 
-        local scoreImg = Image(sysLayer, RESOURCE_ROOT .. "score.png").widget
+        local scoreImg = Image(sysLayer, "/flappyBird/score.png").widget
         scoreImg:set{
             align = {
                 type = lvgl.ALIGN.CENTER,
@@ -713,7 +713,7 @@ local function entry()
     -- system layer, score etc.
     sysLayer = SysLayer(scr)
 
-    local title = Image(sysLayer, RESOURCE_ROOT .. "title.png").widget
+    local title = Image(sysLayer, "/flappyBird/title.png").widget
     title:set{
         align = {
             type = lvgl.ALIGN.TOP_MID,
@@ -730,7 +730,7 @@ local function entry()
         title:delete()
         title = nil
 
-        local medal = Image(sysLayer, RESOURCE_ROOT .. "medals.png").widget
+        local medal = Image(sysLayer, "/flappyBird/medals.png").widget
         medal:set{
             align = {
                 type = lvgl.ALIGN.TOP_MID,
