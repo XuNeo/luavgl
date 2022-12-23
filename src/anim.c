@@ -368,7 +368,7 @@ static void lugl_obj_anim_init(lugl_obj_t *lobj)
 
 static int lugl_obj_remove_all_anim_int(lua_State *L, lugl_obj_t *lobj)
 {
-  debug("obj: %p\n", obj);
+  debug("obj: %p\n", lobj->obj);
 
   if (lobj == NULL || lobj->anims == NULL) {
     return 0;

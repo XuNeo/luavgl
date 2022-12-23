@@ -204,7 +204,7 @@ static int lugl_obj_delete(lua_State *L)
   lugl_obj_t *lobj;
 
   /**
-   * Some widget may create child obj that doesn't below to lua. Ignore them
+   * Some widget may create child obj that doesn't belong to lua. Ignore them
    * and report no error.
    */
   if (!(lobj = lua_touserdata(L, -1))) {
@@ -226,20 +226,21 @@ static int lugl_obj_delete(lua_State *L)
     lugl_obj_delete(L);
   }
 
-  lua_checkstack(L, 2);
-  /* remove userdata from registry. */
-  lua_pushlightuserdata(L, lobj->obj);
-  lua_pushnil(L);
-  lua_rawset(L, LUA_REGISTRYINDEX);
-
   lugl_obj_remove_all_anim_int(L, lobj);
   lugl_obj_remove_event_all(L, lobj);
 
+  /* delete obj firstly, then cleanup memory */
   if (lobj->lua_created) {
     lv_obj_del(lobj->obj);
   }
 
   lobj->obj = NULL;
+
+  lua_checkstack(L, 2);
+  /* remove userdata from registry. */
+  lua_pushlightuserdata(L, lobj->obj);
+  lua_pushnil(L);
+  lua_rawset(L, LUA_REGISTRYINDEX);
 
   lua_pop(L, 1); /* remove the userdata para */
   return 0;
