@@ -161,12 +161,12 @@ static void _lv_dummy_set(void *obj, lua_State *L)
 static int lugl_tointeger(lua_State *L, int idx)
 {
   int v = 0;
-  if (lua_isboolean(L, -1)) {
-    v = lua_toboolean(L, -1);
-  } else if (lua_isinteger(L, -1)) {
-    v = lua_tointeger(L, -1);
+  if (lua_isboolean(L, idx)) {
+    v = lua_toboolean(L, idx);
+  } else if (lua_isinteger(L, idx)) {
+    v = lua_tointeger(L, idx);
   } else {
-    v = lua_tonumber(L, -1);
+    v = lua_tonumber(L, idx);
   }
 
   return v;
@@ -177,7 +177,7 @@ static lv_color_t lugl_tocolor(lua_State *L, int idx)
   lv_color_t color = {0};
   if (lua_type(L, idx) == LUA_TSTRING) {
     /* support #RGB and #RRGGBB */
-    const char *s = lua_tostring(L, -1);
+    const char *s = lua_tostring(L, idx);
     if (s == NULL) {
       luaL_error(L, "unknown color.");
       return color;
