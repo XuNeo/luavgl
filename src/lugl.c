@@ -70,6 +70,8 @@ static const luaL_Reg lugl_obj_methods[] = {
     { "invalidate", lugl_obj_invalidate },
 
     { "onevent", lugl_obj_on_event },
+    { "onPressed", lugl_obj_on_pressed },
+    { "onClicked", lugl_obj_on_clicked },
     { "anim", lugl_anim_create }, /* in lua, we only support add anim to obj */
     { "anims", lugl_anims_create }, /* create multiple anim */
     { "remove_all_anim", lugl_obj_remove_all_anim }, /* remove all */

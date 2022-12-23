@@ -583,11 +583,25 @@ end
 --- Object event callback. `para` is not used for now.
 --- @alias EventCallback fun(event: ObjEvent, para: any): nil
 ---
---- Set object property
+--- set object event callback
 --- @param code ObjEvent
 --- @param cb EventCallback
 --- @return nil
 function obj:onevent(code, cb)
+end
+
+---
+--- set object pressed event callback, same as obj:onevent(lugl.EVENT.PRESSED, cb)
+--- @param cb EventCallback
+--- @return nil
+function obj:onPressed(cb)
+end
+
+---
+--- set object clicked event callback, same as obj:onevent(lugl.EVENT.CLICKED, cb)
+--- @param cb EventCallback
+--- @return nil
+function obj:onClicked(cb)
 end
 
 ---

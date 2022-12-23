@@ -67,7 +67,7 @@ static void lugl_obj_remove_event(lua_State *L, lv_obj_t *obj,
   event->dsc = NULL;
 }
 
-/* img.onevent(const.event.PRESSED, function(code, value) -- end) */
+/* obj:onevent(lugl.EVENT.PRESSED, function(code, value) -- end) */
 static int lugl_obj_on_event(lua_State *L)
 {
   bool remove_all; /* if third parameter is noneornil, remove all events. */
@@ -151,6 +151,25 @@ static int lugl_obj_on_event(lua_State *L)
   event->dsc = dsc;
 
   return 0;
+}
+
+/* obj:onClicked(function(code, value) end) */
+static int lugl_obj_on_clicked(lua_State *L)
+{
+  /* stack: obj, function cb */
+  lua_pushinteger(L, LV_EVENT_CLICKED);
+  lua_insert(L, 2);
+
+  return lugl_obj_on_event(L);
+}
+
+/* obj:onPressed(function(code, value) end) */
+static int lugl_obj_on_pressed(lua_State *L)
+{
+  lua_pushinteger(L, LV_EVENT_PRESSED);
+  lua_insert(L, 2);
+
+  return lugl_obj_on_event(L);
 }
 
 static void lugl_obj_event_init(lv_obj_t *obj)
