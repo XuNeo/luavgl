@@ -509,7 +509,7 @@ local function createPlayBtn(sysLayer, onEvent)
     playBtn:add_flag(lvgl.FLAG.CLICKABLE)
     playBtn:set{
         align = {
-            align = lvgl.ALIGN.CENTER,
+            type = lvgl.ALIGN.CENTER,
             y_ofs = 80
         }
     }
@@ -581,7 +581,7 @@ local function entry()
         local gameoverImg = Image(sysLayer, RESOURCE_ROOT .. "text_game_over.png").widget
         gameoverImg:set{
             align = {
-                align = lvgl.ALIGN.TOP_MID,
+                type = lvgl.ALIGN.TOP_MID,
                 y_ofs = 100
             }
         }
@@ -603,7 +603,7 @@ local function entry()
         local scoreImg = Image(sysLayer, RESOURCE_ROOT .. "score.png").widget
         scoreImg:set{
             align = {
-                align = lvgl.ALIGN.CENTER,
+                type = lvgl.ALIGN.CENTER,
                 y_ofs = -20,
                 x_ofs = 0
             }
@@ -618,7 +618,7 @@ local function entry()
             exec_cb = function(obj, value)
                 obj:set{
                     align = {
-                        align = lvgl.ALIGN.CENTER,
+                        type = lvgl.ALIGN.CENTER,
                         x_ofs = value,
                         y_ofs = -20
                     }
@@ -630,7 +630,7 @@ local function entry()
             text = string.format("%03d", scoreNow),
             text_font = lvgl.BUILTIN_FONT.MONTSERRAT_22,
             align = {
-                align = lvgl.ALIGN.TOP_MID,
+                type = lvgl.ALIGN.TOP_MID,
                 x_ofs = 0,
                 y_ofs = 25
             }
@@ -640,7 +640,7 @@ local function entry()
             text = string.format("%03d", scoreBest),
             text_font = lvgl.BUILTIN_FONT.MONTSERRAT_22,
             align = {
-                align = lvgl.ALIGN.BOTTOM_MID,
+                type = lvgl.ALIGN.BOTTOM_MID,
                 x_ofs = 0,
                 y_ofs = -5
             }
@@ -716,7 +716,7 @@ local function entry()
     local title = Image(sysLayer, RESOURCE_ROOT .. "title.png").widget
     title:set{
         align = {
-            align = lvgl.ALIGN.TOP_MID,
+            type = lvgl.ALIGN.TOP_MID,
             y_ofs = 80
         }
     }
@@ -733,7 +733,7 @@ local function entry()
         local medal = Image(sysLayer, RESOURCE_ROOT .. "medals.png").widget
         medal:set{
             align = {
-                align = lvgl.ALIGN.TOP_MID,
+                type = lvgl.ALIGN.TOP_MID,
                 y_ofs = 10,
                 x_ofs = -50
             }
@@ -742,7 +742,7 @@ local function entry()
             text = " 000",
             text_font = lvgl.BUILTIN_FONT.MONTSERRAT_28,
             align = {
-                align = lvgl.ALIGN.TOP_MID,
+                type = lvgl.ALIGN.TOP_MID,
                 x_ofs = 10,
                 y_ofs = 20
             }

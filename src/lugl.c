@@ -38,6 +38,7 @@ static const luaL_Reg lugl_obj_methods[] = {
 
     { "set", lugl_obj_set },
     { "set_style", lugl_obj_set_style },
+    { "align_to", lugl_obj_align_to },
     { "delete", lugl_obj_delete },
     { "clean", lugl_obj_clean },
 

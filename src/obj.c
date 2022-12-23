@@ -61,7 +61,7 @@ static void _lv_obj_set_align(void *obj, lua_State *L)
     return;
   }
 
-  lua_getfield(L, -1, "align");
+  lua_getfield(L, -1, "type");
   lv_align_t align = lua_tointeger(L, -1);
   lua_pop(L, 1);
 
@@ -84,7 +84,7 @@ static void _lv_obj_set_align_to(void *obj, lua_State *L)
     return;
   }
 
-  lua_getfield(L, -1, "align");
+  lua_getfield(L, -1, "type");
   lv_align_t align = lua_tointeger(L, -1);
   lua_pop(L, 1);
 
@@ -114,7 +114,6 @@ static const lugl_value_setter_t obj_property_table[] = {
     {"w", 0, {.setter = (setter_int_t)lv_obj_set_width}},
     {"h", 0, {.setter = (setter_int_t)lv_obj_set_height}},
     {"align", SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align}},
-    {"align_to", SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align_to}},
 
     {"scrollbar_mode", 0, {.setter = (setter_int_t)lv_obj_set_scrollbar_mode}},
     {"scroll_dir", 0, {.setter = (setter_int_t)lv_obj_set_scroll_dir}},
@@ -335,6 +334,20 @@ static int lugl_obj_set(lua_State *L)
   return 0;
 }
 
+/**
+ * obj:align_to({base=base, type=type, x_ofs=0, y_ofs=0})
+ */
+static int lugl_obj_align_to(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    return luaL_argerror(L, 1, "null obj");
+  }
+
+  _lv_obj_set_align_to(obj, L);
+  return 0;
+}
+
 static int lugl_obj_set_parent(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
@@ -422,7 +435,6 @@ static int lugl_obj_get_parent(lua_State *L)
 
   return 1;
 }
-
 
 static int lugl_obj_get_state(lua_State *L)
 {

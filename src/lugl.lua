@@ -109,7 +109,7 @@ lugl.STATE = {
     ANY = 0,
 }
 
---- @enum ObjAlignMode
+--- @enum ObjAlignType
 lugl.ALIGN = {
     DEFAULT = 0,
     TOP_LEFT = 0,
@@ -413,6 +413,13 @@ end
 --- @param p StyleProp
 ---
 function obj:set(p)
+end
+
+---
+--- Set object property
+--- @param p AlignToPara
+---
+function obj:align_to(p)
 end
 
 ---
@@ -827,13 +834,13 @@ end
 ---
 --- Align parameter
 --- @class Align
---- @field align number
+--- @field type ObjAlignType
 --- @field x_ofs number
 --- @field y_ofs number
 
 --- AlignTo parameter
---- @class AlignTo
---- @field align number
+--- @class AlignToPara
+--- @field type ObjAlignType
 --- @field base Object
 --- @field x_ofs number
 
@@ -850,7 +857,6 @@ end
 --- @field y number
 --- @field size number set size is equilent to set w/h to same value
 --- @field align Align
---- @field align_to AlignTo
 --- @field transform_width number
 --- @field transform_height number
 --- @field translate_x number
@@ -933,7 +939,7 @@ end
 --- @field w integer
 --- @field h integer
 --- @field align Align
---- @field align_to AlignTo
+--- @field align_to AlignToPara
 --- @field scrollbar_mode ScrollbarMode
 --- @field scroll_dir Dir
 --- @field scroll_snap_x integer
