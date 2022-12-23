@@ -358,13 +358,13 @@ static int lugl_LV_PCT(lua_State*L)
 
 static int lugl_LV_OPA(lua_State*L)
 {
-  int opa = lua_tointeger(L, 1) * LV_OPA_100 / 100;
+  int opa = lugl_tointeger(L, 1) * LV_OPA_100 / 100;
   if (opa > 255)
     opa = 255;
   if (opa < 0)
     opa = 0;
 
-  lua_pushinteger(L, opa * LV_OPA_100 / 100);
+  lua_pushinteger(L, opa);
   return 1;
 }
 
