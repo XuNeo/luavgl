@@ -18,7 +18,7 @@ local root = lugl.Object()
 local obj = root:Object()
 
 -- create image on root and set position/img src/etc. properties.
-local img = root:Image{
+local img = root:Image {
     src = "res/image.png",
     x = 0,
     y = 0,
@@ -28,18 +28,33 @@ local img = root:Image{
 
 -- change image properties.
 
-img:set{
+img:set {
     x = 100,
     y = 100,
     src = "res/another.png"
 }
 
+-- create animation on object
+img:anim {
+    run = true,
+    start_value = 0,
+    end_value = 3600,
+    duration = 2000,
+    repeat_count = 2,
+    path = "bounce",
+    exec_cb = function(obj, value)
+        obj:set{
+            angle = value
+        }
+    end
+}
+
 -- create Label on root and set its font
-local label = root:Label{
+local label = root:Label {
     text = string.format("Hello %03d", 123),
-    text_font = lugl.Font("MiSansW medium,, montserrat", 24, "normal"),
+    text_font = lugl.Font("MiSansW medium, montserrat", 24, "normal"),
     align = {
-        align = CONST.align.CENTER,
+        type = lugl.align.CENTER,
         x_ofs = 0,
         y_ofs = 100,
     }
@@ -83,10 +98,9 @@ Both lua5.3 and lua5.4 are supported. Versions below 5.2 has not been verified.
 #### Build and run
 
 ```bash
-mkdir build
+cmake -Bbuild -DBUILD_SIMULATOR=ON
 cd build
-cmake ..
 make
-make run # use this one to run simulator
+make run # run simulator
 ```
 
