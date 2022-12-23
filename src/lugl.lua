@@ -417,6 +417,14 @@ end
 
 ---
 --- Set object property
+--- @param p StyleProp
+--- @param state ObjState
+---
+function obj:set_style(p, state)
+end
+
+---
+--- Set object property
 --- @param p AlignToPara
 ---
 function obj:align_to(p)

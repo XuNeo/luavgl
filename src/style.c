@@ -418,11 +418,6 @@ static int lugl_obj_set_style(lua_State *L)
     lua_pop(L, 1); /* later we use stack[-1] to get table. */
   }
 
-  struct obj_style_s info = {
-      .obj = obj,
-      .selector = selector,
-  };
-
   lua_pushnil(L); /* nil as initial key to iterate through table */
   while (lua_next(L, -2)) {
     /* -1: value, -2: key */
@@ -433,7 +428,7 @@ static int lugl_obj_set_style(lua_State *L)
       continue;
     }
 
-    lugl_set_style_kv(L, lv_style_set_cb, &info);
+    lugl_obj_set_style_kv(L, obj, selector);
     lua_pop(L, 1); /* remove value, keep the key to continue. */
   }
 
