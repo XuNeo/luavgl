@@ -32,16 +32,14 @@ static void lugl_obj_event_cb(lv_event_t *e)
     return;
   }
 
+  lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_pushlightuserdata(L, obj);
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   lua_pushinteger(L, e->code);
-  int nargs = 2;
-  lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
-  lua_insert(L, -1 - nargs);
 
   /* args: obj, code */
-  lua_call(L, nargs, 0);
+  lua_call(L, 2, 0);
 }
 
 static void lugl_obj_remove_event(lua_State *L, lv_obj_t *obj,
