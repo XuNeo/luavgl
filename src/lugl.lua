@@ -679,6 +679,40 @@ function label:set(p)
 end
 
 ---
+--- Get the text of a label
+--- @return string
+function label:get_text()
+end
+
+---
+--- Get the long mode of a label
+--- @return string
+function label:get_long_mode()
+end
+
+---
+--- Get the recoloring attribute
+--- @return string
+function label:get_recolor()
+end
+
+---
+--- Insert a text to a label.
+--- @param pos integer
+--- @param txt string
+--- @return nil
+function label:ins_text(pos, txt)
+end
+
+---
+--- Delete characters from a label.
+--- @param pos integer
+--- @param cnt integer
+--- @return nil
+function label:cut_text(pos, cnt)
+end
+
+---
 --- Textarea widget
 ---@class Textarea: Object
 ---

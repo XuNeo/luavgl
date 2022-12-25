@@ -122,7 +122,6 @@ static const luaL_Reg lugl_label_methods[] = {
     {"get_text", lugl_label_get_text},
     {"get_long_mode", lugl_label_get_long_mode},
     {"get_recolor", lugl_label_get_recolor},
-    {"get_recolor", lugl_label_get_recolor},
     {"ins_text", lugl_label_ins_text},
     {"cut_text", lugl_label_cut_text},
 
