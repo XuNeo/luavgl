@@ -228,6 +228,39 @@ lugl.KEYBOARD_MODE = {
     TEXT_ARABIC = 0,
 }
 
+--- @enum FlexFlow
+lugl.FLEX_FLOW = {
+    ROW = 0,
+    COLUMN = 0,
+    ROW_WRAP = 0,
+    ROW_REVERSE = 0,
+    ROW_WRAP_REVERSE = 0,
+    COLUMN_WRAP = 0,
+    COLUMN_REVERSE = 0,
+    COLUMN_WRAP_REVERSE = 0,
+}
+
+--- @enum FlexAlign
+lugl.FLEX_FLOW = {
+    START = 0,
+    END = 0,
+    CENTER = 0,
+    SPACE_EVENLY = 0,
+    SPACE_AROUND = 0,
+    SPACE_BETWEEN = 0,
+}
+
+--- @enum GridAlign
+lugl.GRID_ALIGN = {
+    START = 0,
+    CENTER = 0,
+    END = 0,
+    STRETCH = 0,
+    SPACE_EVENLY = 0,
+    SPACE_AROUND = 0,
+    SPACE_BETWEEN = 0,
+}
+
 lugl.ANIM_REPEAT_INFINITE = 0
 lugl.ANIM_PLAYTIME_INFINITE = 0
 lugl.SIZE_CONTENT = 0
@@ -447,6 +480,12 @@ end
 --- get screen object where this one created on(non-native object)
 --- @return Object
 function obj:get_screen(p)
+end
+
+---
+--- get parent object
+--- @return Object
+function obj:get_parent()
 end
 
 ---
@@ -986,6 +1025,13 @@ end
 --- @field blend_mode number
 --- @field layout number
 --- @field base_dir number
+--- @field flex_flow FlexFlow
+--- @field flex_main_place FlexAlign
+--- @field flex_cross_place FlexAlign
+--- @field flex_track_place FlexAlign
+--- @field flex_grow integer 0..255
+--- @field flex FlexLayoutPara
+
 ---
 
 --- Object style
@@ -1066,4 +1112,12 @@ end
 ---
 --- @alias ImgSrc string | lightuserdata
 
+--- @alias flexAlignOptions "flex-start" | "flex-end" | "center" | "space-between" | "space-around" | "space-evenly"
+---
+--- @class FlexLayoutPara
+--- @field flex_direction "row" | "column" | "row-reverse" | "column-reverse"
+--- @field flex_wrap "nowrap" | "wrap" | "wrap-reverse"
+--- @field justify_content flexAlignOptions
+--- @field align_items flexAlignOptions
+--- @field align_content flexAlignOptions
 return lugl

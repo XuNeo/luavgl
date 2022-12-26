@@ -349,6 +349,43 @@ static void lugl_keyboard_mode_init(lua_State* L)
 #endif
 }
 
+static void lugl_flex_flow_init(lua_State* L)
+{
+  lua_newtable(L);
+
+  lua_pushstring(L, "ROW"); lua_pushinteger(L, LV_FLEX_FLOW_ROW); lua_settable(L, -3);
+  lua_pushstring(L, "COLUMN"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN); lua_settable(L, -3);
+  lua_pushstring(L, "ROW_WRAP"); lua_pushinteger(L, LV_FLEX_FLOW_ROW_WRAP); lua_settable(L, -3);
+  lua_pushstring(L, "ROW_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_ROW_REVERSE); lua_settable(L, -3);
+  lua_pushstring(L, "ROW_WRAP_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_ROW_WRAP_REVERSE); lua_settable(L, -3);
+  lua_pushstring(L, "COLUMN_WRAP"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN_WRAP); lua_settable(L, -3);
+  lua_pushstring(L, "COLUMN_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN_REVERSE); lua_settable(L, -3);
+  lua_pushstring(L, "COLUMN_WRAP_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN_WRAP_REVERSE); lua_settable(L, -3);
+}
+
+static void lugl_flex_align_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "START"); lua_pushinteger(L, LV_FLEX_ALIGN_START); lua_settable(L, -3);
+  lua_pushstring(L, "END"); lua_pushinteger(L, LV_FLEX_ALIGN_END); lua_settable(L, -3);
+  lua_pushstring(L, "CENTER"); lua_pushinteger(L, LV_FLEX_ALIGN_CENTER); lua_settable(L, -3);
+  lua_pushstring(L, "SPACE_EVENLY"); lua_pushinteger(L, LV_FLEX_ALIGN_SPACE_EVENLY); lua_settable(L, -3);
+  lua_pushstring(L, "SPACE_AROUND"); lua_pushinteger(L, LV_FLEX_ALIGN_SPACE_AROUND); lua_settable(L, -3);
+  lua_pushstring(L, "SPACE_BETWEEN"); lua_pushinteger(L, LV_FLEX_ALIGN_SPACE_BETWEEN); lua_settable(L, -3);
+}
+
+static void lugl_grid_align_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "START"); lua_pushinteger(L, LV_GRID_ALIGN_START); lua_settable(L, -3);
+  lua_pushstring(L, "CENTER"); lua_pushinteger(L, LV_GRID_ALIGN_CENTER); lua_settable(L, -3);
+  lua_pushstring(L, "END"); lua_pushinteger(L, LV_GRID_ALIGN_END); lua_settable(L, -3);
+  lua_pushstring(L, "STRETCH"); lua_pushinteger(L, LV_GRID_ALIGN_STRETCH); lua_settable(L, -3);
+  lua_pushstring(L, "SPACE_EVENLY"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_EVENLY); lua_settable(L, -3);
+  lua_pushstring(L, "SPACE_AROUND"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_AROUND); lua_settable(L, -3);
+  lua_pushstring(L, "SPACE_BETWEEN"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_BETWEEN); lua_settable(L, -3);
+}
+
 static int lugl_LV_PCT(lua_State*L)
 {
   int pct = lua_tointeger(L, 1);
@@ -391,7 +428,12 @@ static void lugl_constants_init(lua_State *L)
   lua_setfield(L, -2, "DIR");
   lugl_keyboard_mode_init(L);
   lua_setfield(L, -2, "KEYBOARD_MODE");
-
+  lugl_flex_flow_init(L);
+  lua_setfield(L, -2, "FLEX_FLOW");
+  lugl_flex_align_init(L);
+  lua_setfield(L, -2, "FLEX_ALIGN");
+  lugl_grid_align_init(L);
+  lua_setfield(L, -2, "GRID_ALIGN");
   /* miscellaneous. */
 
   lua_pushinteger(L, LV_ANIM_REPEAT_INFINITE);
@@ -440,5 +482,11 @@ static void lugl_constants_init(lua_State *L)
 
   lua_pushinteger(L, LV_TEXTAREA_CURSOR_LAST);
   lua_setfield(L, -2, "TEXTAREA_CURSOR_LAST");
+
+  lua_pushinteger(L, LV_LAYOUT_FLEX);
+  lua_setfield(L, -2, "LAYOUT_FLEX");
+
+  lua_pushinteger(L, LV_LAYOUT_GRID);
+  lua_setfield(L, -2, "LAYOUT_GRID");
 
 }

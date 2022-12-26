@@ -17,6 +17,7 @@ typedef enum {
   STYLE_TYPE_POINTER, /* a pointer from light-userdata */
   STYLE_TYPE_IMGSRC,  /* string or light-userdata, similar to pointer */
 
+  STYLE_TYPE_TABLE, /* value is in table */
   /* Flag of none-simple type. All extended styles are special case. */
   STYLE_TYPE_SPECIAL = 0x10,
 } style_type_t;
@@ -27,6 +28,14 @@ enum {
   LV_STYLE_PAD_VER,
   LV_STYLE_PAD_HOR,
   LV_STYLE_PAD_GAP,
+
+  _LV_STYLE_FLEX,
+
+  _LV_STYLE_FLEX_FLOW, /* style not const, need to call related API */
+  _LV_STYLE_FLEX_MAIN_PLACE,
+  _LV_STYLE_FLEX_CROSS_PLACE,
+  _LV_STYLE_FLEX_TRACK_PLACE,
+  _LV_STYLE_FLEX_GROW,
 };
 
 /* callback made when style matched. */
@@ -131,6 +140,14 @@ static const struct style_map_s {
     {"pad_all", LV_STYLE_PAD_ALL, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
     {"pad_ver", LV_STYLE_PAD_VER, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
     {"pad_hor", LV_STYLE_PAD_HOR, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+
+    /* styles for layout */
+    {"flex", _LV_STYLE_FLEX, STYLE_TYPE_SPECIAL | STYLE_TYPE_TABLE},
+    {"flex_flow", _LV_STYLE_FLEX_FLOW, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+    {"flex_main_place", _LV_STYLE_FLEX_MAIN_PLACE, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+    {"flex_cross_place", _LV_STYLE_FLEX_CROSS_PLACE, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+    {"flex_track_place", _LV_STYLE_FLEX_TRACK_PLACE, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+    {"flex_grow", _LV_STYLE_FLEX_GROW, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
 };
 
 #define STYLE_MAP_LEN (sizeof(g_style_map) / sizeof(g_style_map[0]))
@@ -164,6 +181,129 @@ static uint8_t to_int(char c)
     return c - 'a' + 10;
 
   return -1;
+}
+
+static lv_flex_align_t lugl_to_flex_align(lua_State *L, int idx)
+{
+  if (lua_type(L, idx) != LUA_TSTRING)
+    return LV_FLEX_ALIGN_START;
+
+  const char *str = lua_tostring(L, idx);
+  if (strcmp("flex-start", str) == 0)
+    return LV_FLEX_ALIGN_START;
+
+  if (strcmp("flex-end", str) == 0)
+    return LV_FLEX_ALIGN_END;
+
+  if (strcmp("center", str) == 0)
+    return LV_FLEX_ALIGN_CENTER;
+
+  if (strcmp("space-evenly", str) == 0)
+    return LV_FLEX_ALIGN_SPACE_EVENLY;
+
+  if (strcmp("space-around", str) == 0)
+    return LV_FLEX_ALIGN_SPACE_AROUND;
+
+  if (strcmp("space-between", str) == 0)
+    return LV_FLEX_ALIGN_SPACE_BETWEEN;
+
+  return LV_FLEX_ALIGN_START;
+}
+
+static int lugl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb, void *args)
+{
+  if (!lua_istable(L, -1)) {
+    debug("para should be table.");
+    return luaL_argerror(L, -1, "should be table.");
+  }
+
+  const char *str;
+  lv_flex_flow_t flow = LV_FLEX_FLOW_ROW;
+  lv_flex_align_t align;
+
+  /**
+   * flex-direction:
+   * row | row-reverse | column | column-reverse
+   */
+  lua_getfield(L, -1, "flex_direction");
+  if (lua_type(L, -1) == LUA_TSTRING) {
+    str = lua_tostring(L, -1);
+    /* starts with  */
+    if (strncmp("row", str, 3) == 0) {
+      flow = LV_FLEX_FLOW_ROW;
+    } else if (strncmp("column", str, 3) == 0) {
+      flow = LV_FLEX_FLOW_COLUMN;
+    }
+
+    /* if reverse presents */
+    if (strstr(str, "-reverse")) {
+      flow |= _LV_FLEX_REVERSE;
+    }
+  }
+  lua_pop(L, 1);
+
+  /**
+   * flex-wrap:
+   * nowrap | wrap | wrap-reverse;
+   */
+  lua_getfield(L, -1, "flex_wrap");
+  if (lua_type(L, -1) == LUA_TSTRING) {
+    str = lua_tostring(L, -1);
+    if (strcmp("wrap", str) == 0) {
+      flow |= _LV_FLEX_WRAP;
+    } else if (strcmp("wrap-reverse", str) == 0) {
+      flow |= _LV_FLEX_WRAP | _LV_FLEX_REVERSE;
+    }
+    /* else: normal */
+  }
+  lua_pop(L, 1);
+
+  lv_style_value_t value = {0};
+  value.num = LV_LAYOUT_FLEX;
+  cb(LV_STYLE_LAYOUT, value, args);
+  value.num = flow;
+  cb(LV_STYLE_FLEX_FLOW, value, args);
+
+  /**
+   * justify-content
+   * flex-start | flex-end | center |
+   * space-between | space-around | space-evenly
+   */
+  lua_getfield(L, -1, "justify_content");
+  if (lua_type(L, -1) == LUA_TSTRING) {
+    align = lugl_to_flex_align(L, -1);
+    value.num = align;
+    cb(LV_STYLE_FLEX_MAIN_PLACE, value, args);
+  }
+  lua_pop(L, 1);
+
+  /**
+   * align-items
+   * flex-start | flex-end | center |
+   * space-between | space-around | space-evenly
+   */
+  lua_getfield(L, -1, "align_items");
+  if (lua_type(L, -1) == LUA_TSTRING) {
+    align = lugl_to_flex_align(L, -1);
+    value.num = align;
+    cb(LV_STYLE_FLEX_CROSS_PLACE, value, args);
+  }
+  lua_pop(L, 1);
+
+  /**
+   * align-content
+   * flex-start | flex-end | center |
+   * space-between | space-around | space-evenly
+   */
+  lua_getfield(L, -1, "align_content");
+  if (lua_type(L, -1) == LUA_TSTRING) {
+    align = lugl_to_flex_align(L, -1);
+    value.num = align;
+    cb(LV_STYLE_FLEX_TRACK_PLACE, value, args);
+  }
+  lua_pop(L, 1);
+
+  return 0;
 }
 
 /**
@@ -205,6 +345,8 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
       break;
     case STYLE_TYPE_IMGSRC:
       value.ptr = lugl_toimgsrc(L, -1);
+      break;
+    case STYLE_TYPE_TABLE:
       break;
     default:
       /* error, unkown type */
@@ -254,6 +396,28 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
       case LV_STYLE_TRANSITION:
         break;
 
+      /* layout styles that not constant */
+      case _LV_STYLE_FLEX_FLOW:
+        cb(LV_STYLE_FLEX_FLOW, value, args);
+        break;
+      case _LV_STYLE_FLEX_MAIN_PLACE:
+        cb(LV_STYLE_FLEX_MAIN_PLACE, value, args);
+        break;
+      case _LV_STYLE_FLEX_CROSS_PLACE:
+        cb(LV_STYLE_FLEX_CROSS_PLACE, value, args);
+        break;
+      case _LV_STYLE_FLEX_TRACK_PLACE:
+        cb(LV_STYLE_FLEX_TRACK_PLACE, value, args);
+        break;
+      case _LV_STYLE_FLEX_GROW:
+        cb(LV_STYLE_FLEX_GROW, value, args);
+        break;
+
+      case _LV_STYLE_FLEX: {
+        /* value is all on table */
+        lugl_set_flex_layout_kv(L, cb, args);
+        break;
+      }
       default:
         break;
       }

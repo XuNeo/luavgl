@@ -68,6 +68,9 @@ static const luaL_Reg lugl_obj_methods[] = {
     { "mark_layout_as_dirty", lugl_obj_mark_layout_as_dirty },
     { "center", lugl_obj_center },
     { "invalidate", lugl_obj_invalidate },
+    { "set_flex_flow", lugl_obj_set_flex_flow },
+    { "set_flex_align", lugl_obj_set_flex_align },
+    { "set_flex_grow", lugl_obj_set_flex_grow },
 
     { "onevent", lugl_obj_on_event },
     { "onPressed", lugl_obj_on_pressed },
