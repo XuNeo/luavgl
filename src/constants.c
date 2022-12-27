@@ -405,6 +405,19 @@ static int lugl_LV_OPA(lua_State*L)
   return 1;
 }
 
+static int lugl_LV_HOR_RES(lua_State*L)
+{
+  lua_pushinteger(L, LV_HOR_RES);
+  return 1;
+}
+
+static int lugl_LV_VER_RES(lua_State*L)
+{
+  lua_pushinteger(L, LV_VER_RES);
+  return 1;
+}
+
+
 /* clang-format on */
 static void lugl_constants_init(lua_State *L)
 {
@@ -489,4 +502,9 @@ static void lugl_constants_init(lua_State *L)
   lua_pushinteger(L, LV_LAYOUT_GRID);
   lua_setfield(L, -2, "LAYOUT_GRID");
 
+  lua_pushcfunction(L, lugl_LV_HOR_RES);
+  lua_setfield(L, -2, "HOR_RES");
+
+  lua_pushcfunction(L, lugl_LV_VER_RES);
+  lua_setfield(L, -2, "VER_RES");
 }
