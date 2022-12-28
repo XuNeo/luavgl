@@ -302,6 +302,14 @@ function lugl.Object(parent, property)
 end
 
 ---
+--- Create Label on parent
+--- @param parent? Object | nil
+--- @param property? CheckboxStyle
+--- @return Checkbox
+function lugl.Checkbox(parent, property)
+end
+
+---
 --- Create Image on parent
 --- @param parent? Object | nil
 --- @param property? ImageStyle
@@ -397,6 +405,13 @@ local obj = {}
 --- @param property? StyleProp
 --- @return Object
 function obj:Object(property)
+end
+
+---
+--- Create checkbox on object
+--- @param property? CheckboxStyle
+--- @return Checkbox
+function obj:Checkbox(property)
 end
 
 ---
@@ -664,6 +679,25 @@ end
 --- @return Anim[] anim handlers in array
 function obj:anims(p)
 end
+
+---
+--- Checkbox widget
+---@class Checkbox:Object
+---
+local checkbox = {}
+
+--- set method
+--- @param p CheckboxStyle
+--- @return nil
+function checkbox:set(p)
+end
+
+---
+--- Get the text of a label
+--- @return string
+function checkbox:get_text()
+end
+
 
 ---
 --- Image widget
@@ -1061,6 +1095,10 @@ end
 
 --- Label style
 --- @class LabelStyle :StyleProp
+--- @field text string
+
+--- Checkbox style
+--- @class CheckboxStyle :StyleProp
 --- @field text string
 
 --- Textarea style

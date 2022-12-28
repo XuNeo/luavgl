@@ -27,6 +27,8 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return "lv_obj";
   else if (obj->class_p == &lv_list_class)
     return "lv_list";
+  else if (obj->class_p == &lv_checkbox_class)
+    return "lv_checkbox";
   else
     return NULL;
 }
