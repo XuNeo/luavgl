@@ -144,9 +144,12 @@ static const struct style_map_s {
     /* styles for layout */
     {"flex", _LV_STYLE_FLEX, STYLE_TYPE_SPECIAL | STYLE_TYPE_TABLE},
     {"flex_flow", _LV_STYLE_FLEX_FLOW, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
-    {"flex_main_place", _LV_STYLE_FLEX_MAIN_PLACE, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
-    {"flex_cross_place", _LV_STYLE_FLEX_CROSS_PLACE, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
-    {"flex_track_place", _LV_STYLE_FLEX_TRACK_PLACE, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+    {"flex_main_place", _LV_STYLE_FLEX_MAIN_PLACE,
+     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+    {"flex_cross_place", _LV_STYLE_FLEX_CROSS_PLACE,
+     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
+    {"flex_track_place", _LV_STYLE_FLEX_TRACK_PLACE,
+     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
     {"flex_grow", _LV_STYLE_FLEX_GROW, STYLE_TYPE_SPECIAL | STYLE_TYPE_INT},
 };
 
@@ -167,6 +170,13 @@ static void lv_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
 {
   lv_style_t *s = args;
   lv_style_set_prop(s, prop, value);
+}
+
+static void lv_style_set_inherit_cb(lv_style_prop_t prop,
+                                    lv_style_value_t value, void *args)
+{
+  lv_style_t *s = args;
+  lv_style_set_prop_meta(s, prop, LV_STYLE_PROP_META_INHERIT);
 }
 
 static uint8_t to_int(char c)
@@ -306,6 +316,14 @@ static int lugl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb, void *args)
   return 0;
 }
 
+/* is the style value on stack top is inherit special value */
+static inline bool lugl_is_style_inherit(lua_State *L)
+{
+  const char *str;
+  return (lua_type(L, -1) == LUA_TSTRING) && (str = lua_tostring(L, -1)) &&
+         (strcmp(str, "inherit") == 0);
+}
+
 /**
  * internal used API, called from style:set()
  * key: stack[-2]
@@ -322,16 +340,23 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
   }
 
   /* map name to style value. */
-  int i = 0;
   lv_style_value_t value = {0};
-  for (; i < STYLE_MAP_LEN; i++) {
-    const struct style_map_s *p = &g_style_map[i];
-    if (strcmp(key, p->name))
-      continue;
+  const struct style_map_s *p = NULL;
+  for (int i = 0; i < STYLE_MAP_LEN; i++) {
+    if (strcmp(key, g_style_map[i].name) == 0) {
+      p = &g_style_map[i];
+      break;
+    }
+  }
 
-    style_type_t type = p->type & 0x0f;
-    int v;
+  if (p == NULL) /* not found */
+    return -1;
 
+  style_type_t type = p->type & 0x0f;
+  int v;
+
+  if (!lugl_is_style_inherit(L)) {
+    /* get normal values */
     switch (type) {
     case STYLE_TYPE_INT:
       v = lugl_tointeger(L, -1);
@@ -352,85 +377,83 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
       /* error, unkown type */
       return luaL_error(L, "unknown style");
     }
-
-    if (p->type & STYLE_TYPE_SPECIAL) {
-      switch ((int)p->prop) {
-        /* style combinations */
-      case LV_STYLE_SIZE:
-        cb(LV_STYLE_WIDTH, value, args);
-        cb(LV_STYLE_HEIGHT, value, args);
-        break;
-
-      case LV_STYLE_PAD_ALL:
-        cb(LV_STYLE_PAD_TOP, value, args);
-        cb(LV_STYLE_PAD_BOTTOM, value, args);
-        cb(LV_STYLE_PAD_LEFT, value, args);
-        cb(LV_STYLE_PAD_RIGHT, value, args);
-        break;
-
-      case LV_STYLE_PAD_VER:
-        cb(LV_STYLE_PAD_TOP, value, args);
-        cb(LV_STYLE_PAD_BOTTOM, value, args);
-        break;
-
-      case LV_STYLE_PAD_HOR:
-        cb(LV_STYLE_PAD_LEFT, value, args);
-        cb(LV_STYLE_PAD_RIGHT, value, args);
-        break;
-
-      case LV_STYLE_PAD_GAP:
-        cb(LV_STYLE_PAD_ROW, value, args);
-        cb(LV_STYLE_PAD_COLUMN, value, args);
-        break;
-
-        /* pointers needs to build from lua stack table */
-      case LV_STYLE_BG_GRAD:
-        break;
-
-      case LV_STYLE_COLOR_FILTER_DSC:
-        break;
-
-      case LV_STYLE_ANIM:
-        break;
-
-      case LV_STYLE_TRANSITION:
-        break;
-
-      /* layout styles that not constant */
-      case _LV_STYLE_FLEX_FLOW:
-        cb(LV_STYLE_FLEX_FLOW, value, args);
-        break;
-      case _LV_STYLE_FLEX_MAIN_PLACE:
-        cb(LV_STYLE_FLEX_MAIN_PLACE, value, args);
-        break;
-      case _LV_STYLE_FLEX_CROSS_PLACE:
-        cb(LV_STYLE_FLEX_CROSS_PLACE, value, args);
-        break;
-      case _LV_STYLE_FLEX_TRACK_PLACE:
-        cb(LV_STYLE_FLEX_TRACK_PLACE, value, args);
-        break;
-      case _LV_STYLE_FLEX_GROW:
-        cb(LV_STYLE_FLEX_GROW, value, args);
-        break;
-
-      case _LV_STYLE_FLEX: {
-        /* value is all on table */
-        lugl_set_flex_layout_kv(L, cb, args);
-        break;
-      }
-      default:
-        break;
-      }
-    } else if (p->prop < _LV_STYLE_LAST_BUILT_IN_PROP) {
-      cb(p->prop, value, args);
-    } else {
-      return luaL_error(L, "unknown style");
-    }
-
-    return 0;
   }
 
-  return -1;
+  if (p->type & STYLE_TYPE_SPECIAL) {
+    switch ((int)p->prop) {
+      /* style combinations */
+    case LV_STYLE_SIZE:
+      cb(LV_STYLE_WIDTH, value, args);
+      cb(LV_STYLE_HEIGHT, value, args);
+      break;
+
+    case LV_STYLE_PAD_ALL:
+      cb(LV_STYLE_PAD_TOP, value, args);
+      cb(LV_STYLE_PAD_BOTTOM, value, args);
+      cb(LV_STYLE_PAD_LEFT, value, args);
+      cb(LV_STYLE_PAD_RIGHT, value, args);
+      break;
+
+    case LV_STYLE_PAD_VER:
+      cb(LV_STYLE_PAD_TOP, value, args);
+      cb(LV_STYLE_PAD_BOTTOM, value, args);
+      break;
+
+    case LV_STYLE_PAD_HOR:
+      cb(LV_STYLE_PAD_LEFT, value, args);
+      cb(LV_STYLE_PAD_RIGHT, value, args);
+      break;
+
+    case LV_STYLE_PAD_GAP:
+      cb(LV_STYLE_PAD_ROW, value, args);
+      cb(LV_STYLE_PAD_COLUMN, value, args);
+      break;
+
+      /* pointers needs to build from lua stack table */
+    case LV_STYLE_BG_GRAD:
+      break;
+
+    case LV_STYLE_COLOR_FILTER_DSC:
+      break;
+
+    case LV_STYLE_ANIM:
+      break;
+
+    case LV_STYLE_TRANSITION:
+      break;
+
+    /* layout styles that not constant */
+    case _LV_STYLE_FLEX_FLOW:
+      cb(LV_STYLE_FLEX_FLOW, value, args);
+      break;
+    case _LV_STYLE_FLEX_MAIN_PLACE:
+      cb(LV_STYLE_FLEX_MAIN_PLACE, value, args);
+      break;
+    case _LV_STYLE_FLEX_CROSS_PLACE:
+      cb(LV_STYLE_FLEX_CROSS_PLACE, value, args);
+      break;
+    case _LV_STYLE_FLEX_TRACK_PLACE:
+      cb(LV_STYLE_FLEX_TRACK_PLACE, value, args);
+      break;
+    case _LV_STYLE_FLEX_GROW:
+      cb(LV_STYLE_FLEX_GROW, value, args);
+      break;
+
+    case _LV_STYLE_FLEX: {
+      /* value is all on table */
+      lugl_set_flex_layout_kv(L, cb, args);
+      break;
+    }
+    default:
+      break;
+    }
+  } else if (p->prop < _LV_STYLE_LAST_BUILT_IN_PROP) {
+    cb(p->prop, value, args);
+  } else {
+    return luaL_error(L, "unknown style");
+  }
+
+  return 0;
 }
 
 /**
@@ -454,7 +477,12 @@ static int lugl_style_set(lua_State *L)
       lua_pop(L, 1);
       continue;
     }
-    lugl_set_style_kv(L, lv_style_set_cb, s);
+
+    /* special value check */
+    bool inherit = lugl_is_style_inherit(L);
+
+    lugl_set_style_kv(L, inherit ? lv_style_set_inherit_cb : lv_style_set_cb,
+                      s);
     lua_pop(L, 1); /* remove value, keep the key to continue. */
   }
 
@@ -550,6 +578,14 @@ static void obj_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
   lv_obj_set_local_style_prop(info->obj, prop, value, info->selector);
 }
 
+static void obj_style_inherit_set_cb(lv_style_prop_t prop,
+                                     lv_style_value_t value, void *args)
+{
+  struct obj_style_s *info = args;
+  lv_obj_set_local_style_prop_meta(info->obj, prop, LV_STYLE_PROP_META_INHERIT,
+                                   info->selector);
+}
+
 static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
 {
   struct obj_style_s info = {
@@ -557,7 +593,11 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
       .selector = selector,
   };
 
-  return lugl_set_style_kv(L, obj_style_set_cb, &info);
+  /* special value check */
+  bool inherit = lugl_is_style_inherit(L);
+
+  return lugl_set_style_kv(
+      L, inherit ? obj_style_inherit_set_cb : obj_style_set_cb, &info);
 }
 
 /**
