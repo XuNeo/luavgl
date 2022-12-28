@@ -108,6 +108,21 @@ static void lugl_state_init(lua_State* L)
   lua_pushstring(L, "ANY"); lua_pushinteger(L, LV_STATE_ANY); lua_settable(L, -3);
 }
 
+static void lugl_part_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "MAIN"); lua_pushinteger(L, LV_PART_MAIN); lua_settable(L, -3);
+  lua_pushstring(L, "SCROLLBAR"); lua_pushinteger(L, LV_PART_SCROLLBAR); lua_settable(L, -3);
+  lua_pushstring(L, "INDICATOR"); lua_pushinteger(L, LV_PART_INDICATOR); lua_settable(L, -3);
+  lua_pushstring(L, "KNOB"); lua_pushinteger(L, LV_PART_KNOB); lua_settable(L, -3);
+  lua_pushstring(L, "SELECTED"); lua_pushinteger(L, LV_PART_SELECTED); lua_settable(L, -3);
+  lua_pushstring(L, "ITEMS"); lua_pushinteger(L, LV_PART_ITEMS); lua_settable(L, -3);
+  lua_pushstring(L, "TICKS"); lua_pushinteger(L, LV_PART_TICKS); lua_settable(L, -3);
+  lua_pushstring(L, "CURSOR"); lua_pushinteger(L, LV_PART_CURSOR); lua_settable(L, -3);
+  lua_pushstring(L, "CUSTOM_FIRST"); lua_pushinteger(L, LV_PART_CUSTOM_FIRST); lua_settable(L, -3);
+  lua_pushstring(L, "ANY"); lua_pushinteger(L, LV_PART_ANY); lua_settable(L, -3);
+}
+
 static void lugl_align_init(lua_State* L)
 {
   lua_newtable(L);
@@ -427,6 +442,8 @@ static void lugl_constants_init(lua_State *L)
   lua_setfield(L, -2, "FLAG");
   lugl_state_init(L);
   lua_setfield(L, -2, "STATE");
+  lugl_part_init(L);
+  lua_setfield(L, -2, "PART");
   lugl_align_init(L);
   lua_setfield(L, -2, "ALIGN");
   lugl_builtin_font_init(L);
