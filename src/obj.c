@@ -267,11 +267,6 @@ static int lugl_obj_clean(lua_State *L)
   return 0;
 }
 
-/**
- * set the property of object like x, y, w, h etc.
- * #1: obj: userdata
- * #2: {k = v} key: string, choose from x, y, w, h, value: any
- */
 static int lugl_obj_set(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);

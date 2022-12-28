@@ -9,7 +9,8 @@
 #include <stdlib.h>
 
 /* clang-format off */
-#define debug(format, ...) fprintf(stdout, "[lugl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
+#define debug(format, ...)
+// fprintf(stdout, "[lugl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 // syslog(LOG_DEBUG, "[lugl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 /* clang-format on */
 
@@ -74,10 +75,15 @@ typedef struct {
 } lugl_obj_t;
 
 static void dumpstack(lua_State *L);
-static const char *lugl_class_to_metatable_name(lv_obj_t *obj);
 
-static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj);
 static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx);
+static const char *lugl_toimgsrc(lua_State *L, int idx);
+static int lugl_tointeger(lua_State *L, int idx);
+static lv_color_t lugl_tocolor(lua_State *L, int idx);
+
+static const char *lugl_class_to_metatable_name(lv_obj_t *obj);
+static void lugl_new_objlib(lua_State *L);
+static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj);
 static lv_obj_t *lugl_check_obj(lua_State *L, int index);
 
 static int lugl_obj_create_helper(lua_State *L,
@@ -98,18 +104,9 @@ static void lugl_iterate(lua_State *L, int index,
 
 static int _lugl_set_property(lua_State *L, void *obj,
                               const lugl_value_setter_t table[], uint32_t len);
-
 #define lugl_set_property(L, obj, table)                                       \
   _lugl_set_property(L, obj, table, sizeof(table) / sizeof(table[0]))
 
 static int lugl_obj_set_property_kv(lua_State *L, void *data);
-
-static const char *lugl_toimgsrc(lua_State *L, int idx);
-
-static void _lv_dummy_set(void *obj, lua_State *L);
-
-static int lugl_tointeger(lua_State *L, int idx);
 static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector);
-static lv_color_t lugl_tocolor(lua_State *L, int idx);
-
-static void lugl_new_objlib(lua_State *L);
+static void _lv_dummy_set(void *obj, lua_State *L);

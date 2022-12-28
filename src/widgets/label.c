@@ -52,11 +52,7 @@ static int label_set_property_cb(lua_State *L, void *data)
   return -1;
 }
 
-/**
- * set the property of object like x, y, w, h etc.
- * #1: obj: lightuserdata
- * #2: {k = v} key: string, choose from x, y, w, h, value: any
- */
+
 static int lugl_label_set(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
