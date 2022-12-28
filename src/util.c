@@ -29,6 +29,14 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return "lv_list";
   else if (obj->class_p == &lv_checkbox_class)
     return "lv_checkbox";
+  else if (obj->class_p == &lv_calendar_class)
+    return "lv_calendar";
+  else if (obj->class_p == &lv_calendar_header_arrow_class)
+    return "lv_obj";
+  else if (obj->class_p == &lv_calendar_header_dropdown_class)
+    return "lv_obj";
+  else if (obj->class_p == &lv_btnmatrix_class)
+    return "lv_obj"; /* needed, but not supported, so return lv_obj instead */
   else
     return NULL;
 }

@@ -8,6 +8,7 @@
 #include "lugl.h"
 #include "private.h"
 
+#include "calendar.c"
 #include "checkbox.c"
 #include "img.c"
 #include "keyboard.c"
@@ -20,6 +21,7 @@
 #define WIDGET_CREATE_FUNCTIONS                 \
     { "Object", lugl_obj_create },              \
     \
+    { "Calendar", lugl_calendar_create },         \
     { "Checkbox", lugl_checkbox_create },         \
     { "Image", lugl_img_create },               \
     { "Textarea", lugl_textarea_create },       \
@@ -39,4 +41,5 @@ static void lugl_widgets_init(lua_State *L)
   lugl_textarea_init(L);
   lugl_keyboard_init(L);
   lugl_checkbox_init(L);
+  lugl_calendar_init(L);
 }
