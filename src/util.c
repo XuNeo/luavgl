@@ -235,3 +235,38 @@ static const char *lugl_toimgsrc(lua_State *L, int idx)
 
   return src;
 }
+
+static void dumpvalue(lua_State *L, int i, bool cr)
+{
+  const char ending = cr ? '\n' : '\0';
+  switch (lua_type(L, i)) {
+  case LUA_TNUMBER:
+    printf("number: %g%c", lua_tonumber(L, i), ending);
+    break;
+  case LUA_TSTRING:
+    printf("string: %s%c", lua_tostring(L, i), ending);
+    break;
+  case LUA_TBOOLEAN:
+    printf("boolean: %s%c", (lua_toboolean(L, i) ? "true" : "false"), ending);
+    break;
+  case LUA_TNIL:
+    printf("nil: %s%c", "nil", ending);
+    break;
+  default:
+    printf("pointer: %p%c", lua_topointer(L, i), ending);
+    break;
+  }
+}
+
+static void dumptable(lua_State *L, int index)
+{
+  int i = index < 0 ? index - 1 : index;
+  lua_pushnil(L); /* nil as initial key to iterate through table */
+  while (lua_next(L, i)) {
+    /* -1: value, -2: key */
+    dumpvalue(L, -2, 0);
+    dumpvalue(L, -1, 1);
+    lua_pop(L, 1); /* remove value, keep the key to continue. */
+  }
+  fflush(stdout);
+}
