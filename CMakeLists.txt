@@ -7,9 +7,9 @@ if (FIND_LUA_PACKAGE)
     find_package(Lua)
 endif(FIND_LUA_PACKAGE)
 
-# add_compile_options(-g -O0)
-# add_compile_options(-fsanitize=address)
-# add_link_options(-fsanitize=address)
+add_compile_options(-g -O0)
+add_compile_options(-fsanitize=address)
+add_link_options(-fsanitize=address)
 
 add_library(lugl STATIC "src/lugl.c")
 target_include_directories(lugl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
