@@ -10,7 +10,7 @@ static void lugl_obj_event_cb(lv_event_t *e)
     debug("Null user data, should be L.\n");
   }
 
-  lv_obj_t *obj = e->target;
+  lv_obj_t *obj = e->current_target;
 
   lua_pushlightuserdata(L, obj);
   lua_rawget(L, LUA_REGISTRYINDEX);
