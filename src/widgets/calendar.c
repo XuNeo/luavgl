@@ -29,7 +29,7 @@ static void _lv_calendar_set_today(void *obj, lua_State *L)
   lua_pop(L, 1);
 
   lua_getfield(L, -1, "day");
-  year = lua_tointeger(L, -1);
+  day = lua_tointeger(L, -1);
   lua_pop(L, 1);
 
   lv_calendar_set_today_date(obj, year, month, day);
@@ -42,7 +42,7 @@ static void _lv_calendar_set_showed(void *obj, lua_State *L)
     return;
   }
 
-  uint32_t year, month, day;
+  uint32_t year, month;
   lua_getfield(L, -1, "year");
   year = lua_tointeger(L, -1);
   lua_pop(L, 1);
@@ -138,7 +138,6 @@ static int lugl_calendar_get_pressed(lua_State *L)
 
 static int lugl_calendar_get_btnm(lua_State *L)
 {
-  lv_calendar_date_t date;
   lv_obj_t *obj = lugl_check_obj(L, 1);
   lv_obj_t *btm = lv_calendar_get_btnmatrix(obj);
   lua_pushlightuserdata(L, btm);
@@ -152,15 +151,11 @@ static int lugl_calendar_get_btnm(lua_State *L)
 
 static int lugl_calendar_create_arrow(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
-
   return lugl_obj_create_helper(L, lv_calendar_header_arrow_create);
 }
 
 static int lugl_calendar_create_dropdown(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
-
   return lugl_obj_create_helper(L, lv_calendar_header_dropdown_create);
 }
 
