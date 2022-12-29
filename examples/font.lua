@@ -6,7 +6,7 @@ local label1 = lugl.Label(nil, {
     text_font = lugl.Font("montserrat", 32, "normal"),
     text = "Hello Font",
     align = {
-        align = CONST.align.CENTER,
+        type = lugl.ALIGN.CENTER
     }
 })
 
@@ -16,8 +16,7 @@ lugl.Label(nil, {
     -- x= 0, y = 0,
     text_font = lugl.Font("MiSansW medium, montserrat", 24),
     text = "Hello Font2",
-    align_to = {
-        align = CONST.align.OUT_BOTTOM_LEFT,
-        base = label1,
-    }
+}):align_to({
+    type = lugl.ALIGN.OUT_BOTTOM_LEFT,
+    base = label1,
 })

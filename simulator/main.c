@@ -197,11 +197,23 @@ static int pmain(lua_State *L)
   printf("script path: %s\n", path);
   lua_pushstring(L, path);
   lua_setglobal(L, "RESOURCE_ROOT");
+  luaL_openlibs(L);
+
+  lua_getglobal(L, "package");
+  lua_getfield(L, -1, "path");
+
+  const char *pkg_path = lua_tostring(L, -1);
+  char *new_path = malloc(strlen(pkg_path) + strlen(script) + 2);
+  strcpy(new_path, pkg_path);
+  strcat(new_path, ";"), strcat(new_path, path), strcat(new_path, "?.lua");
+  lua_pop(L, 1);
+  lua_pushstring(L, new_path);
+  lua_setfield(L, -2, "path");
+  lua_pop(L, 1);
   free(path);
+  free(new_path);
 
   lua_atpanic(L, &lua_panic);
-
-  luaL_openlibs(L);
 
   luaL_requiref(L, "lugl", luaopen_lugl, 1);
   lua_pop(L, 1);
@@ -279,6 +291,19 @@ int lua_terminate(lua_context_t *luactx)
   return 0;
 }
 
+static lua_context_t *lua_ctx;
+static lua_lugl_args_t args;
+
+static void reload_cb(lv_event_t *e)
+{
+  (void)e;
+  if (lua_ctx != NULL) {
+    lua_terminate(lua_ctx);
+  }
+
+  lua_ctx = lua_load_script(LUGL_EXAMPLE_DIR "/examples.lua", &args);
+}
+
 int main(int argc, char **argv)
 {
   (void)argc; /*Unused*/
@@ -290,14 +315,18 @@ int main(int argc, char **argv)
   /*Initialize the HAL (display, input devices, tick) for LVGL*/
   hal_init();
 
-  lv_obj_t *root = lv_scr_act();
-  lua_lugl_args_t args = {
-      .delete_font = NULL,
-      .make_font = NULL,
-      .root = root,
-  };
+  args.root = lv_scr_act();
 
-  lua_load_script(LUGL_EXAMPLE_DIR "/flappyBird/flappyBird.lua", &args);
+  lua_ctx = lua_load_script(LUGL_EXAMPLE_DIR "/examples.lua", &args);
+
+  lv_obj_t *btn = lv_btn_create(lv_layer_sys());
+  lv_obj_align(btn, LV_ALIGN_BOTTOM_RIGHT, 0, -50);
+  lv_obj_set_size(btn, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+  lv_obj_set_style_pad_all(btn, 5, 0);
+  lv_obj_add_event_cb(btn, reload_cb, LV_EVENT_CLICKED, NULL);
+  lv_obj_t* label = lv_label_create(btn);
+  lv_label_set_text(label, "RELOAD");
+  lv_obj_center(label);
 
   while (1) {
     /* Periodically call the lv_task handler.
