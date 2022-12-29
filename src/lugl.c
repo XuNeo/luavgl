@@ -248,7 +248,14 @@ static int root_gc(lua_State* L)
   debug("enter.\n");
   lugl_ctx_t* ctx = lugl_context(L);
   lv_obj_del(ctx->root);
+  return 0;
+}
 
+static int root_clean(lua_State* L)
+{
+  debug("enter.\n");
+  lugl_ctx_t* ctx = lugl_context(L);
+  lv_obj_clean(ctx->root);
   return 0;
 }
 
@@ -258,34 +265,33 @@ int luaopen_lugl(lua_State* L)
 
     luaL_newlib(L, lugl_functions);
 
-    if (ctx->root == NULL) {
-        lv_obj_t* root;
+    /* similar to luv, setup a metatable to root, for __gc */
+    luaL_newmetatable(L, "root.meta");
+    lua_pushstring(L, "__gc");
+    lua_pushcfunction(L, ctx->root ? root_clean : root_gc);
+    lua_settable(L, -3);
+    lua_pop(L, 1);
+
+    lv_obj_t* root = ctx->root;
+    if (root == NULL) {
         debug("create root obj for lua.\n");
         root = lv_obj_create(lv_scr_act());
-
-        /* similar to luv, setup a metatable to root, for __gc */
-        luaL_newmetatable(L, "root.meta");
-        lua_pushstring(L, "__gc");
-        lua_pushcfunction(L, root_gc);
-        lua_settable(L, -3);
-        lua_pop(L, 1);
-
-        lua_pushstring(L, "_root");
-        *(void**)lua_newuserdata(L, sizeof(void*)) = root;
-        // setup the userdata's metatable for __gc
-        luaL_getmetatable(L, "root.meta");
-        lua_setmetatable(L, -2);
-        // create a ref to root, avoid __gc early
-        // this puts the root userdata into the _root key
-        // in the returned luv table
-        lua_rawset(L, -3);
-
-        lv_obj_remove_style_all(root);
-        lv_obj_set_size(root, LV_HOR_RES, LV_VER_RES);
-        lv_obj_clear_flag(root, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
-
         ctx->root = root;
     }
+
+    lua_pushstring(L, "_root");
+    *(void**)lua_newuserdata(L, sizeof(void*)) = root;
+    // setup the userdata's metatable for __gc
+    luaL_getmetatable(L, "root.meta");
+    lua_setmetatable(L, -2);
+    // create a ref to root, avoid __gc early
+    // this puts the root userdata into the _root key
+    // in the returned luv table
+    lua_rawset(L, -3);
+
+    lv_obj_remove_style_all(root);
+    lv_obj_set_size(root, LV_HOR_RES, LV_VER_RES);
+    lv_obj_clear_flag(root, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
 
     lugl_obj_init(L);
     lugl_label_init(L);
