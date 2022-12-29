@@ -261,6 +261,12 @@ lugl.GRID_ALIGN = {
     SPACE_BETWEEN = 0,
 }
 
+--- @enum RollerMode
+lugl.ROLLER_MODE = {
+    NORMAL = 0,
+    INFINITE = 0,
+}
+
 lugl.ANIM_REPEAT_INFINITE = 0
 lugl.ANIM_PLAYTIME_INFINITE = 0
 lugl.SIZE_CONTENT = 0
@@ -356,6 +362,14 @@ end
 --- @param property? LabelStyle
 --- @return List
 function lugl.List(parent, property)
+end
+
+---
+--- Create Roller Widget on parent
+--- @param parent? Object | nil
+--- @param property? RollerStyle
+--- @return Roller
+function lugl.Roller(parent, property)
 end
 
 ---
@@ -456,6 +470,13 @@ end
 function obj:List(property)
 end
 
+
+---
+--- Create Roller Widget on parent
+--- @param property? RollerStyle
+--- @return Roller
+function obj:Roller(parent, property)
+end
 ---
 --- Set object property
 --- @param p StyleProp
@@ -878,6 +899,38 @@ function list:get_btn_text(btn)
 end
 
 ---
+--- Roller widget
+---@class Roller: Object
+---
+local roller = {}
+
+--- Roller set method
+--- @param p RollerStyle
+--- @return nil
+function roller:set(p)
+end
+
+--- Get the options of a roller
+--- @return string
+function roller:get_options()
+end
+
+--- Get the index of the selected option
+--- @return integer
+function roller:get_selected()
+end
+
+--- Get the current selected option as a string.
+--- @return string
+function roller:get_selected_str()
+end
+
+--- Get the total number of options
+--- @return integer
+function roller:get_options_cnt()
+end
+
+---
 --- Anim
 ---@class Anim
 ---
@@ -1126,6 +1179,12 @@ end
 
 --- List style
 --- @class ListStyle :StyleProp
+
+--- Roller style
+--- @class RollerStyle :StyleProp
+--- @field options table | string
+--- @field selected table | integer
+--- @field visible_cnt integer
 
 ---
 --- Anim(for object) parameter

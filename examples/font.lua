@@ -1,6 +1,3 @@
-local lugl = require("lugl")
-local CONST = lugl.const
-
 local label1 = lugl.Label(nil, {
     x = 0, y = 0,
     text_font = lugl.Font("montserrat", 32, "normal"),

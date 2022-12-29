@@ -401,6 +401,13 @@ static void lugl_grid_align_init(lua_State* L)
   lua_pushstring(L, "SPACE_BETWEEN"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_BETWEEN); lua_settable(L, -3);
 }
 
+static void lugl_roller_mode_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "NORMAL"); lua_pushinteger(L, LV_ROLLER_MODE_NORMAL); lua_settable(L, -3);
+  lua_pushstring(L, "INFINITE"); lua_pushinteger(L, LV_ROLLER_MODE_INFINITE); lua_settable(L, -3);
+}
+
 static int lugl_LV_PCT(lua_State*L)
 {
   int pct = lua_tointeger(L, 1);
@@ -464,6 +471,8 @@ static void lugl_constants_init(lua_State *L)
   lua_setfield(L, -2, "FLEX_ALIGN");
   lugl_grid_align_init(L);
   lua_setfield(L, -2, "GRID_ALIGN");
+  lugl_roller_mode_init(L);
+  lua_setfield(L, -2, "ROLLER_MODE");
   /* miscellaneous. */
 
   lua_pushinteger(L, LV_ANIM_REPEAT_INFINITE);
