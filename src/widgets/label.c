@@ -52,7 +52,6 @@ static int label_set_property_cb(lua_State *L, void *data)
   return -1;
 }
 
-
 static int lugl_label_set(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
@@ -112,9 +111,27 @@ static int lugl_label_cut_text(lua_State *L)
   return 0;
 }
 
+/* demo purpose, there is no need to use set_text_static */
+static int lugl_label_set_text_static(lua_State *L)
+{
+  const char* str = lua_tostring(L, 2);
+  lugl_obj_t *lobj = lugl_obj_touserdatauv(L, 1);
+  if (lobj->obj == NULL) {
+    return luaL_error(L, "obj null.");
+  }
+
+  /* uservalue is on top */
+  lua_pushvalue(L, 2);
+  lua_setfield(L, -2, "text_static");
+
+  lv_label_set_text_static(lobj->obj, str);
+  return 0;
+}
+
 static const luaL_Reg lugl_label_methods[] = {
     // label.c
     {"set", lugl_label_set},
+    {"set_text_static", lugl_label_set_text_static},
     {"get_text", lugl_label_get_text},
     {"get_long_mode", lugl_label_get_long_mode},
     {"get_recolor", lugl_label_get_recolor},
