@@ -75,8 +75,10 @@ typedef struct {
 } lugl_obj_t;
 
 static void dumpstack(lua_State *L);
+static void dumptable(lua_State *L, int index);
 
 static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx);
+static lugl_obj_t* lugl_obj_touserdatauv(lua_State *L, int idx);
 static const char *lugl_toimgsrc(lua_State *L, int idx);
 static int lugl_tointeger(lua_State *L, int idx);
 static lv_color_t lugl_tocolor(lua_State *L, int idx);

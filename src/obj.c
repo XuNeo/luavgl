@@ -7,13 +7,6 @@
 #include "lugl.h"
 #include "private.h"
 
-static int lugl_error(lua_State *L, const char *msg)
-{
-  lua_pushnil(L);
-  lua_pushstring(L, msg);
-  return 2;
-}
-
 static void _lv_obj_set_align(void *obj, lua_State *L)
 {
   if (!lua_istable(L, -1)) {
@@ -134,7 +127,31 @@ static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj)
   lua_pushlightuserdata(L, obj);
   lua_pushvalue(L, -2);
   lua_rawset(L, LUA_REGISTRYINDEX);
+  return lobj;
+}
 
+/**
+ * get the obj userdata and uservalue, if uservalue is not a table, then add
+ * one. result stack: table(from uservalue) return succeeded or not
+ */
+static lugl_obj_t *lugl_obj_touserdatauv(lua_State *L, int idx)
+{
+  lugl_obj_t *lobj = lugl_to_lobj(L, idx);
+
+  int type = lua_getuservalue(L, idx);
+  if (type == LUA_TTABLE)
+    return lobj;
+
+  /* initial element: 1 */
+  lua_createtable(L, 0, 1);
+
+#if 0 /* reserved slot, not used for now */
+  lua_pushinteger(L, 1);
+  lua_pushnil(L);
+  lua_rawset(L, -3);
+#endif
+  lua_pushvalue(L, -1); /* leave one on stack */
+  lua_setuservalue(L, idx > 0 ? idx : idx - 2);
   return lobj;
 }
 
@@ -223,6 +240,10 @@ static int lugl_obj_delete(lua_State *L)
     lua_checkstack(L, 2);
     lua_pushlightuserdata(L, child);
     lua_rawget(L, LUA_REGISTRYINDEX);
+    if (lua_isnoneornil(L, -1)) {
+      continue;
+    }
+
     lugl_obj_delete(L);
   }
 
@@ -234,13 +255,14 @@ static int lugl_obj_delete(lua_State *L)
     lv_obj_del(lobj->obj);
   }
 
-  lobj->obj = NULL;
-
   lua_checkstack(L, 2);
   /* remove userdata from registry. */
   lua_pushlightuserdata(L, lobj->obj);
   lua_pushnil(L);
   lua_rawset(L, LUA_REGISTRYINDEX);
+
+  debug("delete obj: %p\n", lobj->obj);
+  lobj->obj = NULL;
 
   lua_pop(L, 1); /* remove the userdata para */
   return 0;
