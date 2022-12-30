@@ -26,6 +26,7 @@ typedef enum {
 } setter_type_t;
 
 typedef void (*setter_int_t)(void *, int);
+typedef void (*setter_pointer_t)(void *, void*);
 
 /* clang-format off */
 typedef struct {

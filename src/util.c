@@ -39,6 +39,10 @@ static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
     return "lv_obj"; /* needed, but not supported, so return lv_obj instead */
   else if (obj->class_p == &lv_roller_class)
     return "lv_roller";
+  else if (obj->class_p == &lv_dropdown_class)
+    return "lv_dropdown";
+  else if (obj->class_p == &lv_dropdownlist_class)
+    return "lv_obj";
   else
     return NULL;
 }

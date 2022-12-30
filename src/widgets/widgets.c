@@ -10,6 +10,7 @@
 
 #include "calendar.c"
 #include "checkbox.c"
+#include "dropdown.c"
 #include "img.c"
 #include "keyboard.c"
 #include "label.c"
@@ -24,6 +25,7 @@
     \
     { "Calendar", lugl_calendar_create },       \
     { "Checkbox", lugl_checkbox_create },       \
+    { "Dropdown", lugl_dropdown_create },       \
     { "Image", lugl_img_create },               \
     { "Textarea", lugl_textarea_create },       \
     { "Keyboard", lugl_keyboard_create },       \
@@ -45,4 +47,5 @@ static void lugl_widgets_init(lua_State *L)
   lugl_checkbox_init(L);
   lugl_calendar_init(L);
   lugl_roller_init(L);
+  lugl_dropdown_init(L);
 }

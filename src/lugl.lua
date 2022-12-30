@@ -135,7 +135,7 @@ lugl.ALIGN = {
     OUT_RIGHT_BOTTOM = 0,
 }
 
---- @class BuiltinFont
+--- @enum BuiltinFont
 lugl.BUILTIN_FONT = {
     MONTSERRAT_8 = 0,
     MONTSERRAT_10 = 0,
@@ -316,6 +316,14 @@ function lugl.Checkbox(parent, property)
 end
 
 ---
+--- Create Dropdown on parent
+--- @param parent? Object | nil
+--- @param property? DropdownStyle
+--- @return Dropdown
+function lugl.Dropdown(parent, property)
+end
+
+---
 --- Create Image on parent
 --- @param parent? Object | nil
 --- @param property? ImageStyle
@@ -426,6 +434,13 @@ end
 --- @param property? CheckboxStyle
 --- @return Checkbox
 function obj:Checkbox(property)
+end
+
+---
+--- Create Dropdown on parent
+--- @param property? DropdownStyle
+--- @return Dropdown
+function obj.Dropdown(parent, property)
 end
 
 ---
@@ -719,6 +734,46 @@ end
 function checkbox:get_text()
 end
 
+---
+--- Dropdown widget
+---@class Dropdown:Object
+---
+local dropdown = {}
+
+--- set method
+--- @param p DropdownStyle
+--- @return nil
+function dropdown:set(p)
+end
+
+--- get method
+--- @param which "list" | "options" | "selected" | "option_cnt" | "selected_str" | "option_index" | "symbol" | "dir"
+--- @param arg ? string
+--- @return string | Dir | Object
+function dropdown:get(which, arg)
+end
+
+--- Open the drop down list
+function dropdown:open()
+end
+
+--- Close (Collapse) the drop-down list
+function dropdown:close()
+end
+
+--- Tells whether the list is opened or not
+function dropdown:is_open()
+end
+
+--- Add an options to a drop-down list from a string
+--- @param option string
+--- @param pos integer
+function dropdown:add_option(option, pos)
+end
+
+--- Tells whether the list is opened or not
+function dropdown:clear_option()
+end
 
 ---
 --- Image widget
@@ -1098,7 +1153,7 @@ end
 --- @field arc_img_src number
 --- @field text_color number | string
 --- @field text_opa number
---- @field text_font Font
+--- @field text_font Font | BuiltinFont
 --- @field text_letter_space number
 --- @field text_line_space number
 --- @field text_decor number
@@ -1153,6 +1208,15 @@ end
 --- Checkbox style
 --- @class CheckboxStyle :StyleProp
 --- @field text string
+
+--- Dropdown style
+--- @class DropdownStyle :StyleProp
+--- @field text string | nil
+--- @field options string
+--- @field selected integer
+--- @field dir Dir
+--- @field symbol lightuserdata | string
+--- @field highlight boolean
 
 --- Textarea style
 --- @class TextareaStyle :StyleProp
