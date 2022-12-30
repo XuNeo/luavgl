@@ -7,10 +7,6 @@ if (FIND_LUA_PACKAGE)
     find_package(Lua)
 endif(FIND_LUA_PACKAGE)
 
-add_compile_options(-g -O0)
-add_compile_options(-fsanitize=address)
-add_link_options(-fsanitize=address)
-
 add_library(lugl STATIC "src/lugl.c")
 target_include_directories(lugl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
@@ -19,6 +15,10 @@ target_include_directories(lugl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps/lvgl) #
 target_include_directories(lugl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/simulator) # need lv_conf.h
 
 if (BUILD_SIMULATOR)
+    add_compile_options(-g -O0)
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
+
     find_package(SDL2 REQUIRED SDL2)
     include_directories(${SDL2_INCLUDE_DIRS})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/simulator) # need lv_conf.h and lv_drv_conf.h
