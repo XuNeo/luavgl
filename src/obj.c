@@ -7,6 +7,8 @@
 #include "lugl.h"
 #include "private.h"
 
+static int lugl_obj_delete(lua_State *L);
+
 static void _lv_obj_set_align(void *obj, lua_State *L)
 {
   if (!lua_istable(L, -1)) {
@@ -108,6 +110,27 @@ static inline void lugl_setup_obj(lua_State *L, lv_obj_t *obj)
   lugl_iterate(L, -1, lugl_obj_set_property_kv, obj);
 }
 
+static void obj_delete_cb(lv_event_t *e)
+{
+  lua_State *L = e->user_data;
+  lua_pushlightuserdata(L, e->current_target);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (lua_isnoneornil(L, -1)) {
+    goto pop_exit;
+  }
+
+  lugl_obj_t *lobj = lugl_to_lobj(L, -1);
+  if (lobj->lua_created)
+    goto pop_exit;
+
+  lugl_obj_delete(L);
+  return;
+
+pop_exit:
+    lua_pop(L, 1);
+    return;
+}
+
 static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj)
 {
   lugl_obj_t *lobj;
@@ -122,6 +145,7 @@ static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj)
   lugl_obj_anim_init(lobj);
   lugl_obj_event_init(lobj);
   lobj->obj = obj;
+  lv_obj_add_event_cb(obj, obj_delete_cb, LV_EVENT_DELETE, L);
 
   /* registry[obj] = lobj */
   lua_pushlightuserdata(L, obj);

@@ -91,7 +91,8 @@ static int lugl_dropdown_get(lua_State *L)
     lua_pushlightuserdata(L, list);
     lua_rawget(L, LUA_REGISTRYINDEX);
     if (lua_isnoneornil(L, -1)) {
-      lugl_new_obj(L, list);
+      lua_pop(L, 1);
+      lugl_new_obj(L, list)->lua_created = false;
     }
     return 1;
   }
