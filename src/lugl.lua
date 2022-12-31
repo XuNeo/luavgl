@@ -391,9 +391,9 @@ end
 Return a font which is lightuserdata, to be used for label etc.
 ]]
 --- @param family string | "montserrat" | "unscii" | "Your Extension Font Name"
---- @param size number the font size in px
+--- @param size integer the font size in px
 --- @param weight @see built-in font only support "normal" weight
----             | number # default to normal, weight 400
+---             | integer # default to normal, weight 400
 ---             | nil # default to normal, weight 400
 ---             | "thin" # weight 100
 ---             | "extra light" # weight 200
@@ -811,7 +811,7 @@ end
 --- w, h = img:get_img_size()
 --- w, h = img:get_img_size("/path/to/this/image.png")
 --- @param src ? string
---- @return integer[]
+--- @return integer, integer
 function img:get_img_size(src)
 end
 
@@ -1072,101 +1072,101 @@ end
 --- Align parameter
 --- @class Align
 --- @field type ObjAlignType
---- @field x_ofs number
---- @field y_ofs number
+--- @field x_ofs integer
+--- @field y_ofs integer
 
 --- AlignTo parameter
 --- @class AlignToPara
 --- @field type ObjAlignType
 --- @field base Object
---- @field x_ofs number
+--- @field x_ofs integer
 
 --- Style properties
 --- @class StyleProp
---- @field w number
---- @field width number
---- @field min_width number
---- @field max_width number
---- @field height number
---- @field min_height number
---- @field max_height number
---- @field x number
---- @field y number
---- @field size number set size is equilent to set w/h to same value
+--- @field w integer
+--- @field width integer
+--- @field min_width integer
+--- @field max_width integer
+--- @field height integer
+--- @field min_height integer
+--- @field max_height integer
+--- @field x integer
+--- @field y integer
+--- @field size integer set size is equilent to set w/h to same value
 --- @field align Align
---- @field transform_width number
---- @field transform_height number
---- @field translate_x number
---- @field translate_y number
---- @field transform_zoom number
---- @field transform_angle number
---- @field pad_all number
---- @field pad_top number
---- @field pad_bottom number
---- @field pad_ver number
---- @field pad_left number
---- @field pad_right number
---- @field pad_hor number
---- @field pad_row number
---- @field pad_column number
---- @field pad_gap number
---- @field bg_color number | string text color in hex number or #RGB or #RRGGBB format
---- @field bg_opa number
---- @field bg_grad_color number
---- @field bg_grad_dir number
---- @field bg_main_stop number
---- @field bg_grad_stop number
---- @field bg_dither_mode number
---- @field bg_img_src number
---- @field bg_img_opa number
---- @field bg_img_recolor number
---- @field bg_img_recolor_opa number
---- @field bg_img_tiled number
---- @field border_color number | string
---- @field border_opa number
---- @field border_width number
---- @field border_side number
---- @field border_post number
---- @field outline_width number
---- @field outline_color number | string
---- @field outline_opa number
---- @field outline_pad number
---- @field shadow_width number
---- @field shadow_ofs_x number
---- @field shadow_ofs_y number
---- @field shadow_spread number
---- @field shadow_color number | string
---- @field shadow_opa number
---- @field img_opa number
---- @field img_recolor number
---- @field img_recolor_opa number
---- @field line_width number
---- @field line_dash_width number
---- @field line_dash_gap number
---- @field line_rounded number
---- @field line_color number | string
---- @field line_opa number
---- @field arc_width number
---- @field arc_rounded number
---- @field arc_color number | string
---- @field arc_opa number
---- @field arc_img_src number
---- @field text_color number | string
---- @field text_opa number
+--- @field transform_width integer
+--- @field transform_height integer
+--- @field translate_x integer
+--- @field translate_y integer
+--- @field transform_zoom integer
+--- @field transform_angle integer
+--- @field pad_all integer
+--- @field pad_top integer
+--- @field pad_bottom integer
+--- @field pad_ver integer
+--- @field pad_left integer
+--- @field pad_right integer
+--- @field pad_hor integer
+--- @field pad_row integer
+--- @field pad_column integer
+--- @field pad_gap integer
+--- @field bg_color integer | string text color in hex integer or #RGB or #RRGGBB format
+--- @field bg_opa integer
+--- @field bg_grad_color integer
+--- @field bg_grad_dir integer
+--- @field bg_main_stop integer
+--- @field bg_grad_stop integer
+--- @field bg_dither_mode integer
+--- @field bg_img_src integer
+--- @field bg_img_opa integer
+--- @field bg_img_recolor integer
+--- @field bg_img_recolor_opa integer
+--- @field bg_img_tiled integer
+--- @field border_color integer | string
+--- @field border_opa integer
+--- @field border_width integer
+--- @field border_side integer
+--- @field border_post integer
+--- @field outline_width integer
+--- @field outline_color integer | string
+--- @field outline_opa integer
+--- @field outline_pad integer
+--- @field shadow_width integer
+--- @field shadow_ofs_x integer
+--- @field shadow_ofs_y integer
+--- @field shadow_spread integer
+--- @field shadow_color integer | string
+--- @field shadow_opa integer
+--- @field img_opa integer
+--- @field img_recolor integer
+--- @field img_recolor_opa integer
+--- @field line_width integer
+--- @field line_dash_width integer
+--- @field line_dash_gap integer
+--- @field line_rounded integer
+--- @field line_color integer | string
+--- @field line_opa integer
+--- @field arc_width integer
+--- @field arc_rounded integer
+--- @field arc_color integer | string
+--- @field arc_opa integer
+--- @field arc_img_src integer
+--- @field text_color integer | string
+--- @field text_opa integer
 --- @field text_font Font | BuiltinFont
---- @field text_letter_space number
---- @field text_line_space number
---- @field text_decor number
---- @field text_align number
---- @field radius number
---- @field clip_corner number
---- @field opa number
---- @field color_filter_opa number
---- @field anim_time number
---- @field anim_speed number
---- @field blend_mode number
---- @field layout number
---- @field base_dir number
+--- @field text_letter_space integer
+--- @field text_line_space integer
+--- @field text_decor integer
+--- @field text_align integer
+--- @field radius integer
+--- @field clip_corner integer
+--- @field opa integer
+--- @field color_filter_opa integer
+--- @field anim_time integer
+--- @field anim_speed integer
+--- @field blend_mode integer
+--- @field layout integer
+--- @field base_dir integer
 --- @field flex_flow FlexFlow
 --- @field flex_main_place FlexAlign
 --- @field flex_cross_place FlexAlign
@@ -1193,10 +1193,10 @@ end
 --- Image style
 --- @class ImageStyle :StyleProp
 --- @field src string
---- @field offset_x number offset of image
---- @field offset_y number
---- @field angle number
---- @field zoom number
+--- @field offset_x integer offset of image
+--- @field offset_y integer
+--- @field angle integer
+--- @field zoom integer
 --- @field antialias boolean
 --- @field pivot table
 ---
@@ -1266,8 +1266,8 @@ end
 --- @alias TimerCallback fun(t:Timer): nil
 --- @class TimerPara
 --- @field paused boolean Do not start timer immediaely
---- @field period number timer period in ms unit
---- @field repeat_count number | -1 |
+--- @field period integer timer period in ms unit
+--- @field repeat_count integer | -1 |
 --- @field cb TimerCallback
 ---
 
