@@ -132,10 +132,8 @@ static int msghandler(lua_State *L)
                             luaL_typename(L, 1));
   }
 
-#ifdef CONFIG_MIWEAR_LUA_TRACEBACK
   /* append a standard traceback */
   luaL_traceback(L, L, msg, 1);
-#endif
 
   msg = lua_tostring(L, -1);
   lua_pop(L, 1);
