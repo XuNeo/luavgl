@@ -45,6 +45,8 @@ static const luaL_Reg lugl_obj_methods[] = {
     /* misc. functions */
     { "set_parent", lugl_obj_set_parent },
     { "get_parent", lugl_obj_get_parent },
+    { "get_child", lugl_obj_get_child },
+    { "get_child_cnt", lugl_obj_get_child_cnt },
     { "get_screen", lugl_obj_get_screen },
     { "get_state", lugl_obj_get_state },
     { "scroll_to", lugl_obj_scroll_to },

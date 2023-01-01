@@ -521,6 +521,12 @@ function obj:delete()
 end
 
 ---
+--- Delete all children of this object
+--- @return nil
+function obj:clean()
+end
+
+---
 --- Set parent, note parent should also created by lua, native object may not work.
 --- @param p Object
 --- @return nil
@@ -537,6 +543,19 @@ end
 --- get parent object
 --- @return Object
 function obj:get_parent()
+end
+
+---
+--- get child object
+--- @param id integer 0 the first child, -1 the lastly created child
+--- @return Object
+function obj:get_child(id)
+end
+
+---
+--- get object children count
+--- @return integer
+function obj:get_child_cnt()
 end
 
 ---

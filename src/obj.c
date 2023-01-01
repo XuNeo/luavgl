@@ -409,6 +409,43 @@ static int lugl_obj_get_parent(lua_State *L)
   return 1;
 }
 
+static int lugl_obj_get_child(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  int id = lugl_tointeger(L, 2);
+  lv_obj_t *child = lv_obj_get_child(obj, id);
+  if (child == NULL) {
+    lua_pushnil(L);
+    return 1;
+  }
+
+  /* check if userdata is added to this obj, so lua can access it. */
+  lua_pushlightuserdata(L, child);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (lua_isnil(L, -1)) {
+    lugl_new_obj(L, child)->lua_created = false;
+  }
+
+  return 1;
+}
+
+static int lugl_obj_get_child_cnt(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lua_pushinteger(L, lv_obj_get_child_cnt(obj));
+  return 1;
+}
+
 static int lugl_obj_get_state(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
