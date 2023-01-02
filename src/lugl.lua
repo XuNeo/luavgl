@@ -589,17 +589,31 @@ function obj:is_visible()
 end
 
 ---
---- Set object property
+--- add flag to object
 --- @param p ObjFlag
 --- @return nil
 function obj:add_flag(p)
 end
 
 ---
---- Set object property
+--- clear object flag
 --- @param p ObjFlag
 --- @return nil
 function obj:clear_flag(p)
+end
+
+---
+--- add state to object
+--- @param p ObjState
+--- @return nil
+function obj:add_state(p)
+end
+
+---
+--- clear object state
+--- @param p ObjState
+--- @return nil
+function obj:clear_state(p)
 end
 
 ---

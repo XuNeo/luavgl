@@ -54,6 +54,8 @@ static const luaL_Reg lugl_obj_methods[] = {
     { "is_visible", lugl_obj_is_visible },
     { "add_flag", lugl_obj_add_flag },
     { "clear_flag", lugl_obj_clear_flag },
+    { "add_state", lugl_obj_add_state },
+    { "clear_state", lugl_obj_clear_state },
     { "add_style", lugl_obj_add_style },
     { "remove_style", lugl_obj_remove_style },
     { "remove_style_all", lugl_obj_remove_style_all },

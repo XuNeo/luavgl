@@ -539,6 +539,32 @@ static int lugl_obj_clear_flag(lua_State *L)
   return 0;
 }
 
+static int lugl_obj_add_state(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_state_t state = lua_tointeger(L, 2);
+  lv_obj_add_state(obj, state);
+  return 0;
+}
+
+static int lugl_obj_clear_state(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_state_t state = lua_tointeger(L, 2);
+  lv_obj_clear_state(obj, state);
+  return 0;
+}
+
 /**
  * obj:scroll_by(x, y, anim_en)
  */
