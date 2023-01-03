@@ -11,6 +11,11 @@ static int lugl_obj_delete(lua_State *L);
 
 static void _lv_obj_set_align(void *obj, lua_State *L)
 {
+  if (lua_isinteger(L, -1)) {
+    lv_obj_align(obj, lua_tointeger(L, -1), 0, 0);
+    return;
+  }
+
   if (!lua_istable(L, -1)) {
     luaL_argerror(L, -1, "should be table.");
     debug("para should be table.");
@@ -127,8 +132,8 @@ static void obj_delete_cb(lv_event_t *e)
   return;
 
 pop_exit:
-    lua_pop(L, 1);
-    return;
+  lua_pop(L, 1);
+  return;
 }
 
 static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj)

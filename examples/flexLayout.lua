@@ -13,9 +13,7 @@ local root = lugl.Object(nil, {
     },
     w = 300,
     h = 75,
-    align = {
-        type = lugl.ALIGN.CENTER,
-    }
+    align = lugl.ALIGN.CENTER
 })
 
 for i = 1, 10 do

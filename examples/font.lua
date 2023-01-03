@@ -2,9 +2,7 @@ local label1 = lugl.Label(nil, {
     x = 0, y = 0,
     text_font = lugl.Font("montserrat", 32, "normal"),
     text = "Hello Font",
-    align = {
-        type = lugl.ALIGN.CENTER
-    }
+    align = lugl.ALIGN.CENTER
 })
 
 print("label1: ", label1)

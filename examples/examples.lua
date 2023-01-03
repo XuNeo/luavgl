@@ -12,7 +12,7 @@ local container = lugl.Object(nil, {
 })
 
 local function createBtn(parent, name)
-    local root = parent:Object{
+    local root = parent:Object {
         w = lugl.SIZE_CONTENT,
         h = lugl.SIZE_CONTENT,
         bg_color = "#ccc",
@@ -22,20 +22,17 @@ local function createBtn(parent, name)
         pad_all = 20,
     }
 
-    root:onClicked(function ()
+    root:onClicked(function()
         container:delete()
         require(name)
     end)
 
     root:Label {
-        text= name,
+        text = name,
         text_color = "#333",
-        align = {
-            type = lugl.ALIGN.CENTER
-        }
+        align = lugl.ALIGN.CENTER,
     }
 end
-
 
 createBtn(container, "font")
 createBtn(container, "uservalue")

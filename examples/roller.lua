@@ -4,9 +4,7 @@ local roller = lugl.Roller(nil, {
         mode = lugl.ROLLER_MODE.INFINITE,
     },
     visible_cnt = 4,
-    align = {
-        type = lugl.ALIGN.CENTER,
-    }
+    align = lugl.ALIGN.CENTER
 })
 
 roller:onevent(lugl.EVENT.VALUE_CHANGED, function (obj, code)

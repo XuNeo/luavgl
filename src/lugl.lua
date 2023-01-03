@@ -440,7 +440,7 @@ end
 --- Create Dropdown on parent
 --- @param property? DropdownStyle
 --- @return Dropdown
-function obj.Dropdown(parent, property)
+function obj:Dropdown(parent, property)
 end
 
 ---
@@ -1126,7 +1126,7 @@ end
 --- @field x integer
 --- @field y integer
 --- @field size integer set size is equilent to set w/h to same value
---- @field align Align
+--- @field align Align | ObjAlignType
 --- @field transform_width integer
 --- @field transform_height integer
 --- @field translate_x integer
