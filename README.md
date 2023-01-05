@@ -13,6 +13,7 @@ lugl is a wrapper around lvgl core functions and widgets with class inherence in
 
 ```lua
 local root = lugl.Object()
+root:set { w = lugl.HOR_RES(), h = lugl.VER_RES() }
 
 -- create obj on root
 local obj = root:Object()
@@ -29,9 +30,8 @@ local img = root:Image {
 -- change image properties.
 
 img:set {
-    x = 100,
-    y = 100,
-    src = "res/another.png"
+    src = "/assets/lvgl-logo.png",
+    align = lugl.ALIGN.CENTER,
 }
 
 -- create animation on object
@@ -43,7 +43,7 @@ img:anim {
     repeat_count = 2,
     path = "bounce",
     exec_cb = function(obj, value)
-        obj:set{
+        obj:set {
             angle = value
         }
     end
@@ -52,9 +52,9 @@ img:anim {
 -- create Label on root and set its font
 local label = root:Label {
     text = string.format("Hello %03d", 123),
-    text_font = lugl.Font("MiSansW medium, montserrat", 24, "normal"),
+    text_font = lugl.Font("montserrat", 24, "normal"),
     align = {
-        type = lugl.align.CENTER,
+        type = lugl.ALIGN.CENTER,
         x_ofs = 0,
         y_ofs = 100,
     }
@@ -63,7 +63,7 @@ local label = root:Label {
 
 ```
 
-LUGL mainly targets for embedded device, a simulator on Ubuntu has been provided for preview.
+lugl mainly targets for embedded device, a simulator on Ubuntu has been provided for preview.
 
 ### Embedded device
 
