@@ -174,10 +174,7 @@ static const luaL_Reg lugl_calendar_methods[] = {
 
 static void lugl_calendar_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_calendar_class, "lv_calendar");
-  lugl_new_objlib(L);
-  luaL_setfuncs(L, lugl_calendar_methods, 0);
-  lua_setfield(L, -2, "__index");
-
-  lua_pop(L, 1); /* pop __index table */
+  lugl_obj_newmetatable(L, &lv_calendar_class, "lv_calendar",
+                        lugl_calendar_methods);
+  lua_pop(L, 1);
 }

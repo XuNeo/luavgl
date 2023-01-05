@@ -125,13 +125,13 @@ static int lugl_dropdown_get(lua_State *L)
   }
 
   if (strcmp(key, "option_index") == 0) {
-    const char* option = lua_tostring(L, 3);
+    const char *option = lua_tostring(L, 3);
     lua_pushinteger(L, lv_dropdown_get_option_index(obj, option));
     return 1;
   }
 
   if (strcmp(key, "symbol") == 0) {
-    lua_pushlightuserdata(L, (void*)lv_dropdown_get_symbol(obj));
+    lua_pushlightuserdata(L, (void *)lv_dropdown_get_symbol(obj));
     return 1;
   }
 
@@ -197,10 +197,7 @@ static const luaL_Reg lugl_dropdown_methods[] = {
 
 static void lugl_dropdown_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_dropdown_class, "lv_dropdown");
-  lugl_new_objlib(L);
-  luaL_setfuncs(L, lugl_dropdown_methods, 0);
-  lua_setfield(L, -2, "__index");
-
-  lua_pop(L, 1); /* pop __index table */
+  lugl_obj_newmetatable(L, &lv_dropdown_class, "lv_dropdown",
+                        lugl_dropdown_methods);
+  lua_pop(L, 1);
 }

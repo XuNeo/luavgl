@@ -114,7 +114,7 @@ static int lugl_label_cut_text(lua_State *L)
 /* demo purpose, there is no need to use set_text_static */
 static int lugl_label_set_text_static(lua_State *L)
 {
-  const char* str = lua_tostring(L, 2);
+  const char *str = lua_tostring(L, 2);
   lugl_obj_t *lobj = lugl_obj_touserdatauv(L, 1);
   if (lobj->obj == NULL) {
     return luaL_error(L, "obj null.");
@@ -150,13 +150,8 @@ static const luaL_Reg lugl_label_methods[] = {
 
 static void lugl_label_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_label_class, "lv_label");
-
-  lugl_new_objlib(L);
-  luaL_setfuncs(L, lugl_label_methods, 0);
-  lua_setfield(L, -2, "__index");
+  lugl_obj_newmetatable(L, &lv_label_class, "lv_label", lugl_label_methods);
   lua_pushcfunction(L, lugl_label_tostring);
   lua_setfield(L, -2, "__tostring");
-
-  lua_pop(L, 1); /* pop __index table */
+  lua_pop(L, 1);
 }

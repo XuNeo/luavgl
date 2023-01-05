@@ -84,7 +84,6 @@ static int lugl_textarea_set_property_kv(lua_State *L, void *data)
   return -1;
 }
 
-
 static int lugl_textarea_set(lua_State *L)
 {
   lv_obj_t *obj = lugl_check_obj(L, 1);
@@ -129,11 +128,7 @@ static const luaL_Reg lugl_textarea_methods[] = {
 
 static void lugl_textarea_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_textarea_class, "lv_textarea");
-
-  lugl_new_objlib(L);
-  luaL_setfuncs(L, lugl_textarea_methods, 0);
-  lua_setfield(L, -2, "__index");
-
-  lua_pop(L, 1); /* pop __index table */
+  lugl_obj_newmetatable(L, &lv_textarea_class, "lv_textarea",
+                        lugl_textarea_methods);
+  lua_pop(L, 1);
 }

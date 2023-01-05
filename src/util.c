@@ -8,8 +8,8 @@
  * Create a table(used as object metatable), using clz as key in lua
  * registry. The name is set to metatable.__name if not NULL
  */
-int lugl_obj_newmetatable(lua_State *L, const lv_obj_class_t *clz,
-                          const char *name)
+int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
+                             const char *name, const luaL_Reg *l, int n)
 {
   if (lugl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
     return 0; /* leave previous value on top, but return 0 */
@@ -22,10 +22,33 @@ int lugl_obj_newmetatable(lua_State *L, const lv_obj_class_t *clz,
     lua_setfield(L, -2, "__name"); /* metatable.__name = tname */
   }
 
+  /* add to registry */
   lua_pushlightuserdata(L, (void *)clz);
   lua_pushvalue(L, -2);
   lua_rawset(L, LUA_REGISTRYINDEX); /* registry[clz] = metatable */
-  return 0;
+
+  /* New index table.
+   * M = {} -- stack top
+   *
+   * t = {l} -- table contains the lib functions
+   * b = getmatatable(clz.base_clz)
+   * setmetatable(t, b)
+   * M.__index = t
+   */
+  lua_createtable(L, 0, n); /* t = {} */
+  luaL_setfuncs(L, l, 0);   /* set methods to t */
+  if (clz != &lv_obj_class) {
+    /* b = getmatatable(clz.base_clz) */
+    if (lugl_obj_getmetatable(L, clz->base_class) == LUA_TNIL) {
+      return luaL_error(L, "need to init base class firstly: %s.", name);
+    }
+
+    /* setmetatable(t, b) */
+    lua_setmetatable(L, -2);
+  }
+
+  lua_setfield(L, -2, "__index"); /* M.__index = t */
+  return 1;
 }
 
 int lugl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz)
@@ -273,8 +296,37 @@ static void dumptable(lua_State *L, int index)
   while (lua_next(L, i)) {
     /* -1: value, -2: key */
     dumpvalue(L, -2, 0);
+    printf(" ");
     dumpvalue(L, -1, 1);
     lua_pop(L, 1); /* remove value, keep the key to continue. */
+  }
+  fflush(stdout);
+}
+
+static void dumpstack(lua_State *L)
+{
+  int top = lua_gettop(L);
+  printf("\n");
+  for (int i = 1; i <= top; i++) {
+    printf("%d\t%s\t", i, luaL_typename(L, i));
+    switch (lua_type(L, i)) {
+    case LUA_TNUMBER:
+      printf("number: %g\n", lua_tonumber(L, i));
+      break;
+    case LUA_TSTRING:
+      printf("string: %s\n", lua_tostring(L, i));
+      break;
+    case LUA_TBOOLEAN:
+      printf("boolean: %s\n", (lua_toboolean(L, i) ? "true" : "false"));
+      break;
+    case LUA_TNIL:
+      printf("nil: %s\n", "nil");
+      break;
+
+    default:
+      printf("pointer: %p\n", lua_topointer(L, i));
+      break;
+    }
   }
   fflush(stdout);
 }

@@ -59,33 +59,6 @@ static const luaL_Reg lugl_style_methods[] = {
     { NULL, NULL }
 };
 
-static void dumpstack(lua_State* L)
-{
-    int top = lua_gettop(L);
-    printf("\n");
-    for (int i = 1; i <= top; i++) {
-        printf("%d\t%s\t", i, luaL_typename(L, i));
-        switch (lua_type(L, i)) {
-        case LUA_TNUMBER:
-            printf("number: %g\n", lua_tonumber(L, i));
-            break;
-        case LUA_TSTRING:
-            printf("string: %s\n", lua_tostring(L, i));
-            break;
-        case LUA_TBOOLEAN:
-            printf("boolean: %s\n", (lua_toboolean(L, i) ? "true" : "false"));
-            break;
-        case LUA_TNIL:
-            printf("nil: %s\n", "nil");
-            break;
-        default:
-            printf("pointer: %p\n", lua_topointer(L, i));
-            break;
-        }
-    }
-    fflush(stdout);
-}
-
 static void lugl_anim_init(lua_State* L)
 {
     luaL_newmetatable(L, "lv_anim");

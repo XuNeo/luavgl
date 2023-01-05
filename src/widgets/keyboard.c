@@ -75,11 +75,13 @@ static const luaL_Reg lugl_keyboard_methods[] = {
 
 static void lugl_keyboard_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_keyboard_class, "lv_keyboard");
+  static const luaL_Reg btm_methods[] = {
+      {NULL, NULL},
+  };
+  lugl_obj_newmetatable(L, &lv_btnmatrix_class, "lv_btnm", btm_methods);
+  lua_pop(L, 1);
 
-  lugl_new_objlib(L);
-  luaL_setfuncs(L, lugl_keyboard_methods, 0);
-  lua_setfield(L, -2, "__index");
-
-  lua_pop(L, 1); /* pop __index table */
+  lugl_obj_newmetatable(L, &lv_keyboard_class, "lv_keyboard",
+                        lugl_keyboard_methods);
+  lua_pop(L, 1);
 }

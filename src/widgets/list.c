@@ -94,11 +94,6 @@ static const luaL_Reg lugl_list_methods[] = {
 
 static void lugl_list_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_list_class, "lv_list");
-
-  lugl_new_objlib(L);
-  luaL_setfuncs(L, lugl_list_methods, 0);
-  lua_setfield(L, -2, "__index");
-
-  lua_pop(L, 1); /* pop __index table */
+  lugl_obj_newmetatable(L, &lv_list_class, "lv_list", lugl_list_methods);
+  lua_pop(L, 1);
 }

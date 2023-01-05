@@ -141,10 +141,6 @@ static const luaL_Reg lugl_roller_methods[] = {
 
 static void lugl_roller_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_roller_class, "lv_roller");
-  lugl_new_objlib(L);
-  luaL_setfuncs(L, lugl_roller_methods, 0);
-  lua_setfield(L, -2, "__index");
-
-  lua_pop(L, 1); /* pop __index table */
+  lugl_obj_newmetatable(L, &lv_roller_class, "lv_roller", lugl_roller_methods);
+  lua_pop(L, 1);
 }

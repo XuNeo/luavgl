@@ -26,7 +26,7 @@ typedef enum {
 } setter_type_t;
 
 typedef void (*setter_int_t)(void *, int);
-typedef void (*setter_pointer_t)(void *, void*);
+typedef void (*setter_pointer_t)(void *, void *);
 
 /* clang-format off */
 typedef struct {
@@ -80,8 +80,9 @@ static void dumptable(lua_State *L, int index);
 
 static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx);
 static lugl_obj_t *lugl_obj_touserdatauv(lua_State *L, int idx);
-int lugl_obj_newmetatable(lua_State *L, const lv_obj_class_t *clz,
-                          const char *name);
+int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
+                             const char *name, const luaL_Reg *l, int n);
+
 int lugl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz);
 int lugl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz);
 static const char *lugl_toimgsrc(lua_State *L, int idx);
@@ -110,9 +111,13 @@ static void lugl_iterate(lua_State *L, int index,
 
 static int _lugl_set_property(lua_State *L, void *obj,
                               const lugl_value_setter_t table[], uint32_t len);
-#define lugl_set_property(L, obj, table)                                       \
-  _lugl_set_property(L, obj, table, sizeof(table) / sizeof(table[0]))
 
 static int lugl_obj_set_property_kv(lua_State *L, void *data);
 static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector);
 static void _lv_dummy_set(void *obj, lua_State *L);
+
+#define lugl_obj_newmetatable(L, clz, name, l)                                 \
+  lugl_obj_createmetatable(L, clz, name, l, sizeof(l) / sizeof((l)[0]) - 1);
+
+#define lugl_set_property(L, obj, table)                                       \
+  _lugl_set_property(L, obj, table, sizeof(table) / sizeof(table[0]))
