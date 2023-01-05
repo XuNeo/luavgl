@@ -59,7 +59,7 @@ static int lugl_list_add_text(lua_State *L)
   lv_obj_t *list = lugl_check_obj(L, 1);
   const char *str = lua_tostring(L, 2);
   lv_obj_t *obj = lv_list_add_text(list, str);
-  lugl_new_obj(L, obj)->lua_created = true;
+  lugl_add_lobj(L, obj)->lua_created = true;
   return 1;
 }
 
@@ -69,7 +69,7 @@ static int lugl_list_add_btn(lua_State *L)
   const void *icon = lugl_toimgsrc(L, 2);
   const char *str = lua_tostring(L, 3);
   lv_obj_t *obj = lv_list_add_btn(list, icon, str);
-  lugl_new_obj(L, obj)->lua_created = true;
+  lugl_add_lobj(L, obj)->lua_created = true;
   return 1;
 }
 
@@ -94,7 +94,7 @@ static const luaL_Reg lugl_list_methods[] = {
 
 static void lugl_list_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_list");
+  lugl_obj_newmetatable(L, &lv_list_class, "lv_list");
 
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_list_methods, 0);

@@ -99,23 +99,23 @@ static int lugl_led_get_brightness(lua_State *L)
 }
 
 static const luaL_Reg lugl_led_methods[] = {
-    { "set", lugl_led_set },
-    { "on", lugl_led_on },
-    { "off", lugl_led_off },
-    { "toggle", lugl_led_toggle },
+    {"set", lugl_led_set},
+    {"on", lugl_led_on},
+    {"off", lugl_led_off},
+    {"toggle", lugl_led_toggle},
 
-    { "get_brightness", lugl_led_get_brightness },
+    {"get_brightness", lugl_led_get_brightness},
 
-    { NULL, NULL }
+    {NULL, NULL},
 };
 
-static void lugl_led_init(lua_State* L)
+static void lugl_led_init(lua_State *L)
 {
-    luaL_newmetatable(L, "lv_led");
+  lugl_obj_newmetatable(L, &lv_led_class, "lv_led");
 
-    lugl_new_objlib(L);
-    luaL_setfuncs(L, lugl_led_methods, 0);
-    lua_setfield(L, -2, "__index");
+  lugl_new_objlib(L);
+  luaL_setfuncs(L, lugl_led_methods, 0);
+  lua_setfield(L, -2, "__index");
 
-    lua_pop(L, 1); /* pop __index table */
+  lua_pop(L, 1); /* pop __index table */
 }

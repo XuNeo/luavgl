@@ -92,7 +92,7 @@ static int lugl_dropdown_get(lua_State *L)
     lua_rawget(L, LUA_REGISTRYINDEX);
     if (lua_isnoneornil(L, -1)) {
       lua_pop(L, 1);
-      lugl_new_obj(L, list)->lua_created = false;
+      lugl_add_lobj(L, list)->lua_created = false;
     }
     return 1;
   }
@@ -197,8 +197,7 @@ static const luaL_Reg lugl_dropdown_methods[] = {
 
 static void lugl_dropdown_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_dropdown");
-
+  lugl_obj_newmetatable(L, &lv_dropdown_class, "lv_dropdown");
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_dropdown_methods, 0);
   lua_setfield(L, -2, "__index");

@@ -79,14 +79,17 @@ static void dumpstack(lua_State *L);
 static void dumptable(lua_State *L, int index);
 
 static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx);
-static lugl_obj_t* lugl_obj_touserdatauv(lua_State *L, int idx);
+static lugl_obj_t *lugl_obj_touserdatauv(lua_State *L, int idx);
+int lugl_obj_newmetatable(lua_State *L, const lv_obj_class_t *clz,
+                          const char *name);
+int lugl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz);
+int lugl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz);
 static const char *lugl_toimgsrc(lua_State *L, int idx);
 static int lugl_tointeger(lua_State *L, int idx);
 static lv_color_t lugl_tocolor(lua_State *L, int idx);
 
-static const char *lugl_class_to_metatable_name(lv_obj_t *obj);
 static void lugl_new_objlib(lua_State *L);
-static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj);
+static lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj);
 static lv_obj_t *lugl_check_obj(lua_State *L, int index);
 
 static int lugl_obj_create_helper(lua_State *L,

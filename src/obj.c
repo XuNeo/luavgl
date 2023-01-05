@@ -136,14 +136,24 @@ pop_exit:
   return;
 }
 
-static lugl_obj_t *lugl_new_obj(lua_State *L, lv_obj_t *obj)
+/**
+ * Add existing lvgl obj to lua, return lobj(lugl obj).
+ * If no metatable not found for this obj class, then lv_obj_class metatable is
+ * used
+ */
+static lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj)
 {
   lugl_obj_t *lobj;
 
-  const char *meta = lugl_class_to_metatable_name(obj);
-  debug("create %s: %p\n", meta, obj);
   lobj = lua_newuserdata(L, sizeof(*lobj));
-  luaL_getmetatable(L, meta);
+
+  if (lugl_obj_getmetatable(L, obj->class_p) == LUA_TNIL) {
+    lua_pop(L, 1);
+    debug("cannot find metatable for class: %p\n", obj->class_p);
+    /* use base obj metatable instead */
+    lugl_obj_getmetatable(L, &lv_obj_class);
+  }
+
   lua_setmetatable(L, -2);
 
   memset(lobj, 0, sizeof(*lobj));
@@ -214,7 +224,7 @@ static int lugl_obj_create_helper(lua_State *L,
   lua_remove(L, 1);
 
   lv_obj_t *obj = create(parent);
-  lugl_new_obj(L, obj)->lua_created = true;
+  lugl_add_lobj(L, obj)->lua_created = true;
 
   if (!lua_istable(L, -2)) {
     /* no need to call setup */
@@ -383,7 +393,7 @@ static int lugl_obj_get_screen(lua_State *L)
 
   if (lua_isnil(L, -1)) {
     /* create lugl object and attach screen on it. */
-    lugl_obj_t *lobj = lugl_new_obj(L, screen);
+    lugl_obj_t *lobj = lugl_add_lobj(L, screen);
     /* mark it's non-lua created, thus cannot be deleted by lua */
     lobj->lua_created = false;
   }
@@ -406,7 +416,7 @@ static int lugl_obj_get_parent(lua_State *L)
   lua_rawget(L, LUA_REGISTRYINDEX);
   if (lua_isnil(L, -1)) {
     /* create lugl object and attach screen on it. */
-    lugl_obj_t *lobj = lugl_new_obj(L, parent);
+    lugl_obj_t *lobj = lugl_add_lobj(L, parent);
     /* mark it's non-lua created, thus cannot be deleted by lua */
     lobj->lua_created = false;
   }
@@ -433,7 +443,7 @@ static int lugl_obj_get_child(lua_State *L)
   lua_pushlightuserdata(L, child);
   lua_rawget(L, LUA_REGISTRYINDEX);
   if (lua_isnil(L, -1)) {
-    lugl_new_obj(L, child)->lua_created = false;
+    lugl_add_lobj(L, child)->lua_created = false;
   }
 
   return 1;
@@ -813,12 +823,4 @@ static int lugl_obj_gc(lua_State *L)
   }
 
   return 0;
-}
-
-static int lugl_obj_tostring(lua_State *L)
-{
-  lv_obj_t *obj = lugl_check_obj(L, 1);
-  const char *meta = lugl_class_to_metatable_name(obj);
-  lua_pushfstring(L, "%s: object %p", meta, obj);
-  return 1;
 }

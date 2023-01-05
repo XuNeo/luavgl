@@ -143,7 +143,7 @@ static int lugl_calendar_get_btnm(lua_State *L)
   lua_pushlightuserdata(L, btm);
   lua_rawget(L, LUA_REGISTRYINDEX);
   if (lua_isnoneornil(L, -1)) {
-    lugl_new_obj(L, btm);
+    lugl_add_lobj(L, btm);
   }
 
   return 1; /* obj userdata is already on stack */
@@ -174,8 +174,7 @@ static const luaL_Reg lugl_calendar_methods[] = {
 
 static void lugl_calendar_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_calendar");
-
+  lugl_obj_newmetatable(L, &lv_calendar_class, "lv_calendar");
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_calendar_methods, 0);
   lua_setfield(L, -2, "__index");

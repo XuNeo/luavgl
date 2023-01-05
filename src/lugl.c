@@ -150,9 +150,7 @@ static void dumpstack(lua_State* L)
 static void lugl_obj_init(lua_State* L)
 {
     /* base lv_obj */
-    luaL_newmetatable(L, "lv_obj");
-    lua_pushcfunction(L, lugl_obj_tostring);
-    lua_setfield(L, -2, "__tostring");
+    lugl_obj_newmetatable(L, &lv_obj_class, "lv_obj");
     lua_pushcfunction(L, lugl_obj_gc);
     lua_setfield(L, -2, "__gc");
     luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */

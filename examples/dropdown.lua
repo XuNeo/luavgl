@@ -13,6 +13,7 @@ local dd = lugl.Dropdown(nil, {
     }
 })
 local list = dd:get("list")
+print("get dropdown list: ", list)
 list:set { text_font = lugl.BUILTIN_FONT.MONTSERRAT_20 }
 
 print("available options:", dd:get("options"))

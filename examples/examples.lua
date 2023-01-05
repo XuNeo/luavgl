@@ -11,6 +11,8 @@ local container = lugl.Object(nil, {
     }
 })
 
+print("created container", container)
+
 local function createBtn(parent, name)
     local root = parent:Object {
         w = lugl.SIZE_CONTENT,

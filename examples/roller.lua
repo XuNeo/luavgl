@@ -7,6 +7,7 @@ local roller = lugl.Roller(nil, {
     align = lugl.ALIGN.CENTER
 })
 
+print("create roller:", roller)
 roller:onevent(lugl.EVENT.VALUE_CHANGED, function (obj, code)
     print(obj:get_selected_str())
 end)

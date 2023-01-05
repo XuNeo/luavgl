@@ -5,46 +5,48 @@
 #include "private.h"
 
 /**
- * check object class and return metatable name.
+ * Create a table(used as object metatable), using clz as key in lua
+ * registry. The name is set to metatable.__name if not NULL
  */
-static const char *lugl_class_to_metatable_name(lv_obj_t *obj)
+int lugl_obj_newmetatable(lua_State *L, const lv_obj_class_t *clz,
+                          const char *name)
 {
-  if (obj->class_p == &lv_obj_class)
-    return "lv_obj";
-  else if (obj->class_p == &lv_img_class)
-    return "lv_img";
-  else if (obj->class_p == &lv_label_class)
-    return "lv_label";
-  else if (obj->class_p == &lv_textarea_class)
-    return "lv_textarea";
-  else if (obj->class_p == &lv_keyboard_class)
-    return "lv_keyboard";
-  else if (obj->class_p == &lv_led_class)
-    return "lv_led";
-  else if (obj->class_p == &lv_list_text_class)
-    return "lv_label";
-  else if (obj->class_p == &lv_list_btn_class)
-    return "lv_obj";
-  else if (obj->class_p == &lv_list_class)
-    return "lv_list";
-  else if (obj->class_p == &lv_checkbox_class)
-    return "lv_checkbox";
-  else if (obj->class_p == &lv_calendar_class)
-    return "lv_calendar";
-  else if (obj->class_p == &lv_calendar_header_arrow_class)
-    return "lv_obj";
-  else if (obj->class_p == &lv_calendar_header_dropdown_class)
-    return "lv_obj";
-  else if (obj->class_p == &lv_btnmatrix_class)
-    return "lv_obj"; /* needed, but not supported, so return lv_obj instead */
-  else if (obj->class_p == &lv_roller_class)
-    return "lv_roller";
-  else if (obj->class_p == &lv_dropdown_class)
-    return "lv_dropdown";
-  else if (obj->class_p == &lv_dropdownlist_class)
-    return "lv_obj";
-  else
-    return NULL;
+  if (lugl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
+    return 0; /* leave previous value on top, but return 0 */
+  lua_pop(L, 1);
+
+  /* create metatable, 3 elements, normally for __index, __gc and __name*/
+  lua_createtable(L, 0, 3);
+  if (name) {
+    lua_pushstring(L, name);
+    lua_setfield(L, -2, "__name"); /* metatable.__name = tname */
+  }
+
+  lua_pushlightuserdata(L, (void *)clz);
+  lua_pushvalue(L, -2);
+  lua_rawset(L, LUA_REGISTRYINDEX); /* registry[clz] = metatable */
+  return 0;
+}
+
+int lugl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz)
+{
+  lua_pushlightuserdata(L, (void *)clz);
+  return lua_rawget(L, LUA_REGISTRYINDEX);
+}
+
+/**
+ * get metatable of clz, and set it as the metatable of table on stack idx
+ * return 0 if failed.
+ */
+int lugl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz)
+{
+  if (lugl_obj_getmetatable(L, clz) == LUA_TNIL) {
+    lua_pop(L, 1);
+    return 0;
+  }
+
+  lua_setmetatable(L, idx);
+  return 1;
 }
 
 static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx)

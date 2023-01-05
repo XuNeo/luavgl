@@ -75,7 +75,7 @@ static const luaL_Reg lugl_keyboard_methods[] = {
 
 static void lugl_keyboard_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_keyboard");
+  lugl_obj_newmetatable(L, &lv_keyboard_class, "lv_keyboard");
 
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_keyboard_methods, 0);

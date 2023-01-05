@@ -219,7 +219,7 @@ static const luaL_Reg lugl_img_methods[] = {
 
 static void lugl_img_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_img");
+  lugl_obj_newmetatable(L, &lv_img_class, "lv_img");
 
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_img_methods, 0); /* should add obj methods firstly, so

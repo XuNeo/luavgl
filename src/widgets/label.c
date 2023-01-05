@@ -128,6 +128,13 @@ static int lugl_label_set_text_static(lua_State *L)
   return 0;
 }
 
+static int lugl_label_tostring(lua_State *L)
+{
+  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lua_pushfstring(L, "lv_label:%p, text: %s", obj, lv_label_get_text(obj));
+  return 1;
+}
+
 static const luaL_Reg lugl_label_methods[] = {
     // label.c
     {"set", lugl_label_set},
@@ -143,11 +150,13 @@ static const luaL_Reg lugl_label_methods[] = {
 
 static void lugl_label_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_label");
+  lugl_obj_newmetatable(L, &lv_label_class, "lv_label");
 
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_label_methods, 0);
   lua_setfield(L, -2, "__index");
+  lua_pushcfunction(L, lugl_label_tostring);
+  lua_setfield(L, -2, "__tostring");
 
   lua_pop(L, 1); /* pop __index table */
 }

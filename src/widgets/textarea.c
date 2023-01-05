@@ -129,7 +129,7 @@ static const luaL_Reg lugl_textarea_methods[] = {
 
 static void lugl_textarea_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_textarea");
+  lugl_obj_newmetatable(L, &lv_textarea_class, "lv_textarea");
 
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_textarea_methods, 0);

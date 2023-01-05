@@ -79,8 +79,7 @@ static const luaL_Reg lugl_checkbox_methods[] = {
 
 static void lugl_checkbox_init(lua_State *L)
 {
-  luaL_newmetatable(L, "lv_checkbox");
-
+  lugl_obj_newmetatable(L, &lv_checkbox_class, "lv_checkbox");
   lugl_new_objlib(L);
   luaL_setfuncs(L, lugl_checkbox_methods, 0);
   lua_setfield(L, -2, "__index");
