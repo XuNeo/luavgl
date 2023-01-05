@@ -103,4 +103,10 @@ cd build
 make
 make run # run simulator
 ```
+## Custom Widget
+
+lugl support custom widget, and use them in `lua` just like lvgl core widgets.
+An example is provided in [`simulator/extension.c`](https://github.com/XuNeo/lugl/blob/master/simulator/extension.c#L62)
+
+For custom widget, it should be registered to Lua after lugl lib loaded.
 
