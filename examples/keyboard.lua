@@ -21,10 +21,13 @@ local ta = root:Textarea {
     align = lugl.ALIGN.TOP_MID,
 }
 
+print("created textarea: ", ta)
+
 local keyboard = root:Keyboard {
     textarea = ta,
     align = lugl.ALIGN.BOTTOM_MID,
 }
+print("created keyboard: ", keyboard)
 
 ta:onevent(lugl.EVENT.PRESSED, function(obj, code)
     keyboard:clear_flag(lugl.FLAG.HIDDEN)

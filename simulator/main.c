@@ -14,6 +14,7 @@
 #include <lualib.h>
 
 #include <lugl.h>
+#include "extension.h"
 
 typedef struct {
   lua_State *L;
@@ -215,6 +216,7 @@ static int pmain(lua_State *L)
 
   luaL_requiref(L, "lugl", luaopen_lugl, 1);
   lua_pop(L, 1);
+  lugl_extension_init(L);
 
   lua_pushcfunction(L, msghandler); /* push message handler */
   int base = lua_gettop(L);
