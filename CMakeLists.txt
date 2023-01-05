@@ -13,6 +13,7 @@ target_include_directories(lugl PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_include_directories(lugl PRIVATE ${LUA_INCLUDE_DIR}) # need lua.h, lauxlib.h
 target_include_directories(lugl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps/lvgl) # need lvgl.h
 target_include_directories(lugl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/simulator) # need lv_conf.h
+target_compile_options(lugl PRIVATE -Wall -Werror)
 
 if (BUILD_SIMULATOR)
     add_compile_options(-g -O0)

@@ -9,6 +9,7 @@
 /* extended feature for object */
 #include "widgets/widgets.c"
 #include "style.c"
+#include "event.c"
 
 static int lugl_obj_delete(lua_State *L);
 
@@ -868,11 +869,6 @@ static const luaL_Reg lugl_obj_methods[] = {
     { "remove_all_anim", lugl_obj_remove_all_anim }, /* remove all */
     { NULL, NULL },
 };
-
-static void lugl_new_objlib(lua_State* L)
-{
-  luaL_newlib(L, lugl_obj_methods);
-}
 
 static void lugl_obj_init(lua_State* L)
 {

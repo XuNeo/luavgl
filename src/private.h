@@ -89,7 +89,6 @@ static const char *lugl_toimgsrc(lua_State *L, int idx);
 static int lugl_tointeger(lua_State *L, int idx);
 static lv_color_t lugl_tocolor(lua_State *L, int idx);
 
-static void lugl_new_objlib(lua_State *L);
 static lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj);
 static lv_obj_t *lugl_check_obj(lua_State *L, int index);
 

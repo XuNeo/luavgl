@@ -8,7 +8,6 @@
 
 #include "anim.c"
 #include "constants.c"
-#include "event.c"
 #include "font.c"
 #include "obj.c"
 #include "timer.c"
