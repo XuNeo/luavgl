@@ -3,9 +3,12 @@
 
 #include <lvgl.h>
 #include <stdlib.h>
-
 #include "lugl.h"
 #include "private.h"
+
+/* extended feature for object */
+#include "widgets/widgets.c"
+#include "style.c"
 
 static int lugl_obj_delete(lua_State *L);
 
@@ -35,38 +38,6 @@ static void _lv_obj_set_align(void *obj, lua_State *L)
   lua_pop(L, 1);
 
   lv_obj_align(obj, align, x_ofs, y_ofs);
-}
-
-static void _lv_obj_set_align_to(void *obj, lua_State *L)
-{
-  if (!lua_istable(L, -1)) {
-    luaL_argerror(L, -1, "should be table.");
-    debug("para should be table.");
-    return;
-  }
-
-  lua_getfield(L, -1, "type");
-  lv_align_t align = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lua_getfield(L, -1, "base");
-  lv_obj_t *base = lugl_to_lobj(L, -1)->obj;
-  lua_pop(L, 1);
-  if (base == NULL) {
-    luaL_argerror(L, -1, "base is not lua obj");
-    debug("base obj should be created by lua");
-    return;
-  }
-
-  lua_getfield(L, -1, "x_ofs");
-  lv_coord_t x_ofs = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lua_getfield(L, -1, "y_ofs");
-  lv_coord_t y_ofs = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lv_obj_align_to(obj, base, align, x_ofs, y_ofs);
 }
 
 static const lugl_value_setter_t obj_property_table[] = {
@@ -193,19 +164,6 @@ static lugl_obj_t *lugl_obj_touserdatauv(lua_State *L, int idx)
   lua_setuservalue(L, idx > 0 ? idx : idx - 2);
   return lobj;
 }
-
-/**
- * optional arg:
- *
- * @arg property: initial object property which set directly to obj. Style can
- * be added later
- *
- * root = lvgl.Object()
- * root = lvgl.Object{x = 0, y = 0, w = 100, h = 100}
- * img = root:Image() -- create image on root
- * img = root:Image{x = 0, y = 0, bg_color = 0x00ff00}
- *
- */
 
 static int lugl_obj_create_helper(lua_State *L,
                                   lv_obj_t *(*create)(lv_obj_t *parent))
@@ -355,7 +313,32 @@ static int lugl_obj_align_to(lua_State *L)
     return luaL_argerror(L, 1, "null obj");
   }
 
-  _lv_obj_set_align_to(obj, L);
+  if (!lua_istable(L, 2)) {
+    debug("para should be table.");
+    return luaL_argerror(L, 2, "should be table.");
+  }
+
+  lua_getfield(L, 2, "type");
+  lv_align_t align = lua_tointeger(L, -1);
+  lua_pop(L, 1);
+
+  lua_getfield(L, 2, "base");
+  lv_obj_t *base = lugl_to_lobj(L, -1)->obj;
+  lua_pop(L, 1);
+  if (base == NULL) {
+    debug("base is not lua obj");
+    return luaL_argerror(L, -1, "base is not lua obj");
+  }
+
+  lua_getfield(L, 2, "x_ofs");
+  lv_coord_t x_ofs = lua_tointeger(L, -1);
+  lua_pop(L, 1);
+
+  lua_getfield(L, 2, "y_ofs");
+  lv_coord_t y_ofs = lua_tointeger(L, -1);
+  lua_pop(L, 1);
+
+  lv_obj_align_to(obj, base, align, x_ofs, y_ofs);
   return 0;
 }
 
@@ -813,6 +796,14 @@ static int lugl_obj_set_flex_grow(lua_State *L)
 
 static int lugl_obj_gc(lua_State *L)
 {
+  if (lua_type(L, 1) != LUA_TUSERDATA) {
+    /* If t = setmetatable({}, obj_meta_table), this will happen when t is
+     * gc;ed. Currently all metatables for classes based on obj, that has no own
+     * __gc will goes here.
+     */
+    return 0;
+  }
+
   debug("\n");
 
   lv_obj_t *obj = lugl_check_obj(L, 1);
@@ -823,4 +814,73 @@ static int lugl_obj_gc(lua_State *L)
   }
 
   return 0;
+}
+
+static const luaL_Reg lugl_obj_methods[] = {
+    /* widget created using any_obj:Object() has parent of any_obj */
+    WIDGET_CREATE_FUNCTIONS,
+
+    { "set", lugl_obj_set },
+    { "set_style", lugl_obj_set_style },
+    { "align_to", lugl_obj_align_to },
+    { "delete", lugl_obj_delete },
+    { "clean", lugl_obj_clean },
+
+    /* misc. functions */
+    { "set_parent", lugl_obj_set_parent },
+    { "get_parent", lugl_obj_get_parent },
+    { "get_child", lugl_obj_get_child },
+    { "get_child_cnt", lugl_obj_get_child_cnt },
+    { "get_screen", lugl_obj_get_screen },
+    { "get_state", lugl_obj_get_state },
+    { "scroll_to", lugl_obj_scroll_to },
+    { "is_scrolling", lugl_obj_is_scrolling },
+    { "is_visible", lugl_obj_is_visible },
+    { "add_flag", lugl_obj_add_flag },
+    { "clear_flag", lugl_obj_clear_flag },
+    { "add_state", lugl_obj_add_state },
+    { "clear_state", lugl_obj_clear_state },
+    { "add_style", lugl_obj_add_style },
+    { "remove_style", lugl_obj_remove_style },
+    { "remove_style_all", lugl_obj_remove_style_all },
+    { "scroll_by", lugl_obj_scroll_by },
+    { "scroll_by_bounded", lugl_obj_scroll_by_bounded },
+    { "scroll_to_view", lugl_obj_scroll_to_view },
+    { "scroll_to_view_recursive", lugl_obj_scroll_to_view_recursive },
+    { "scroll_by_raw", lugl_obj_scroll_by_raw },
+    { "scrollbar_invalidate", lugl_obj_scrollbar_invalidate },
+    { "readjust_scroll", lugl_obj_readjust_scroll },
+    { "is_editable", lugl_obj_is_editable },
+    { "is_group_def", lugl_obj_is_group_def },
+    { "is_layout_positioned", lugl_obj_is_layout_positioned },
+    { "mark_layout_as_dirty", lugl_obj_mark_layout_as_dirty },
+    { "center", lugl_obj_center },
+    { "invalidate", lugl_obj_invalidate },
+    { "set_flex_flow", lugl_obj_set_flex_flow },
+    { "set_flex_align", lugl_obj_set_flex_align },
+    { "set_flex_grow", lugl_obj_set_flex_grow },
+
+    { "onevent", lugl_obj_on_event },
+    { "onPressed", lugl_obj_on_pressed },
+    { "onClicked", lugl_obj_on_clicked },
+    { "anim", lugl_anim_create }, /* in lua, we only support add anim to obj */
+    { "anims", lugl_anims_create }, /* create multiple anim */
+    { "remove_all_anim", lugl_obj_remove_all_anim }, /* remove all */
+    { NULL, NULL },
+};
+
+static void lugl_new_objlib(lua_State* L)
+{
+  luaL_newlib(L, lugl_obj_methods);
+}
+
+static void lugl_obj_init(lua_State* L)
+{
+    /* base lv_obj */
+    lugl_obj_newmetatable(L, &lv_obj_class, "lv_obj");
+    lua_pushcfunction(L, lugl_obj_gc);
+    lua_setfield(L, -2, "__gc");
+    luaL_newlib(L, lugl_obj_methods); /* methods belong to this type */
+    lua_setfield(L, -2, "__index");
+    lua_pop(L, 1);
 }
