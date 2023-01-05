@@ -50,7 +50,7 @@ static int lugl_dropdown_set_property_kv(lua_State *L, void *data)
 
 static int lugl_dropdown_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
@@ -75,7 +75,7 @@ static int lugl_dropdown_set(lua_State *L)
 
 static int lugl_dropdown_get(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
@@ -145,28 +145,28 @@ static int lugl_dropdown_get(lua_State *L)
 
 static int lugl_dropdown_open(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lv_dropdown_open(obj);
   return 0;
 }
 
 static int lugl_dropdown_close(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lv_dropdown_close(obj);
   return 0;
 }
 
 static int lugl_dropdown_is_open(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lua_pushboolean(L, lv_dropdown_is_open(obj));
   return 1;
 }
 
 static int lugl_dropdown_add_option(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   const char *str = lua_tostring(L, 2);
   uint32_t pos = lua_tointeger(L, 3);
   lv_dropdown_add_option(obj, str, pos);
@@ -176,7 +176,7 @@ static int lugl_dropdown_add_option(lua_State *L)
 
 static int lugl_dropdown_clear_option(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
 
   lv_dropdown_clear_options(obj);
   return 0;

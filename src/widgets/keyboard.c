@@ -14,7 +14,7 @@ static int lugl_keyboard_create(lua_State *L)
 
 static void _lv_keyboard_set_textarea(void *obj, lua_State *L)
 {
-  lv_obj_t *ta = lugl_check_obj(L, -1);
+  lv_obj_t *ta = lugl_to_obj(L, -1);
   if (ta->class_p != &lv_textarea_class) {
     luaL_argerror(L, -1, "expect textarea obj");
     return;
@@ -50,9 +50,9 @@ static int lugl_keyboard_set_property_kv(lua_State *L, void *data)
 
 static int lugl_keyboard_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 

@@ -62,9 +62,9 @@ static int lugl_img_set_property_kv(lua_State *L, void *data)
 
 static int lugl_img_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -97,9 +97,9 @@ static int lugl_img_set(lua_State *L)
  */
 static int lugl_img_set_src(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -118,9 +118,9 @@ static int lugl_img_set_src(lua_State *L)
  */
 static int lugl_img_set_offset(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -151,9 +151,9 @@ static int lugl_img_set_offset(lua_State *L)
  */
 static int lugl_img_set_pivot(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -180,9 +180,9 @@ static int lugl_img_set_pivot(lua_State *L)
  */
 static int lugl_get_img_size(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 

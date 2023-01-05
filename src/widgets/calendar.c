@@ -79,9 +79,9 @@ static int lugl_calendar_set_property_kv(lua_State *L, void *data)
 
 static int lugl_calendar_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -113,7 +113,7 @@ static inline int calendar_new_date(lua_State *L,
 
 static int lugl_calendar_get_today(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   const lv_calendar_date_t *date = lv_calendar_get_today_date(obj);
 
   return calendar_new_date(L, date);
@@ -121,7 +121,7 @@ static int lugl_calendar_get_today(lua_State *L)
 
 static int lugl_calendar_get_showed(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   const lv_calendar_date_t *date = lv_calendar_get_showed_date(obj);
 
   return calendar_new_date(L, date);
@@ -130,7 +130,7 @@ static int lugl_calendar_get_showed(lua_State *L)
 static int lugl_calendar_get_pressed(lua_State *L)
 {
   lv_calendar_date_t date;
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lv_calendar_get_pressed_date(obj, &date);
 
   return calendar_new_date(L, &date);
@@ -138,12 +138,12 @@ static int lugl_calendar_get_pressed(lua_State *L)
 
 static int lugl_calendar_get_btnm(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lv_obj_t *btm = lv_calendar_get_btnmatrix(obj);
   lua_pushlightuserdata(L, btm);
   lua_rawget(L, LUA_REGISTRYINDEX);
   if (lua_isnoneornil(L, -1)) {
-    lugl_add_lobj(L, btm);
+    lugl_add_lobj(L, btm)->lua_created = false;
   }
 
   return 1; /* obj userdata is already on stack */

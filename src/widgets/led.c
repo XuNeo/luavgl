@@ -39,9 +39,9 @@ static int lugl_led_set_property_kv(lua_State *L, void *data)
 
 static int lugl_led_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -57,9 +57,9 @@ static int lugl_led_set(lua_State *L)
 
 static int lugl_led_on(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -69,9 +69,9 @@ static int lugl_led_on(lua_State *L)
 
 static int lugl_led_off(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -81,9 +81,9 @@ static int lugl_led_off(lua_State *L)
 
 static int lugl_led_toggle(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -93,7 +93,7 @@ static int lugl_led_toggle(lua_State *L)
 
 static int lugl_led_get_brightness(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lua_pushinteger(L, lv_led_get_brightness(obj));
   return 1;
 }

@@ -605,7 +605,7 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
  */
 static int lugl_obj_set_style(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
@@ -644,7 +644,7 @@ static int lugl_obj_set_style(lua_State *L)
  */
 static int lugl_obj_add_style(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lugl_style_t *s = lugl_check_style(L, 2);
 
   int selector = 0;
@@ -662,7 +662,7 @@ static int lugl_obj_add_style(lua_State *L)
  */
 static int lugl_obj_remove_style(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   lugl_style_t *s = lugl_check_style(L, 2);
 
   int selector = 0;
@@ -679,7 +679,7 @@ static int lugl_obj_remove_style(lua_State *L)
  */
 static int lugl_obj_remove_style_all(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
 
   lv_obj_remove_style_all(obj);
   return 0;

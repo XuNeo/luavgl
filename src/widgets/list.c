@@ -38,9 +38,9 @@ static int lugl_list_set_property_kv(lua_State *L, void *data)
 
 static int lugl_list_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_check_obj(L, 1);
+  lv_obj_t *obj = lugl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been delted.");
+    luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
@@ -56,7 +56,7 @@ static int lugl_list_set(lua_State *L)
 
 static int lugl_list_add_text(lua_State *L)
 {
-  lv_obj_t *list = lugl_check_obj(L, 1);
+  lv_obj_t *list = lugl_to_obj(L, 1);
   const char *str = lua_tostring(L, 2);
   lv_obj_t *obj = lv_list_add_text(list, str);
   lugl_add_lobj(L, obj)->lua_created = true;
@@ -65,7 +65,7 @@ static int lugl_list_add_text(lua_State *L)
 
 static int lugl_list_add_btn(lua_State *L)
 {
-  lv_obj_t *list = lugl_check_obj(L, 1);
+  lv_obj_t *list = lugl_to_obj(L, 1);
   const void *icon = lugl_toimgsrc(L, 2);
   const char *str = lua_tostring(L, 3);
   lv_obj_t *obj = lv_list_add_btn(list, icon, str);
@@ -75,8 +75,8 @@ static int lugl_list_add_btn(lua_State *L)
 
 static int lugl_get_btn_text(lua_State *L)
 {
-  lv_obj_t *list = lugl_check_obj(L, 1);
-  lv_obj_t *btn = lugl_check_obj(L, 2);
+  lv_obj_t *list = lugl_to_obj(L, 1);
+  lv_obj_t *btn = lugl_to_obj(L, 2);
 
   lua_pushstring(L, lv_list_get_btn_text(list, btn));
   return 1;

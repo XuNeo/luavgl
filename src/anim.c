@@ -3,6 +3,24 @@
 #include "lugl.h"
 #include "private.h"
 
+typedef struct lugl_anim_s {
+  lv_anim_t *aa; /* the handler returns be lv_anim_start */
+  lv_anim_t cfg; /* the configuration, must not be the first element. */
+  lv_obj_t *obj;
+  lua_State *L;
+  int ref; /* execute callback to reference. */
+
+  /* anim configured but not started. lv_anim does't support pause anim, this
+   * is done by keep a lv_anim_t backup, thus we can re-start the anim any
+   * time.
+   *
+   * deleted = ref == LUA_NOREF
+   */
+  bool paused;
+} lugl_anim_t;
+
+typedef lugl_anim_t *lugl_anim_handle_t;
+
 static lugl_anim_t *lugl_check_anim(lua_State *L, int index)
 {
   lugl_anim_t *v = *(lugl_anim_t **)luaL_checkudata(L, index, "lv_anim");
