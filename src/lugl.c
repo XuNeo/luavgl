@@ -14,9 +14,6 @@
 #include "util.c"
 
 static const struct luaL_Reg lugl_functions[] = {
-    /* widget create using lvgl.table, has parent of root */
-    WIDGET_CREATE_FUNCTIONS,
-
 #if 0 //currently, only obj can create anim
     { "Anim", lugl_anim_create },
 #endif
@@ -203,6 +200,9 @@ int luaopen_lugl(lua_State* L)
     lugl_style_init(L);
 
     lugl_constants_init(L);
+
+    luaL_getmetatable(L, "widgets");
+    lua_setmetatable(L, -2);
 
     (void)dumpstack;
     (void)dumptable;

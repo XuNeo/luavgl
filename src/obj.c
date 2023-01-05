@@ -1,15 +1,15 @@
 #include <lauxlib.h>
 #include <lua.h>
 
-#include <lvgl.h>
-#include <stdlib.h>
 #include "lugl.h"
 #include "private.h"
+#include <lvgl.h>
+#include <stdlib.h>
 
 /* extended feature for object */
-#include "widgets/widgets.c"
-#include "style.c"
 #include "event.c"
+#include "style.c"
+#include "widgets/widgets.c"
 
 static int lugl_obj_delete(lua_State *L);
 
@@ -817,64 +817,83 @@ static int lugl_obj_gc(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg lugl_obj_methods[] = {
+static const luaL_Reg widget_create_methods[] = {
     /* widget created using any_obj:Object() has parent of any_obj */
     WIDGET_CREATE_FUNCTIONS,
-
-    { "set", lugl_obj_set },
-    { "set_style", lugl_obj_set_style },
-    { "align_to", lugl_obj_align_to },
-    { "delete", lugl_obj_delete },
-    { "clean", lugl_obj_clean },
-
-    /* misc. functions */
-    { "set_parent", lugl_obj_set_parent },
-    { "get_parent", lugl_obj_get_parent },
-    { "get_child", lugl_obj_get_child },
-    { "get_child_cnt", lugl_obj_get_child_cnt },
-    { "get_screen", lugl_obj_get_screen },
-    { "get_state", lugl_obj_get_state },
-    { "scroll_to", lugl_obj_scroll_to },
-    { "is_scrolling", lugl_obj_is_scrolling },
-    { "is_visible", lugl_obj_is_visible },
-    { "add_flag", lugl_obj_add_flag },
-    { "clear_flag", lugl_obj_clear_flag },
-    { "add_state", lugl_obj_add_state },
-    { "clear_state", lugl_obj_clear_state },
-    { "add_style", lugl_obj_add_style },
-    { "remove_style", lugl_obj_remove_style },
-    { "remove_style_all", lugl_obj_remove_style_all },
-    { "scroll_by", lugl_obj_scroll_by },
-    { "scroll_by_bounded", lugl_obj_scroll_by_bounded },
-    { "scroll_to_view", lugl_obj_scroll_to_view },
-    { "scroll_to_view_recursive", lugl_obj_scroll_to_view_recursive },
-    { "scroll_by_raw", lugl_obj_scroll_by_raw },
-    { "scrollbar_invalidate", lugl_obj_scrollbar_invalidate },
-    { "readjust_scroll", lugl_obj_readjust_scroll },
-    { "is_editable", lugl_obj_is_editable },
-    { "is_group_def", lugl_obj_is_group_def },
-    { "is_layout_positioned", lugl_obj_is_layout_positioned },
-    { "mark_layout_as_dirty", lugl_obj_mark_layout_as_dirty },
-    { "center", lugl_obj_center },
-    { "invalidate", lugl_obj_invalidate },
-    { "set_flex_flow", lugl_obj_set_flex_flow },
-    { "set_flex_align", lugl_obj_set_flex_align },
-    { "set_flex_grow", lugl_obj_set_flex_grow },
-
-    { "onevent", lugl_obj_on_event },
-    { "onPressed", lugl_obj_on_pressed },
-    { "onClicked", lugl_obj_on_clicked },
-    { "anim", lugl_anim_create }, /* in lua, we only support add anim to obj */
-    { "anims", lugl_anims_create }, /* create multiple anim */
-    { "remove_all_anim", lugl_obj_remove_all_anim }, /* remove all */
-    { NULL, NULL },
 };
 
-static void lugl_obj_init(lua_State* L)
+static const luaL_Reg lugl_obj_methods[] = {
+    {"set", lugl_obj_set},
+    {"set_style", lugl_obj_set_style},
+    {"align_to", lugl_obj_align_to},
+    {"delete", lugl_obj_delete},
+    {"clean", lugl_obj_clean},
+
+    /* misc. functions */
+    {"set_parent", lugl_obj_set_parent},
+    {"get_parent", lugl_obj_get_parent},
+    {"get_child", lugl_obj_get_child},
+    {"get_child_cnt", lugl_obj_get_child_cnt},
+    {"get_screen", lugl_obj_get_screen},
+    {"get_state", lugl_obj_get_state},
+    {"scroll_to", lugl_obj_scroll_to},
+    {"is_scrolling", lugl_obj_is_scrolling},
+    {"is_visible", lugl_obj_is_visible},
+    {"add_flag", lugl_obj_add_flag},
+    {"clear_flag", lugl_obj_clear_flag},
+    {"add_state", lugl_obj_add_state},
+    {"clear_state", lugl_obj_clear_state},
+    {"add_style", lugl_obj_add_style},
+    {"remove_style", lugl_obj_remove_style},
+    {"remove_style_all", lugl_obj_remove_style_all},
+    {"scroll_by", lugl_obj_scroll_by},
+    {"scroll_by_bounded", lugl_obj_scroll_by_bounded},
+    {"scroll_to_view", lugl_obj_scroll_to_view},
+    {"scroll_to_view_recursive", lugl_obj_scroll_to_view_recursive},
+    {"scroll_by_raw", lugl_obj_scroll_by_raw},
+    {"scrollbar_invalidate", lugl_obj_scrollbar_invalidate},
+    {"readjust_scroll", lugl_obj_readjust_scroll},
+    {"is_editable", lugl_obj_is_editable},
+    {"is_group_def", lugl_obj_is_group_def},
+    {"is_layout_positioned", lugl_obj_is_layout_positioned},
+    {"mark_layout_as_dirty", lugl_obj_mark_layout_as_dirty},
+    {"center", lugl_obj_center},
+    {"invalidate", lugl_obj_invalidate},
+    {"set_flex_flow", lugl_obj_set_flex_flow},
+    {"set_flex_align", lugl_obj_set_flex_align},
+    {"set_flex_grow", lugl_obj_set_flex_grow},
+
+    {"onevent", lugl_obj_on_event},
+    {"onPressed", lugl_obj_on_pressed},
+    {"onClicked", lugl_obj_on_clicked},
+    {"anim", lugl_anim_create},   /* in lua, we only support add anim to obj */
+    {"anims", lugl_anims_create}, /* create multiple anim */
+    {"remove_all_anim", lugl_obj_remove_all_anim}, /* remove all */
+    {NULL, NULL},
+};
+
+static void lugl_obj_init(lua_State *L)
 {
-    /* base lv_obj */
-    lugl_obj_newmetatable(L, &lv_obj_class, "lv_obj", lugl_obj_methods);
-    lua_pushcfunction(L, lugl_obj_gc);
-    lua_setfield(L, -2, "__gc");
-    lua_pop(L, 1);
+  /* base lv_obj */
+  lugl_obj_newmetatable(L, &lv_obj_class, "lv_obj", lugl_obj_methods);
+  lua_pushcfunction(L, lugl_obj_gc);
+  lua_setfield(L, -2, "__gc");
+
+  /**
+   * Widget creation functions is a metatable, so we can add extended widget to
+   * it.
+   *
+   * widgets = {}
+   * lib = {widget_create_methods}
+   * widgets.__index = lib
+   * obj.__metatable = widgets
+   */
+  lua_getfield(L, -1, "__index");
+  luaL_newmetatable(L, "widgets");
+  luaL_newlib(L, widget_create_methods);
+  lua_setfield(L, -2, "__index");
+  lua_setmetatable(L, -2);
+  lua_pop(L, 1); /* remove obj.__index table */
+
+  lua_pop(L, 1); /* remove obj metatable */
 }
