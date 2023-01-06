@@ -420,7 +420,7 @@ end
 ---
 --- Basic lvgl object
 --- @class Object
-local obj = {}
+obj = {}
 
 ---
 --- Create object on object
@@ -1215,7 +1215,7 @@ end
 --- @field y integer
 --- @field w integer
 --- @field h integer
---- @field align Align
+--- @field align Align | integer
 --- @field align_to AlignToPara
 --- @field scrollbar_mode ScrollbarMode
 --- @field scroll_dir Dir
