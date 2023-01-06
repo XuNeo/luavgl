@@ -307,6 +307,14 @@ end
 function lugl.Object(parent, property)
 end
 
+--- Create Calendar widget on parent
+--- @param parent? Object | nil
+--- @param property? StyleProp
+--- @return Calendar
+function lugl.Calendar(parent, property)
+end
+
+
 ---
 --- Create Label on parent
 --- @param parent? Object | nil
@@ -427,6 +435,13 @@ obj = {}
 --- @param property? StyleProp
 --- @return Object
 function obj:Object(property)
+end
+
+---
+--- Create calendar on object
+--- @param property? CalendarStyle
+--- @return Calendar
+function obj:Calendar(property)
 end
 
 ---
@@ -747,6 +762,48 @@ end
 --- @param p AnimPara[]
 --- @return Anim[] anim handlers in array
 function obj:anims(p)
+end
+
+---
+--- Calendar widget
+---@class Calendar:Object
+---
+local calendar = {}
+
+--- set method for calendar widget
+--- @param p CalendarStyle
+--- @return nil
+function calendar:set(p)
+end
+
+--- get today para setting from calendar widget
+--- @return CalendarDatePara
+function calendar:get_today(p)
+end
+
+--- get the currently showed date
+--- @return CalendarDatePara
+function calendar:get_showed(p)
+end
+
+--- get the currently pressed day
+--- @return CalendarDatePara
+function calendar:get_pressed(p)
+end
+
+--- get the button matrix object of the calendar.
+--- @return Object
+function calendar:get_btnm(p)
+end
+
+--- create a calendar header with drop-drowns to select the year and month.
+--- @return Object
+function calendar:Arrow(p)
+end
+
+--- create a calendar header with drop-drowns to select the year and month
+--- @return Object
+function calendar:Dropdown(p)
 end
 
 ---
@@ -1238,6 +1295,12 @@ end
 --- @class LabelStyle :StyleProp
 --- @field text string
 
+
+--- Checkbox style
+--- @class CalendarStyle :StyleProp
+--- @field today CalendarDatePara
+--- @field showed CalendarDatePara
+
 --- Checkbox style
 --- @class CheckboxStyle :StyleProp
 --- @field text string
@@ -1316,4 +1379,14 @@ end
 --- @field justify_content flexAlignOptions
 --- @field align_items flexAlignOptions
 --- @field align_content flexAlignOptions
+
+
+---
+--- CalendarToday para
+--- @class CalendarDatePara
+--- @field year integer
+--- @field month integer
+--- @field day integer
+---
+
 return lugl
