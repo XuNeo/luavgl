@@ -26,12 +26,13 @@ static const lugl_value_setter_t label_property_table[] = {
     {"text", SETTER_TYPE_STACK, {.setter_stack = _lv_label_set_txt}},
     {"long_mode", 0, {.setter = (setter_int_t)lv_label_set_long_mode}},
     {"recolor", 0, {.setter = (setter_int_t)lv_label_set_recolor}},
-    {"text_selection_start",
-     0,
-     {.setter = (setter_int_t)lv_label_set_text_selection_start}},
-    {"text_selection_end",
-     0,
-     {.setter = (setter_int_t)lv_label_set_text_selection_end}},
+#if LVGL_VERSION_MAJOR == 9
+    {"text_selection_start", 0, {.setter = (setter_int_t)lv_label_set_text_selection_start}},
+    {"text_selection_end", 0, {.setter = (setter_int_t)lv_label_set_text_selection_end}},
+#else
+    {"text_selection_start", 0, {.setter = (setter_int_t)lv_label_set_text_sel_start}},
+    {"text_selection_end", 0, {.setter = (setter_int_t)lv_label_set_text_sel_end}},
+#endif
 };
 
 static int label_set_property_cb(lua_State *L, void *data)
