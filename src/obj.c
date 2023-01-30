@@ -810,7 +810,7 @@ static const lugl_value_setter_t obj_property_table[] = {
  * stack[-2]: key(property name)
  * stack[-1]: value(could be any lua data)
  */
-int lugl_obj_set_property_kv(lua_State *L, void *data)
+LUALIB_API int lugl_obj_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = lugl_set_property(L, obj, obj_property_table);
@@ -822,9 +822,8 @@ int lugl_obj_set_property_kv(lua_State *L, void *data)
   return lugl_obj_set_style_kv(L, obj, 0);
 }
 
-
-int lugl_obj_create_helper(lua_State *L,
-                                  lv_obj_t *(*create)(lv_obj_t *parent))
+LUALIB_API int lugl_obj_create_helper(lua_State *L,
+                                      lv_obj_t *(*create)(lv_obj_t *parent))
 {
   lugl_ctx_t *ctx = lugl_context(L);
   lv_obj_t *parent;
@@ -871,7 +870,7 @@ int lugl_obj_create_helper(lua_State *L,
  * If no metatable not found for this obj class, then lv_obj_class metatable is
  * used
  */
-lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj)
+LUALIB_API lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj)
 {
   lugl_obj_t *lobj;
 

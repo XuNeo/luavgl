@@ -158,7 +158,7 @@ static int root_clean(lua_State* L)
   return 0;
 }
 
-int luaopen_lugl(lua_State* L)
+LUALIB_API int luaopen_lugl(lua_State* L)
 {
     lugl_ctx_t* ctx = lugl_context(L);
 

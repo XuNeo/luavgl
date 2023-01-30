@@ -31,19 +31,16 @@ typedef enum {
 typedef void (*setter_int_t)(void *, int);
 typedef void (*setter_pointer_t)(void *, void *);
 
-/* clang-format off */
 typedef struct {
-    const char* key;
-    setter_type_t type;
-    union {
-        void (*setter)(void*, int);
-        void (*setter_stack)(void*, lua_State* L);
-        void (*setter_pointer)(void*, void*);
-    };
+  const char *key;
+  setter_type_t type;
+  union {
+    void (*setter)(void *, int);
+    void (*setter_stack)(void *, lua_State *L);
+    void (*setter_pointer)(void *, void *);
+  };
 } lugl_value_setter_t;
-/* clang-format on */
 
-/* Ref for userdata and event callbacks */
 typedef struct lugl_obj_s {
   lv_obj_t *obj;
   bool lua_created; /* this object is created from lua */
@@ -63,34 +60,136 @@ typedef struct lugl_obj_s {
 
 LUALIB_API lugl_ctx_t *lugl_context(lua_State *L);
 
+/**
+ * @brief Set lugl root object
+ */
 LUALIB_API void lugl_set_root(lua_State *L, lv_obj_t *root);
+
+/**
+ * @brief Set functions to make and destroy extended fonts.
+ */
 LUALIB_API void lugl_set_font_extension(lua_State *L, make_font_cb make,
                                         delete_font_cb d);
 
 /* on embedded device, may call lib open manually. */
-int luaopen_lugl(lua_State *L);
+LUALIB_API int luaopen_lugl(lua_State *L);
 
 /* object creation */
-int lugl_obj_create_helper(lua_State *L, lv_obj_t *(*create)(lv_obj_t *parent));
-lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj);
 
-/* object metatable */
-int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
-                             const char *name, const luaL_Reg *l, int n);
+/**
+ * @brief Helper function to create lua lvgl object.
+ *
+ * Expected stack layout:
+ *    [1]: parent object
+ *    [2]: table of properties(styles)
+ * Return value in stack:
+ *    [1]: userdata of created object, lugl object.
+ *
+ * @param L
+ * @param create function pointer to create object
+ * @return items in stack for return
+ */
+LUALIB_API int lugl_obj_create_helper(lua_State *L,
+                                      lv_obj_t *(*create)(lv_obj_t *parent));
+
+/**
+ * @brief Add existing lvgl object to lua
+ *
+ * Return value in stack:
+ *    [1]: lugl object.
+ *
+ * @return pointer to lugl object
+ */
+LUALIB_API lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj);
+
+/**
+ * @brief Create metatable for specified object class
+ *
+ * @param L
+ * @param clz object class
+ * @param name optional name for this metatable
+ * @param l methods for this metatable
+ * @param n methods length
+ *
+ * Return value in stack:
+ *    [1]: metatable
+ *
+ * @return 1
+ */
+LUALIB_API int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
+                                        const char *name, const luaL_Reg *l,
+                                        int n);
 
 /* helper to get value from stack */
-lv_obj_t *lugl_to_obj(lua_State *L, int idx);
-int lugl_tointeger(lua_State *L, int idx);
-lv_color_t lugl_tocolor(lua_State *L, int idx);
-const char *lugl_toimgsrc(lua_State *L, int idx);
 
-void lugl_iterate(lua_State *L, int index, int (*cb)(lua_State *, void *),
-                  void *cb_para);
-int lugl_set_property_array(lua_State *L, void *obj,
-                            const lugl_value_setter_t table[], uint32_t len);
-void _lv_dummy_set(void *obj, lua_State *L);
+/**
+ * @brief Get lvgl object from stack
+ */
+LUALIB_API lv_obj_t *lugl_to_obj(lua_State *L, int idx);
 
-int lugl_obj_set_property_kv(lua_State *L, void *data);
+/**
+ * @brief Convert value to integer
+ *
+ * Supported values are: integer, float, boolean
+ */
+LUALIB_API int lugl_tointeger(lua_State *L, int idx);
+
+/**
+ * @brief Convert value to lvgl color
+ *
+ * Supported color formats are:
+ *    [1]: string representation: "#RGB" or "#RRGGBB"
+ *    [2]: integer value: 0xaabbcc
+ */
+LUALIB_API lv_color_t lugl_tocolor(lua_State *L, int idx);
+
+/**
+ * @brief Convert value to lvgl image source
+ *
+ * Supported image format:
+ *    [1]: image path string, e.g. "/resource/bg.png"
+ *    [2]: image source lightuserdata
+ */
+LUALIB_API const char *lugl_toimgsrc(lua_State *L, int idx);
+
+/**
+ * @brief Helper function to iterate through table
+ *
+ * @param L
+ * @param index index to the table for iteration
+ * @param cb callback function for every key,value pair
+ *        Stack layout when cb function made:
+ *            [-1]: value
+ *            [-2]: key
+ *        Care must be taken when calling lua_tostring etc. functions which will
+ *        change stack layout.
+ * @param cb_param callback parameter passed to cb function
+ */
+LUALIB_API void lugl_iterate(lua_State *L, int index,
+                             int (*cb)(lua_State *, void *), void *cb_para);
+
+/**
+ * @brief Set object property with provided setter functions
+ *
+ * @param L
+ * @param obj lvgl object
+ * @param table function array
+ * @param len functions in array
+ * @return 1
+ */
+LUALIB_API int lugl_set_property_array(lua_State *L, void *obj,
+                                       const lugl_value_setter_t table[],
+                                       uint32_t len);
+
+/**
+ * @brief Dummy property set function
+ */
+LUALIB_API void _lv_dummy_set(void *obj, lua_State *L);
+
+/**
+ * @brief Set object property with key,value in stack
+ */
+LUALIB_API int lugl_obj_set_property_kv(lua_State *L, void *data);
 
 #ifdef __cplusplus
 } /*extern "C"*/

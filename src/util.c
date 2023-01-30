@@ -121,8 +121,9 @@ static void dumpstack(lua_State *L)
  * Create a table(used as object metatable), using clz as key in lua
  * registry. The name is set to metatable.__name if not NULL
  */
-int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
-                             const char *name, const luaL_Reg *l, int n)
+LUALIB_API int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
+                                        const char *name, const luaL_Reg *l,
+                                        int n)
 {
   if (lugl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
     return 0; /* leave previous value on top, but return 0 */
@@ -185,7 +186,7 @@ int lugl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz)
   return 1;
 }
 
-lv_obj_t *lugl_to_obj(lua_State *L, int idx)
+LUALIB_API lv_obj_t *lugl_to_obj(lua_State *L, int idx)
 {
   lugl_obj_t *lobj = lugl_to_lobj(L, idx);
   if (lobj == NULL)
@@ -194,7 +195,7 @@ lv_obj_t *lugl_to_obj(lua_State *L, int idx)
   return lobj->obj;
 }
 
-int lugl_tointeger(lua_State *L, int idx)
+LUALIB_API int lugl_tointeger(lua_State *L, int idx)
 {
   int v = 0;
   if (lua_isboolean(L, idx)) {
@@ -208,7 +209,7 @@ int lugl_tointeger(lua_State *L, int idx)
   return v;
 }
 
-lv_color_t lugl_tocolor(lua_State *L, int idx)
+LUALIB_API lv_color_t lugl_tocolor(lua_State *L, int idx)
 {
   lv_color_t color = {0};
   if (lua_type(L, idx) == LUA_TSTRING) {
@@ -246,7 +247,7 @@ lv_color_t lugl_tocolor(lua_State *L, int idx)
   return color;
 }
 
-const char *lugl_toimgsrc(lua_State *L, int idx)
+LUALIB_API const char *lugl_toimgsrc(lua_State *L, int idx)
 {
   const char *src = NULL;
   if (lua_isuserdata(L, idx)) {
@@ -262,8 +263,8 @@ const char *lugl_toimgsrc(lua_State *L, int idx)
   return src;
 }
 
-void lugl_iterate(lua_State *L, int index, int (*cb)(lua_State *, void *),
-                  void *cb_para)
+LUALIB_API void lugl_iterate(lua_State *L, int index,
+                             int (*cb)(lua_State *, void *), void *cb_para)
 {
   int i = index < 0 ? index - 1 : index;
   lua_pushnil(L); /* nil as initial key to iterate through table */
@@ -281,7 +282,7 @@ void lugl_iterate(lua_State *L, int index, int (*cb)(lua_State *, void *),
   }
 }
 
-int lugl_set_property_array(lua_State *L, void *obj,
+LUALIB_API int lugl_set_property_array(lua_State *L, void *obj,
                             const lugl_value_setter_t table[], uint32_t len)
 {
   const char *key = lua_tostring(L, -2);
@@ -326,7 +327,7 @@ int lugl_set_property_array(lua_State *L, void *obj,
   return -1; /* property not found */
 }
 
-void _lv_dummy_set(void *obj, lua_State *L)
+LUALIB_API void _lv_dummy_set(void *obj, lua_State *L)
 {
   //
 }
