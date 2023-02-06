@@ -661,11 +661,11 @@ static int lugl_obj_set_flex_align(lua_State *L)
     return 0;
   }
 
-  lv_flex_align_t main = lugl_tointeger(L, 2);
-  lv_flex_align_t cross = lugl_tointeger(L, 3);
-  lv_flex_align_t track = lugl_tointeger(L, 4);
+  lv_flex_align_t m = lugl_tointeger(L, 2);
+  lv_flex_align_t c = lugl_tointeger(L, 3);
+  lv_flex_align_t t = lugl_tointeger(L, 4);
 
-  lv_obj_set_flex_align(obj, main, cross, track);
+  lv_obj_set_flex_align(obj, m, c, t);
   return 0;
 }
 
