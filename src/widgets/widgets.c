@@ -16,8 +16,8 @@
 #include "label.c"
 #include "led.c"
 #include "list.c"
-#include "textarea.c"
 #include "roller.c"
+#include "textarea.c"
 
 /* clang-format off */
 #define WIDGET_CREATE_FUNCTIONS                 \

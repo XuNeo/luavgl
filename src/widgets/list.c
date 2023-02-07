@@ -83,13 +83,13 @@ static int lugl_get_btn_text(lua_State *L)
 }
 
 static const luaL_Reg lugl_list_methods[] = {
-    {"set", lugl_list_set},
+    {"set",          lugl_list_set     },
 
-    {"add_text", lugl_list_add_text},
-    {"add_btn", lugl_list_add_btn},
-    {"get_btn_text", lugl_get_btn_text},
+    {"add_text",     lugl_list_add_text},
+    {"add_btn",      lugl_list_add_btn },
+    {"get_btn_text", lugl_get_btn_text },
 
-    {NULL, NULL},
+    {NULL,           NULL              },
 };
 
 static void lugl_list_init(lua_State *L)

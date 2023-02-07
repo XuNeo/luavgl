@@ -51,9 +51,15 @@ static const struct {
   char *name;
   int value;
 } g_named_weight[] = {
-    {"thin", 100},   {"extra light", 200}, {"light", 300},
-    {"normal", 400}, {"medium", 500},      {"semi bold", 600},
-    {"bold", 700},   {"extra bold", 800},  {"ultra bold", 900},
+    {"thin",        100},
+    {"extra light", 200},
+    {"light",       300},
+    {"normal",      400},
+    {"medium",      500},
+    {"semi bold",   600},
+    {"bold",        700},
+    {"extra bold",  800},
+    {"ultra bold",  900},
 };
 
 static const struct {
@@ -61,7 +67,7 @@ static const struct {
   const lv_font_t *font;
 } g_builtin_montserrat[] = {
 #if LV_FONT_MONTSERRAT_8
-    {8, &lv_font_montserrat_8},
+    {8,  &lv_font_montserrat_8 },
 #endif
 
 #if LV_FONT_MONTSERRAT_10

@@ -711,53 +711,53 @@ static const luaL_Reg widget_create_methods[] = {
 };
 
 static const luaL_Reg lugl_obj_methods[] = {
-    {"set", lugl_obj_set},
-    {"set_style", lugl_obj_set_style},
-    {"align_to", lugl_obj_align_to},
-    {"delete", lugl_obj_delete},
-    {"clean", lugl_obj_clean},
+    {"set",                      lugl_obj_set                     },
+    {"set_style",                lugl_obj_set_style               },
+    {"align_to",                 lugl_obj_align_to                },
+    {"delete",                   lugl_obj_delete                  },
+    {"clean",                    lugl_obj_clean                   },
 
-    /* misc. functions */
-    {"set_parent", lugl_obj_set_parent},
-    {"get_parent", lugl_obj_get_parent},
-    {"get_child", lugl_obj_get_child},
-    {"get_child_cnt", lugl_obj_get_child_cnt},
-    {"get_screen", lugl_obj_get_screen},
-    {"get_state", lugl_obj_get_state},
-    {"scroll_to", lugl_obj_scroll_to},
-    {"is_scrolling", lugl_obj_is_scrolling},
-    {"is_visible", lugl_obj_is_visible},
-    {"add_flag", lugl_obj_add_flag},
-    {"clear_flag", lugl_obj_clear_flag},
-    {"add_state", lugl_obj_add_state},
-    {"clear_state", lugl_obj_clear_state},
-    {"add_style", lugl_obj_add_style},
-    {"remove_style", lugl_obj_remove_style},
-    {"remove_style_all", lugl_obj_remove_style_all},
-    {"scroll_by", lugl_obj_scroll_by},
-    {"scroll_by_bounded", lugl_obj_scroll_by_bounded},
-    {"scroll_to_view", lugl_obj_scroll_to_view},
+ /* misc. functions */
+    {"set_parent",               lugl_obj_set_parent              },
+    {"get_parent",               lugl_obj_get_parent              },
+    {"get_child",                lugl_obj_get_child               },
+    {"get_child_cnt",            lugl_obj_get_child_cnt           },
+    {"get_screen",               lugl_obj_get_screen              },
+    {"get_state",                lugl_obj_get_state               },
+    {"scroll_to",                lugl_obj_scroll_to               },
+    {"is_scrolling",             lugl_obj_is_scrolling            },
+    {"is_visible",               lugl_obj_is_visible              },
+    {"add_flag",                 lugl_obj_add_flag                },
+    {"clear_flag",               lugl_obj_clear_flag              },
+    {"add_state",                lugl_obj_add_state               },
+    {"clear_state",              lugl_obj_clear_state             },
+    {"add_style",                lugl_obj_add_style               },
+    {"remove_style",             lugl_obj_remove_style            },
+    {"remove_style_all",         lugl_obj_remove_style_all        },
+    {"scroll_by",                lugl_obj_scroll_by               },
+    {"scroll_by_bounded",        lugl_obj_scroll_by_bounded       },
+    {"scroll_to_view",           lugl_obj_scroll_to_view          },
     {"scroll_to_view_recursive", lugl_obj_scroll_to_view_recursive},
-    {"scroll_by_raw", lugl_obj_scroll_by_raw},
-    {"scrollbar_invalidate", lugl_obj_scrollbar_invalidate},
-    {"readjust_scroll", lugl_obj_readjust_scroll},
-    {"is_editable", lugl_obj_is_editable},
-    {"is_group_def", lugl_obj_is_group_def},
-    {"is_layout_positioned", lugl_obj_is_layout_positioned},
-    {"mark_layout_as_dirty", lugl_obj_mark_layout_as_dirty},
-    {"center", lugl_obj_center},
-    {"invalidate", lugl_obj_invalidate},
-    {"set_flex_flow", lugl_obj_set_flex_flow},
-    {"set_flex_align", lugl_obj_set_flex_align},
-    {"set_flex_grow", lugl_obj_set_flex_grow},
+    {"scroll_by_raw",            lugl_obj_scroll_by_raw           },
+    {"scrollbar_invalidate",     lugl_obj_scrollbar_invalidate    },
+    {"readjust_scroll",          lugl_obj_readjust_scroll         },
+    {"is_editable",              lugl_obj_is_editable             },
+    {"is_group_def",             lugl_obj_is_group_def            },
+    {"is_layout_positioned",     lugl_obj_is_layout_positioned    },
+    {"mark_layout_as_dirty",     lugl_obj_mark_layout_as_dirty    },
+    {"center",                   lugl_obj_center                  },
+    {"invalidate",               lugl_obj_invalidate              },
+    {"set_flex_flow",            lugl_obj_set_flex_flow           },
+    {"set_flex_align",           lugl_obj_set_flex_align          },
+    {"set_flex_grow",            lugl_obj_set_flex_grow           },
 
-    {"onevent", lugl_obj_on_event},
-    {"onPressed", lugl_obj_on_pressed},
-    {"onClicked", lugl_obj_on_clicked},
-    {"anim", lugl_anim_create},   /* in lua, we only support add anim to obj */
-    {"anims", lugl_anims_create}, /* create multiple anim */
-    {"remove_all_anim", lugl_obj_remove_all_anim}, /* remove all */
-    {NULL, NULL},
+    {"onevent",                  lugl_obj_on_event                },
+    {"onPressed",                lugl_obj_on_pressed              },
+    {"onClicked",                lugl_obj_on_clicked              },
+    {"anim",                     lugl_anim_create                 }, /* in lua, we only support add anim to obj */
+    {"anims",                    lugl_anims_create                }, /* create multiple anim */
+    {"remove_all_anim",          lugl_obj_remove_all_anim         }, /* remove all */
+    {NULL,                       NULL                             },
 };
 
 static void lugl_obj_init(lua_State *L)
@@ -787,16 +787,16 @@ static void lugl_obj_init(lua_State *L)
 }
 
 static const lugl_value_setter_t obj_property_table[] = {
-    {"x", 0, {.setter = (setter_int_t)lv_obj_set_x}},
-    {"y", 0, {.setter = (setter_int_t)lv_obj_set_y}},
-    {"w", 0, {.setter = (setter_int_t)lv_obj_set_width}},
-    {"h", 0, {.setter = (setter_int_t)lv_obj_set_height}},
-    {"align", SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align}},
+    {"x",              0,                 {.setter = (setter_int_t)lv_obj_set_x}             },
+    {"y",              0,                 {.setter = (setter_int_t)lv_obj_set_y}             },
+    {"w",              0,                 {.setter = (setter_int_t)lv_obj_set_width}         },
+    {"h",              0,                 {.setter = (setter_int_t)lv_obj_set_height}        },
+    {"align",          SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align}                },
 
-    {"scrollbar_mode", 0, {.setter = (setter_int_t)lv_obj_set_scrollbar_mode}},
-    {"scroll_dir", 0, {.setter = (setter_int_t)lv_obj_set_scroll_dir}},
-    {"scroll_snap_x", 0, {.setter = (setter_int_t)lv_obj_set_scroll_snap_x}},
-    {"scroll_snap_y", 0, {.setter = (setter_int_t)lv_obj_set_scroll_snap_y}},
+    {"scrollbar_mode", 0,                 {.setter = (setter_int_t)lv_obj_set_scrollbar_mode}},
+    {"scroll_dir",     0,                 {.setter = (setter_int_t)lv_obj_set_scroll_dir}    },
+    {"scroll_snap_x",  0,                 {.setter = (setter_int_t)lv_obj_set_scroll_snap_x} },
+    {"scroll_snap_y",  0,                 {.setter = (setter_int_t)lv_obj_set_scroll_snap_y} },
 };
 
 /**

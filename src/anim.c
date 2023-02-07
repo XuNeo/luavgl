@@ -491,3 +491,29 @@ static int lugl_anim_tostring(lua_State *L)
                   a->cfg.end_value, a->cfg.current_value, a->cfg.repeat_cnt);
   return 1;
 }
+
+static const luaL_Reg lugl_anim_methods[] = {
+  // anim.c
+    {"set",    lugl_anim_set   },
+    {"start",  lugl_anim_start },
+    {"stop",   lugl_anim_stop  },
+    {"delete", lugl_anim_delete},
+
+    {NULL,     NULL            }
+};
+
+static void lugl_anim_init(lua_State *L)
+{
+  luaL_newmetatable(L, "lv_anim");
+
+  lua_pushcfunction(L, lugl_anim_tostring);
+  lua_setfield(L, -2, "__tostring");
+
+  lua_pushcfunction(L, lugl_anim_gc);
+  lua_setfield(L, -2, "__gc");
+
+  luaL_newlib(L, lugl_anim_methods); /* methods belong to this type */
+  lua_setfield(L, -2, "__index");
+
+  lua_pop(L, 1); /* pop __index table */
+}

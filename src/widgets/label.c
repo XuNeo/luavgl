@@ -23,15 +23,21 @@ static void _lv_label_set_txt(void *obj, lua_State *L)
 }
 
 static const lugl_value_setter_t label_property_table[] = {
-    {"text", SETTER_TYPE_STACK, {.setter_stack = _lv_label_set_txt}},
-    {"long_mode", 0, {.setter = (setter_int_t)lv_label_set_long_mode}},
-    {"recolor", 0, {.setter = (setter_int_t)lv_label_set_recolor}},
+    {"text",                 SETTER_TYPE_STACK, {.setter_stack = _lv_label_set_txt}                        },
+    {"long_mode",            0,                 {.setter = (setter_int_t)lv_label_set_long_mode}           },
+    {"recolor",              0,                 {.setter = (setter_int_t)lv_label_set_recolor}             },
 #if LVGL_VERSION_MAJOR == 9
-    {"text_selection_start", 0, {.setter = (setter_int_t)lv_label_set_text_selection_start}},
-    {"text_selection_end", 0, {.setter = (setter_int_t)lv_label_set_text_selection_end}},
+    {"text_selection_start",
+     0,                                         {.setter = (setter_int_t)lv_label_set_text_selection_start}},
+    {"text_selection_end",
+     0,                                         {.setter = (setter_int_t)lv_label_set_text_selection_end}  },
 #else
-    {"text_selection_start", 0, {.setter = (setter_int_t)lv_label_set_text_sel_start}},
-    {"text_selection_end", 0, {.setter = (setter_int_t)lv_label_set_text_sel_end}},
+    {"text_selection_start",
+     0,
+     {.setter = (setter_int_t)lv_label_set_text_sel_start}},
+    {"text_selection_end",
+     0,
+     {.setter = (setter_int_t)lv_label_set_text_sel_end}},
 #endif
 };
 
@@ -137,16 +143,15 @@ static int lugl_label_tostring(lua_State *L)
 }
 
 static const luaL_Reg lugl_label_methods[] = {
-    // label.c
-    {"set", lugl_label_set},
+    {"set",             lugl_label_set            },
     {"set_text_static", lugl_label_set_text_static},
-    {"get_text", lugl_label_get_text},
-    {"get_long_mode", lugl_label_get_long_mode},
-    {"get_recolor", lugl_label_get_recolor},
-    {"ins_text", lugl_label_ins_text},
-    {"cut_text", lugl_label_cut_text},
+    {"get_text",        lugl_label_get_text       },
+    {"get_long_mode",   lugl_label_get_long_mode  },
+    {"get_recolor",     lugl_label_get_recolor    },
+    {"ins_text",        lugl_label_ins_text       },
+    {"cut_text",        lugl_label_cut_text       },
 
-    {NULL, NULL},
+    {NULL,              NULL                      },
 };
 
 static void lugl_label_init(lua_State *L)

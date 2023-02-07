@@ -32,13 +32,13 @@ static void _lv_img_set_pivot(void *obj, lua_State *L)
 }
 
 static const lugl_value_setter_t img_property_table[] = {
-    {"src", SETTER_TYPE_STACK, {.setter_stack = _lv_dummy_set}},
-    {"offset_x", 0, {.setter = (setter_int_t)lv_img_set_offset_x}},
-    {"offset_y", 0, {.setter = (setter_int_t)lv_img_set_offset_y}},
-    {"angle", 0, {.setter = (setter_int_t)lv_img_set_angle}},
-    {"zoom", 0, {.setter = (setter_int_t)lv_img_set_zoom}},
-    {"antialias", 0, {.setter = (setter_int_t)lv_img_set_antialias}},
-    {"pivot", SETTER_TYPE_STACK, {.setter_stack = _lv_img_set_pivot}},
+    {"src",       SETTER_TYPE_STACK, {.setter_stack = _lv_dummy_set}               },
+    {"offset_x",  0,                 {.setter = (setter_int_t)lv_img_set_offset_x} },
+    {"offset_y",  0,                 {.setter = (setter_int_t)lv_img_set_offset_y} },
+    {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}    },
+    {"zoom",      0,                 {.setter = (setter_int_t)lv_img_set_zoom}     },
+    {"antialias", 0,                 {.setter = (setter_int_t)lv_img_set_antialias}},
+    {"pivot",     SETTER_TYPE_STACK, {.setter_stack = _lv_img_set_pivot}           },
 };
 
 static int lugl_img_set_property_kv(lua_State *L, void *data)
@@ -58,7 +58,6 @@ static int lugl_img_set_property_kv(lua_State *L, void *data)
 
   return -1;
 }
-
 
 static int lugl_img_set(lua_State *L)
 {
@@ -206,20 +205,18 @@ static int lugl_get_img_size(lua_State *L)
 }
 
 static const luaL_Reg lugl_img_methods[] = {
-    // img.c
-    {"set", lugl_img_set},
+    {"set",          lugl_img_set       },
 
-    {"set_src", lugl_img_set_src},
-    {"set_offset", lugl_img_set_offset},
-    {"set_pivot", lugl_img_set_pivot},
-    {"get_img_size", lugl_get_img_size},
+    {"set_src",      lugl_img_set_src   },
+    {"set_offset",   lugl_img_set_offset},
+    {"set_pivot",    lugl_img_set_pivot },
+    {"get_img_size", lugl_get_img_size  },
 
-    {NULL, NULL},
+    {NULL,           NULL               },
 };
 
 static void lugl_img_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_img_class, "lv_img",
-                        lugl_img_methods);
+  lugl_obj_newmetatable(L, &lv_img_class, "lv_img", lugl_img_methods);
   lua_pop(L, 1);
 }

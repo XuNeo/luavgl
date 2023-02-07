@@ -67,10 +67,9 @@ static int lugl_keyboard_set(lua_State *L)
 }
 
 static const luaL_Reg lugl_keyboard_methods[] = {
-    // widget/textarea.c
     {"set", lugl_keyboard_set},
 
-    {NULL, NULL},
+    {NULL,  NULL             },
 };
 
 static void lugl_keyboard_init(lua_State *L)

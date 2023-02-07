@@ -183,16 +183,16 @@ static int lugl_dropdown_clear_option(lua_State *L)
 }
 
 static const luaL_Reg lugl_dropdown_methods[] = {
-    // dropdown.c
-    {"set", lugl_dropdown_set},
-    {"get", lugl_dropdown_get},
-    {"open", lugl_dropdown_open},
-    {"close", lugl_dropdown_close},
-    {"is_open", lugl_dropdown_is_open},
-    {"add_option", lugl_dropdown_add_option},
+  // dropdown.c
+    {"set",          lugl_dropdown_set         },
+    {"get",          lugl_dropdown_get         },
+    {"open",         lugl_dropdown_open        },
+    {"close",        lugl_dropdown_close       },
+    {"is_open",      lugl_dropdown_is_open     },
+    {"add_option",   lugl_dropdown_add_option  },
     {"clear_option", lugl_dropdown_clear_option},
 
-    {NULL, NULL},
+    {NULL,           NULL                      },
 };
 
 static void lugl_dropdown_init(lua_State *L)

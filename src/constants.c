@@ -408,6 +408,23 @@ static void lugl_roller_mode_init(lua_State* L)
   lua_pushstring(L, "INFINITE"); lua_pushinteger(L, LV_ROLLER_MODE_INFINITE); lua_settable(L, -3);
 }
 
+static void lugl_key_init(lua_State* L)
+{
+  lua_newtable(L);
+  lua_pushstring(L, "UP"); lua_pushinteger(L, LV_KEY_UP); lua_settable(L, -3);
+  lua_pushstring(L, "DOWN"); lua_pushinteger(L, LV_KEY_DOWN); lua_settable(L, -3);
+  lua_pushstring(L, "RIGHT"); lua_pushinteger(L, LV_KEY_RIGHT); lua_settable(L, -3);
+  lua_pushstring(L, "LEFT"); lua_pushinteger(L, LV_KEY_LEFT); lua_settable(L, -3);
+  lua_pushstring(L, "ESC"); lua_pushinteger(L, LV_KEY_ESC); lua_settable(L, -3);
+  lua_pushstring(L, "DEL"); lua_pushinteger(L, LV_KEY_DEL); lua_settable(L, -3);
+  lua_pushstring(L, "BACKSPACE"); lua_pushinteger(L, LV_KEY_BACKSPACE); lua_settable(L, -3);
+  lua_pushstring(L, "ENTER"); lua_pushinteger(L, LV_KEY_ENTER); lua_settable(L, -3);
+  lua_pushstring(L, "NEXT"); lua_pushinteger(L, LV_KEY_NEXT); lua_settable(L, -3);
+  lua_pushstring(L, "PREV"); lua_pushinteger(L, LV_KEY_PREV); lua_settable(L, -3);
+  lua_pushstring(L, "HOME"); lua_pushinteger(L, LV_KEY_HOME); lua_settable(L, -3);
+  lua_pushstring(L, "END"); lua_pushinteger(L, LV_KEY_END); lua_settable(L, -3);
+}
+
 static int lugl_LV_PCT(lua_State*L)
 {
   int pct = lua_tointeger(L, 1);
@@ -438,7 +455,6 @@ static int lugl_LV_VER_RES(lua_State*L)
   lua_pushinteger(L, LV_VER_RES);
   return 1;
 }
-
 
 /* clang-format on */
 static void lugl_constants_init(lua_State *L)
@@ -473,6 +489,8 @@ static void lugl_constants_init(lua_State *L)
   lua_setfield(L, -2, "GRID_ALIGN");
   lugl_roller_mode_init(L);
   lua_setfield(L, -2, "ROLLER_MODE");
+  lugl_key_init(L);
+  lua_setfield(L, -2, "KEY");
   /* miscellaneous. */
 
   lua_pushinteger(L, LV_ANIM_REPEAT_INFINITE);

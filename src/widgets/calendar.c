@@ -55,7 +55,7 @@ static void _lv_calendar_set_showed(void *obj, lua_State *L)
 }
 
 static const lugl_value_setter_t calendar_property_table[] = {
-    {"today", SETTER_TYPE_STACK, {.setter_stack = _lv_calendar_set_today}},
+    {"today",  SETTER_TYPE_STACK, {.setter_stack = _lv_calendar_set_today} },
     {"showed", SETTER_TYPE_STACK, {.setter_stack = _lv_calendar_set_showed}},
 };
 
@@ -160,16 +160,15 @@ static int lugl_calendar_create_dropdown(lua_State *L)
 }
 
 static const luaL_Reg lugl_calendar_methods[] = {
-    // calendar.c
-    {"set", lugl_calendar_set},
-    {"get_today", lugl_calendar_get_today},
-    {"get_showed", lugl_calendar_get_showed},
-    {"get_pressed", lugl_calendar_get_pressed},
-    {"get_btnm", lugl_calendar_get_btnm},
-    {"Arrow", lugl_calendar_create_arrow},
-    {"Dropdown", lugl_calendar_create_dropdown},
+    {"set",         lugl_calendar_set            },
+    {"get_today",   lugl_calendar_get_today      },
+    {"get_showed",  lugl_calendar_get_showed     },
+    {"get_pressed", lugl_calendar_get_pressed    },
+    {"get_btnm",    lugl_calendar_get_btnm       },
+    {"Arrow",       lugl_calendar_create_arrow   },
+    {"Dropdown",    lugl_calendar_create_dropdown},
 
-    {NULL, NULL},
+    {NULL,          NULL                         },
 };
 
 static void lugl_calendar_init(lua_State *L)

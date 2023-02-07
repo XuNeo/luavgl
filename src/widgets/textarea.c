@@ -119,11 +119,11 @@ static int lugl_textarea_get_text(lua_State *L)
 }
 
 static const luaL_Reg lugl_textarea_methods[] = {
-    // widget/textarea.c
-    {"set", lugl_textarea_set},
+  // widget/textarea.c
+    {"set",      lugl_textarea_set     },
     {"get_text", lugl_textarea_get_text},
 
-    {NULL, NULL},
+    {NULL,       NULL                  },
 };
 
 static void lugl_textarea_init(lua_State *L)

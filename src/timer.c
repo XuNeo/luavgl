@@ -196,3 +196,26 @@ static int lugl_timer_gc(lua_State *L)
   debug("gc timer:%p\n", t);
   return 0;
 }
+
+static const luaL_Reg lugl_timer_methods[] = {
+    {"set",    lugl_timer_set   },
+    {"pause",  lugl_timer_pause },
+    {"resume", lugl_timer_resume},
+    {"delete", lugl_timer_delete},
+    {"ready",  lugl_timer_ready },
+
+    {NULL,     NULL             }
+};
+
+static void lugl_timer_init(lua_State *L)
+{
+  luaL_newmetatable(L, "lv_timer");
+
+  lua_pushcfunction(L, lugl_timer_gc);
+  lua_setfield(L, -2, "__gc");
+
+  luaL_newlib(L, lugl_timer_methods); /* methods belong to this type */
+  lua_setfield(L, -2, "__index");
+
+  lua_pop(L, 1); /* pop __index table */
+}

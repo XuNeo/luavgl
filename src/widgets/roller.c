@@ -57,9 +57,10 @@ static void _lv_roller_set_selected(void *obj, lua_State *L)
 }
 
 static const lugl_value_setter_t roller_property_table[] = {
-    {"options", SETTER_TYPE_STACK, {.setter_stack = _lv_roller_set_options}},
-    {"selected", SETTER_TYPE_STACK, {.setter_stack = _lv_roller_set_selected}},
-    {"visible_cnt", 0, {.setter = (setter_int_t)lv_roller_set_visible_row_count}},
+    {"options",     SETTER_TYPE_STACK, {.setter_stack = _lv_roller_set_options}                 },
+    {"selected",    SETTER_TYPE_STACK, {.setter_stack = _lv_roller_set_selected}                },
+    {"visible_cnt",
+     0,                                {.setter = (setter_int_t)lv_roller_set_visible_row_count}},
 };
 
 static int lugl_roller_set_property_kv(lua_State *L, void *data)
@@ -129,14 +130,14 @@ static int lugl_roller_get_options_cnt(lua_State *L)
 }
 
 static const luaL_Reg lugl_roller_methods[] = {
-    // roller.c
-    {"set", lugl_roller_set},
-    {"get_options", lugl_roller_get_options},
-    {"get_selected", lugl_roller_get_selected},
+  // roller.c
+    {"set",              lugl_roller_set             },
+    {"get_options",      lugl_roller_get_options     },
+    {"get_selected",     lugl_roller_get_selected    },
     {"get_selected_str", lugl_roller_get_selected_str},
-    {"get_options_cnt", lugl_roller_get_options_cnt},
+    {"get_options_cnt",  lugl_roller_get_options_cnt },
 
-    {NULL, NULL},
+    {NULL,               NULL                        },
 };
 
 static void lugl_roller_init(lua_State *L)

@@ -283,7 +283,8 @@ LUALIB_API void lugl_iterate(lua_State *L, int index,
 }
 
 LUALIB_API int lugl_set_property_array(lua_State *L, void *obj,
-                            const lugl_value_setter_t table[], uint32_t len)
+                                       const lugl_value_setter_t table[],
+                                       uint32_t len)
 {
   const char *key = lua_tostring(L, -2);
   if (key == NULL) {
@@ -327,7 +328,4 @@ LUALIB_API int lugl_set_property_array(lua_State *L, void *obj,
   return -1; /* property not found */
 }
 
-LUALIB_API void _lv_dummy_set(void *obj, lua_State *L)
-{
-  //
-}
+LUALIB_API void _lv_dummy_set(void *obj, lua_State *L) {}

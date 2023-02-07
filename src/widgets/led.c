@@ -99,14 +99,14 @@ static int lugl_led_get_brightness(lua_State *L)
 }
 
 static const luaL_Reg lugl_led_methods[] = {
-    {"set", lugl_led_set},
-    {"on", lugl_led_on},
-    {"off", lugl_led_off},
-    {"toggle", lugl_led_toggle},
+    {"set",            lugl_led_set           },
+    {"on",             lugl_led_on            },
+    {"off",            lugl_led_off           },
+    {"toggle",         lugl_led_toggle        },
 
     {"get_brightness", lugl_led_get_brightness},
 
-    {NULL, NULL},
+    {NULL,             NULL                   },
 };
 
 static void lugl_led_init(lua_State *L)

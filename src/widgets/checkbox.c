@@ -70,11 +70,10 @@ static int lugl_checkbox_get_text(lua_State *L)
 }
 
 static const luaL_Reg lugl_checkbox_methods[] = {
-    // checkbox.c
-    {"set", lugl_checkbox_set},
+    {"set",      lugl_checkbox_set     },
     {"get_text", lugl_checkbox_get_text},
 
-    {NULL, NULL},
+    {NULL,       NULL                  },
 };
 
 static void lugl_checkbox_init(lua_State *L)
