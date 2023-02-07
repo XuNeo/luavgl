@@ -9,7 +9,7 @@
 #include "anim.c"
 #include "constants.c"
 #include "font.c"
-// #include "fs.c"
+#include "fs.c"
 #include "obj.c"
 #include "timer.c"
 #include "util.c"
@@ -18,7 +18,7 @@ static const struct luaL_Reg lugl_methods[] = {
     {"Timer", lugl_timer_create}, /* timer.c */
     {"Font",  lugl_font_create }, /* font.c */
     {"Style", lugl_style_create}, /* style.c */
-  // {"open",  lugl_fs_open     }, /* fs.c */
+    {"open",  lugl_fs_open     }, /* fs.c */
 
     {NULL,    NULL             },
 };
@@ -125,6 +125,7 @@ LUALIB_API int luaopen_lugl(lua_State *L)
   lugl_anim_init(L);
   lugl_timer_init(L);
   lugl_style_init(L);
+  lugl_fs_init(L);
 
   lugl_constants_init(L);
 
