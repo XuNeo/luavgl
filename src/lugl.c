@@ -15,12 +15,11 @@
 #include "util.c"
 
 static const struct luaL_Reg lugl_methods[] = {
-    {"Timer", lugl_timer_create}, /* timer.c */
-    {"Font",  lugl_font_create }, /* font.c */
-    {"Style", lugl_style_create}, /* style.c */
-    {"open",  lugl_fs_open     }, /* fs.c */
+    {"Timer",     lugl_timer_create}, /* timer.c */
+    {"Font",      lugl_font_create }, /* font.c */
+    {"Style",     lugl_style_create}, /* style.c */
 
-    {NULL,    NULL             },
+    {NULL,        NULL             },
 };
 
 LUALIB_API lugl_ctx_t *lugl_context(lua_State *L)
