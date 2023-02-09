@@ -11,6 +11,9 @@
 #include "style.c"
 #include "widgets/widgets.c"
 
+static int lugl_anim_create(lua_State *L);
+static int lugl_anims_create(lua_State *L);
+static int lugl_obj_remove_all_anim(lua_State *L);
 static int lugl_obj_delete(lua_State *L);
 
 static void _lv_obj_set_align(void *obj, lua_State *L)
@@ -683,6 +686,42 @@ static int lugl_obj_set_flex_grow(lua_State *L)
   return 0;
 }
 
+static int lugl_obj_indev_search(lua_State *L)
+{
+  lv_obj_t *obj = lugl_to_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_point_t point;
+  if (lua_istable(L, 2)) {
+    lua_geti(L, 2, 1);
+    point.x = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    lua_geti(L, 2, 2);
+    point.y = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+  } else {
+    point.x = lua_tointeger(L, 2);
+    point.y = lua_tointeger(L, 3);
+  }
+
+  obj = lv_indev_search_obj(obj, &point);
+  if (obj == NULL) {
+    lua_pushnil(L);
+  } else {
+    lua_pushlightuserdata(L, obj);
+    lua_rawget(L, LUA_REGISTRYINDEX);
+    if (lua_isnoneornil(L, -1)) {
+      lugl_add_lobj(L, obj)->lua_created = false;
+    }
+  }
+
+  return 1;
+}
+
 static int lugl_obj_gc(lua_State *L)
 {
   if (lua_type(L, 1) != LUA_TUSERDATA) {
@@ -750,6 +789,7 @@ static const luaL_Reg lugl_obj_methods[] = {
     {"set_flex_flow",            lugl_obj_set_flex_flow           },
     {"set_flex_align",           lugl_obj_set_flex_align          },
     {"set_flex_grow",            lugl_obj_set_flex_grow           },
+    {"indev_search",             lugl_obj_indev_search            },
 
     {"onevent",                  lugl_obj_on_event                },
     {"onPressed",                lugl_obj_on_pressed              },

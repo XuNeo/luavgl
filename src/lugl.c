@@ -10,16 +10,17 @@
 #include "constants.c"
 #include "font.c"
 #include "fs.c"
+#include "indev.c"
 #include "obj.c"
 #include "timer.c"
 #include "util.c"
 
 static const struct luaL_Reg lugl_methods[] = {
-    {"Timer",     lugl_timer_create}, /* timer.c */
-    {"Font",      lugl_font_create }, /* font.c */
-    {"Style",     lugl_style_create}, /* style.c */
+    {"Timer", lugl_timer_create}, /* timer.c */
+    {"Font",  lugl_font_create }, /* font.c */
+    {"Style", lugl_style_create}, /* style.c */
 
-    {NULL,        NULL             },
+    {NULL,    NULL             },
 };
 
 LUALIB_API lugl_ctx_t *lugl_context(lua_State *L)
@@ -125,6 +126,7 @@ LUALIB_API int luaopen_lugl(lua_State *L)
   lugl_timer_init(L);
   lugl_style_init(L);
   lugl_fs_init(L);
+  lugl_indev_init(L);
 
   lugl_constants_init(L);
 

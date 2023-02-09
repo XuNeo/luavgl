@@ -1,5 +1,3 @@
--- demo of external widget added to lugl. See simulator/extension.c
-
 local function fs_example()
     -- local f <close>, msg, code = lugl.open_file("/tmp.txt") -- for lua 5.4
     local f, msg, code = lugl.fs.open_file("/tmp.txt", "rw")
