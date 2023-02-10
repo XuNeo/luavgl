@@ -369,21 +369,22 @@ static int lugl_obj_scroll_to(lua_State *L)
 
   lua_getfield(L, -1, "anim");
   bool anim = lua_toboolean(L, -1);
+  lua_pop(L, 1);
 
   lv_coord_t v;
   lua_getfield(L, -1, "x");
   if (!lua_isnil(L, -1)) {
     v = lua_tointeger(L, -1);
-    lua_pop(L, 1);
     lv_obj_scroll_to_x(obj, v, anim ? LV_ANIM_ON : LV_ANIM_OFF);
   }
+  lua_pop(L, 1);
 
   lua_getfield(L, -1, "y");
   if (!lua_isnil(L, -1)) {
     v = lua_tointeger(L, -1);
-    lua_pop(L, 1);
     lv_obj_scroll_to_x(obj, v, anim ? LV_ANIM_ON : LV_ANIM_OFF);
   }
+  lua_pop(L, 1);
 
   return 0;
 }
