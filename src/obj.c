@@ -915,6 +915,14 @@ LUALIB_API lugl_obj_t *lugl_add_lobj(lua_State *L, lv_obj_t *obj)
 {
   lugl_obj_t *lobj;
 
+  lua_pushlightuserdata(L, obj);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (!lua_isnoneornil(L, -1)) {
+    /* already exists */
+    return lugl_to_lobj(L, -1);
+  }
+  lua_pop(L, 1); /* pop nil value */
+
   lobj = lua_newuserdata(L, sizeof(*lobj));
 
   if (lugl_obj_getmetatable(L, obj->class_p) == LUA_TNIL) {
