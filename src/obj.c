@@ -368,7 +368,7 @@ static int lugl_obj_scroll_to(lua_State *L)
   }
 
   lua_getfield(L, -1, "anim");
-  bool anim = lua_toboolean(L, -1);
+  bool anim = lugl_tointeger(L, -1);
   lua_pop(L, 1);
 
   lv_coord_t v;
