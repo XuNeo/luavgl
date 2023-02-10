@@ -10,6 +10,7 @@
 #include "constants.c"
 #include "font.c"
 #include "fs.c"
+#include "group.c"
 #include "indev.c"
 #include "obj.c"
 #include "timer.c"
@@ -127,6 +128,7 @@ LUALIB_API int luaopen_lugl(lua_State *L)
   lugl_style_init(L);
   lugl_fs_init(L);
   lugl_indev_init(L);
+  lugl_group_init(L);
 
   lugl_constants_init(L);
 
