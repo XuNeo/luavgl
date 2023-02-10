@@ -7,7 +7,10 @@ typedef struct lugl_indev_s {
   lv_indev_t *indev;
 } lugl_indev_t;
 
-static lugl_indev_t *lugl_to_indev(lua_State *L, int idx)
+/* group APIs */
+static lv_group_t *lugl_to_group(lua_State *L, int idx);
+
+static lugl_indev_t *lugl_check_indev(lua_State *L, int idx)
 {
   lugl_indev_t *v = luaL_checkudata(L, idx, "lv_indev");
 
@@ -65,9 +68,25 @@ static int lugl_indev_get_obj_act(lua_State *L)
   return 1;
 }
 
+static int lugl_indev_get_next(lua_State *L)
+{
+  lv_indev_t* indev = NULL;
+  if (!lua_isnoneornil(L, 1)) {
+    indev = lugl_check_indev(L, 1)->indev;
+  }
+
+  indev = lv_indev_get_next(indev);
+  if (indev == NULL) {
+    lua_pushnil(L);
+    return 1;
+  }
+
+  return lugl_indev_get(L, indev);
+}
+
 static int lugl_indev_get_type(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_indev_type_t t = lv_indev_get_type(i->indev);
   lua_pushinteger(L, t);
   return 1;
@@ -75,7 +94,7 @@ static int lugl_indev_get_type(lua_State *L)
 
 static int lugl_indev_reset(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_obj_t *obj = lugl_to_obj(L, 2);
   if (obj == NULL) {
     return luaL_argerror(L, 2, "expect lvgl obj.");
@@ -87,7 +106,7 @@ static int lugl_indev_reset(lua_State *L)
 
 static int lugl_indev_reset_long_press(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
 
   lv_indev_reset_long_press(i->indev);
   return 1;
@@ -95,7 +114,7 @@ static int lugl_indev_reset_long_press(lua_State *L)
 
 static int lugl_indev_set_cursor(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_obj_t *obj = lugl_to_obj(L, 2);
   if (obj == NULL) {
     return luaL_argerror(L, 2, "expect lvgl obj.");
@@ -107,13 +126,15 @@ static int lugl_indev_set_cursor(lua_State *L)
 
 static int lugl_indev_set_group(lua_State *L)
 {
-  luaL_error(L, "not implemented yet.");
+  lugl_indev_t *i = lugl_check_indev(L, 1);
+  lv_group_t *group = lugl_to_group(L, 2);
+  lv_indev_set_group(i->indev, group);
   return 0;
 }
 
 static int lugl_indev_get_point(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_point_t point;
   lv_indev_get_point(i->indev, &point);
 
@@ -124,7 +145,7 @@ static int lugl_indev_get_point(lua_State *L)
 
 static int lugl_indev_get_gesture_dir(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_dir_t dir = lv_indev_get_gesture_dir(i->indev);
 
   lua_pushinteger(L, dir);
@@ -133,7 +154,7 @@ static int lugl_indev_get_gesture_dir(lua_State *L)
 
 static int lugl_indev_get_key(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   uint32_t v = lv_indev_get_key(i->indev);
 
   lua_pushinteger(L, v);
@@ -142,7 +163,7 @@ static int lugl_indev_get_key(lua_State *L)
 
 static int lugl_indev_get_scroll_dir(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_dir_t dir = lv_indev_get_scroll_dir(i->indev);
 
   lua_pushinteger(L, dir);
@@ -151,7 +172,7 @@ static int lugl_indev_get_scroll_dir(lua_State *L)
 
 static int lugl_indev_get_scroll_obj(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_obj_t *obj = lv_indev_get_scroll_obj(i->indev);
   if (obj == NULL) {
     lua_pushnil(L);
@@ -171,7 +192,7 @@ static int lugl_indev_get_scroll_obj(lua_State *L)
 
 static int lugl_indev_get_vect(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_point_t point;
   lv_indev_get_vect(i->indev, &point);
 
@@ -182,14 +203,14 @@ static int lugl_indev_get_vect(lua_State *L)
 
 static int lugl_indev_wait_release(lua_State *L)
 {
-  lugl_indev_t *i = lugl_to_indev(L, 1);
+  lugl_indev_t *i = lugl_check_indev(L, 1);
   lv_indev_wait_release(i->indev);
   return 0;
 }
 
 static int lugl_indev_tostring(lua_State *L)
 {
-  lua_pushfstring(L, "lv_indev: %p\n", lugl_to_indev(L, 1));
+  lua_pushfstring(L, "lv_indev: %p\n", lugl_check_indev(L, 1));
   return 1;
 }
 
@@ -206,6 +227,7 @@ static int lugl_indev_gc(lua_State *L)
 static const luaL_Reg indev_lib[] = {
     {"get_act",     lugl_indev_get_act    },
     {"get_obj_act", lugl_indev_get_obj_act},
+    {"get_next",    lugl_indev_get_next   },
 
     {NULL,          NULL                  },
 };
