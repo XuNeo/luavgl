@@ -140,7 +140,7 @@ static int lugl_fs_read(lua_State *L)
 
   if (!success) {
     lua_pop(L, 1);    /* remove last result */
-    luaL_pushfail(L); /* push nil instead */
+    lua_pushnil(L); /* push nil instead */
   }
 
   return n - 2;
