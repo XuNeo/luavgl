@@ -8,6 +8,7 @@
 
 #include "anim.c"
 #include "constants.c"
+#include "disp.c"
 #include "font.c"
 #include "fs.c"
 #include "group.c"
@@ -129,6 +130,7 @@ LUALIB_API int luaopen_lugl(lua_State *L)
   lugl_fs_init(L);
   lugl_indev_init(L);
   lugl_group_init(L);
+  lugl_disp_init(L);
 
   lugl_constants_init(L);
 
