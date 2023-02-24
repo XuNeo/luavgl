@@ -742,6 +742,61 @@ static int lugl_obj_indev_search(lua_State *L)
   return 1;
 }
 
+static int lugl_obj_get_coords(lua_State *L)
+{
+  lv_area_t area;
+  lv_obj_t *obj = lugl_to_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_obj_get_coords(obj, &area);
+  lua_newtable(L);
+
+  lua_pushinteger(L, area.x1);
+  lua_setfield(L, -1, "x1");
+
+  lua_pushinteger(L, area.x2);
+  lua_setfield(L, -1, "x2");
+
+  lua_pushinteger(L, area.y1);
+  lua_setfield(L, -1, "y1");
+
+  lua_pushinteger(L, area.y2);
+  lua_setfield(L, -1, "y2");
+
+  return 1;
+}
+
+/**
+ * get object real position using lv_obj_get_x/x2/y/y2
+ */
+static int lugl_obj_get_pos(lua_State *L)
+{
+  lv_obj_t *obj = lugl_to_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lua_newtable(L);
+
+  lua_pushinteger(L, lv_obj_get_x(obj));
+  lua_setfield(L, -1, "x1");
+
+  lua_pushinteger(L, lv_obj_get_x2(obj));
+  lua_setfield(L, -1, "x2");
+
+  lua_pushinteger(L, lv_obj_get_y(obj));
+  lua_setfield(L, -1, "y1");
+
+  lua_pushinteger(L, lv_obj_get_y2(obj));
+  lua_setfield(L, -1, "y2");
+
+  return 1;
+}
+
 static int lugl_obj_gc(lua_State *L)
 {
   if (lua_type(L, 1) != LUA_TUSERDATA) {
@@ -806,6 +861,8 @@ static const luaL_Reg lugl_obj_methods[] = {
     {"set_flex_align",           lugl_obj_set_flex_align          },
     {"set_flex_grow",            lugl_obj_set_flex_grow           },
     {"indev_search",             lugl_obj_indev_search            },
+    {"get_coords",               lugl_obj_get_coords              },
+    {"get_pos",                  lugl_obj_get_pos                 },
 
     {"onevent",                  lugl_obj_on_event                },
     {"onPressed",                lugl_obj_on_pressed              },

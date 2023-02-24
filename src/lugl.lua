@@ -772,6 +772,18 @@ function obj:anims(p)
 end
 
 ---
+--- Get coords of object
+--- @return Coords coords
+function obj:get_coords(p)
+end
+
+---
+--- Get real postion of object relative to its parent
+--- @return Coords coords
+function obj:get_pos(p)
+end
+
+---
 --- Calendar widget
 ---@class Calendar:Object
 ---
@@ -1394,6 +1406,15 @@ end
 --- @field year integer
 --- @field month integer
 --- @field day integer
+---
+
+---
+--- Coordinates
+--- @class Coords
+--- @field x1 integer
+--- @field y1 integer
+--- @field x2 integer
+--- @field y2 integer
 ---
 
 return lugl
