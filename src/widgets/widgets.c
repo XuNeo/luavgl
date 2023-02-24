@@ -19,22 +19,22 @@
 #include "roller.c"
 #include "textarea.c"
 
-/* clang-format off */
-#define WIDGET_CREATE_FUNCTIONS                 \
-    { "Object", lugl_obj_create },              \
-    \
-    { "Calendar", lugl_calendar_create },       \
-    { "Checkbox", lugl_checkbox_create },       \
-    { "Dropdown", lugl_dropdown_create },       \
-    { "Image", lugl_img_create },               \
-    { "Textarea", lugl_textarea_create },       \
-    { "Keyboard", lugl_keyboard_create },       \
-    { "Label", lugl_label_create },             \
-    { "Led", lugl_led_create },                 \
-    { "List", lugl_list_create },               \
-    { "Roller", lugl_roller_create }
+static int lugl_obj_create(lua_State *L);
 
-/* clang-format on */
+static const luaL_Reg widget_create_methods[] = {
+    {"Object",   lugl_obj_create     },
+    {"Calendar", lugl_calendar_create},
+    {"Checkbox", lugl_checkbox_create},
+    {"Dropdown", lugl_dropdown_create},
+    {"Image",    lugl_img_create     },
+    {"Textarea", lugl_textarea_create},
+    {"Keyboard", lugl_keyboard_create},
+    {"Label",    lugl_label_create   },
+    {"Led",      lugl_led_create     },
+    {"List",     lugl_list_create    },
+    {"Roller",   lugl_roller_create  },
+    {NULL,       NULL                }
+};
 
 static void lugl_widgets_init(lua_State *L)
 {

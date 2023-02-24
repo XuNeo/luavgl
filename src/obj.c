@@ -745,11 +745,6 @@ static int lugl_obj_gc(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg widget_create_methods[] = {
-    /* widget created using any_obj:Object() has parent of any_obj */
-    WIDGET_CREATE_FUNCTIONS,
-};
-
 static const luaL_Reg lugl_obj_methods[] = {
     {"set",                      lugl_obj_set                     },
     {"set_style",                lugl_obj_set_style               },
