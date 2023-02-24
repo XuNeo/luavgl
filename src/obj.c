@@ -299,6 +299,25 @@ static int lugl_obj_get_parent(lua_State *L)
   return 1;
 }
 
+static int lugl_obj_set_get_parent(lua_State *L)
+{
+  lv_obj_t *obj = lugl_to_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  if (!lua_isnoneornil(L, 2)) {
+    lv_obj_t *parent = lugl_to_obj(L, 2);
+    if (parent == NULL) {
+      luaL_argerror(L, 1, "null obj");
+      return 0;
+    }
+  }
+
+  return lugl_obj_get_parent(L);
+}
+
 static int lugl_obj_get_child(lua_State *L)
 {
   lv_obj_t *obj = lugl_to_obj(L, 1);
@@ -753,6 +772,7 @@ static const luaL_Reg lugl_obj_methods[] = {
     {"clean",                    lugl_obj_clean                   },
 
  /* misc. functions */
+    {"parent",                   lugl_obj_set_get_parent          },
     {"set_parent",               lugl_obj_set_parent              },
     {"get_parent",               lugl_obj_get_parent              },
     {"get_child",                lugl_obj_get_child               },

@@ -561,6 +561,13 @@ function obj:get_parent()
 end
 
 ---
+--- set and/or get object's parent
+--- @param p Object
+--- @return Object
+function obj:parent(p)
+end
+
+---
 --- get child object
 --- @param id integer 0 the first child, -1 the lastly created child
 --- @return Object
