@@ -561,6 +561,12 @@ function obj:get_parent()
 end
 
 ---
+--- get obj pos x
+--- @return Object
+function obj:get_x()
+end
+
+---
 --- get child object
 --- @param id integer 0 the first child, -1 the lastly created child
 --- @return Object

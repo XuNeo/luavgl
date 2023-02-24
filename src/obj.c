@@ -350,6 +350,21 @@ static int lugl_obj_get_state(lua_State *L)
   return 1;
 }
 
+static int lugl_obj_get_x(lua_State *L)
+{
+  lv_obj_t *obj = lugl_to_obj(L, 1);
+  if (obj == NULL) {
+    luaL_argerror(L, 1, "null obj");
+    return 0;
+  }
+
+  lv_coord_t state = lv_obj_get_x(obj);
+  lua_pushinteger(L, state);
+  
+  return 1;
+}
+
+
 /**
  * obj:scroll_to({x=10})
  * obj:scroll_to({x=10, anim=true})
@@ -748,6 +763,7 @@ static int lugl_obj_gc(lua_State *L)
 static const luaL_Reg widget_create_methods[] = {
     /* widget created using any_obj:Object() has parent of any_obj */
     WIDGET_CREATE_FUNCTIONS,
+    {NULL, NULL},
 };
 
 static const luaL_Reg lugl_obj_methods[] = {
@@ -764,6 +780,7 @@ static const luaL_Reg lugl_obj_methods[] = {
     {"get_child_cnt",            lugl_obj_get_child_cnt           },
     {"get_screen",               lugl_obj_get_screen              },
     {"get_state",                lugl_obj_get_state               },
+    {"get_x",                    lugl_obj_get_x                   },
     {"scroll_to",                lugl_obj_scroll_to               },
     {"is_scrolling",             lugl_obj_is_scrolling            },
     {"is_visible",               lugl_obj_is_visible              },
