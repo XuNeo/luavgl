@@ -122,7 +122,6 @@ LUALIB_API int luaopen_lugl(lua_State *L)
   lv_obj_clear_flag(root, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
 
   lugl_obj_init(L);
-  lugl_label_init(L);
   lugl_widgets_init(L);
   lugl_anim_init(L);
   lugl_timer_init(L);
