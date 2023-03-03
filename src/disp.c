@@ -233,10 +233,13 @@ static int lugl_disp_set_bg_opa(lua_State *L)
 
 static int lugl_disp_get_chroma_key_color(lua_State *L)
 {
+#if LVGL_VERSION_MAJOR >= 9
   lugl_disp_t *d = lugl_check_disp(L, 1);
   lv_color_t c = lv_disp_get_chroma_key_color(d->disp);
   lua_pushinteger(L, c.full);
-
+#else
+  lua_pushinteger(L, 0);
+#endif
   return 1;
 }
 
