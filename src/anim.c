@@ -45,7 +45,7 @@ static void lugl_anim_exec_cb(void *var, int32_t value)
   lua_rawget(L, LUA_REGISTRYINDEX); /* this should not fail*/
   lua_pushinteger(L, value);
 
-  lua_call(L, 2, 0);
+  lugl_pcall(L, 2, 0);
 }
 
 static inline void lugl_obj_remove_anim(lua_State *L, lugl_obj_t *lobj,

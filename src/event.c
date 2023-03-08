@@ -39,7 +39,7 @@ static void lugl_obj_event_cb(lv_event_t *e)
   lua_pushinteger(L, e->code);
 
   /* args: obj, code */
-  lua_call(L, 2, 0);
+  lugl_pcall(L, 2, 0);
 }
 
 static void lugl_obj_remove_event(lua_State *L, lv_obj_t *obj,

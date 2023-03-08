@@ -191,6 +191,12 @@ LUALIB_API void _lv_dummy_set(void *obj, lua_State *L);
  */
 LUALIB_API int lugl_obj_set_property_kv(lua_State *L, void *data);
 
+/**
+ * @brief Protected call
+ * @return negative error code or zero.
+ */
+LUALIB_API int lugl_pcall(lua_State *L, int nargs, int nresult);
+
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

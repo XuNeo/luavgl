@@ -186,6 +186,61 @@ int lugl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz)
   return 1;
 }
 
+static int msghandler(lua_State *L)
+{
+  if (!lua_isstring(L, 1)) /* 'message' not a string? */
+    return 1;              /* keep it intact */
+
+  const char *msg = lua_tostring(L, 1);
+  if (msg == NULL) {                         /* is error object not a string? */
+    if (luaL_callmeta(L, 1, "__tostring") && /* does it have a metamethod */
+        lua_type(L, -1) == LUA_TSTRING)      /* that produces a string? */
+      return 1;                              /* that is the message */
+    else
+      msg = lua_pushfstring(L, "(error object is a %s value)",
+                            luaL_typename(L, 1));
+  }
+
+  /* append a standard traceback */
+  luaL_traceback(L, L, msg, 1);
+
+  /* show it on screen */
+  lv_obj_t *root = NULL;
+  lugl_ctx_t *ctx = lugl_context(L);
+  root = lv_obj_create(ctx->root ? ctx->root : lv_scr_act());
+  lv_obj_set_size(root, LV_PCT(80), LV_PCT(80));
+  lv_obj_center(root);
+
+  lv_obj_set_style_bg_color(root, lv_color_black(), 0);
+  lv_obj_set_style_bg_opa(root, LV_OPA_70, 0);
+  lv_obj_set_style_border_width(root, 1, 0);
+
+  lv_obj_t *label = lv_label_create(root);
+  lv_label_set_long_mode(label, LV_LABEL_LONG_WRAP);
+  lv_obj_set_style_text_font(label, LV_FONT_DEFAULT, 0);
+  lv_obj_set_style_text_color(label, lv_palette_main(LV_PALETTE_LIGHT_GREEN),
+                              0);
+  lv_obj_set_width(label, LV_PCT(80));
+  lv_obj_center(label);
+
+  lv_label_set_text(label, lua_tostring(L, -1));
+  return 1;
+}
+
+LUALIB_API int lugl_pcall(lua_State *L, int nargs, int nresult)
+{
+  int base = lua_gettop(L) - nargs; /* function index */
+  lua_pushcfunction(L, msghandler); /* push message handler */
+  lua_insert(L, base);              /* put it under function and args */
+  int status = lua_pcall(L, nargs, nresult, base);
+  if (status != LUA_OK) {
+    debug("crashed\n%s", lua_tostring(L, -1));
+  }
+  lua_remove(L, base); /* remove message handler from the stack */
+
+  return status;
+}
+
 LUALIB_API lv_obj_t *lugl_to_obj(lua_State *L, int idx)
 {
   lugl_obj_t *lobj = lugl_to_lobj(L, idx);

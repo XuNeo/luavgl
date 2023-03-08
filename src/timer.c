@@ -28,7 +28,7 @@ static void lugl_timer_cb(lv_timer_t *t)
   lua_pushlightuserdata(L, t);
   lua_rawget(L, LUA_REGISTRYINDEX); /* this should not fail*/
 
-  lua_call(L, 1, 0);
+  lugl_pcall(L, 1, 0);
 }
 
 static void lugl_timer_set_cb(void *_t, lua_State *L)
