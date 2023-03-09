@@ -1,6 +1,6 @@
 local function fs_example()
-    -- local f <close>, msg, code = lugl.open_file("/tmp.txt") -- for lua 5.4
-    local f, msg, code = lugl.fs.open_file("/tmp.txt", "rw")
+    -- local f <close>, msg, code = lvgl.open_file("/tmp.txt") -- for lua 5.4
+    local f, msg, code = lvgl.fs.open_file("/tmp.txt", "rw")
     if not f then
         print("failed: ", msg, code)
         return
@@ -20,23 +20,23 @@ local function fs_example()
     print("header len:", #header, ": ", header)
     print("remaining: ", remaining)
 
-    lugl.Label(nil, {
+    lvgl.Label(nil, {
         x = 0,
         y = 0,
-        text_font = lugl.Font("montserrat", 20, "normal"),
+        text_font = lvgl.Font("montserrat", 20, "normal"),
         text = header .. remaining,
-        align = lugl.ALIGN.TOP_LEFT
+        align = lvgl.ALIGN.TOP_LEFT
     })
 
-    local list = lugl.List(nil, {
-        align = lugl.ALIGN.TOP_RIGHT,
+    local list = lvgl.List(nil, {
+        align = lvgl.ALIGN.TOP_RIGHT,
         pad_all = 10,
-        text_font = lugl.BUILTIN_FONT.MONTSERRAT_12
+        text_font = lvgl.BUILTIN_FONT.MONTSERRAT_12
     })
     list:add_text("Directory list:")
 
-    -- local dir <close>, msg, code = lugl.fs.open_dir("/")
-    local dir, msg, code = lugl.fs.open_dir("/")
+    -- local dir <close>, msg, code = lvgl.fs.open_dir("/")
+    local dir, msg, code = lvgl.fs.open_dir("/")
     if not dir then
         print("open dir failed: ", msg, code)
         return

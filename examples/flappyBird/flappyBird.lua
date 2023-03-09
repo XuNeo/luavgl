@@ -1,4 +1,4 @@
-local lvgl = require("lugl")
+local lvgl = require("lvgl")
 local CONST = lvgl.const
 
 local MOVE_SPEED = 480 / 8000 -- 8s for 480 pixel, pixel per ms

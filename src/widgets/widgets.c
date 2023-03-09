@@ -5,7 +5,7 @@
 #include <lvgl.h>
 #include <stdlib.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
 #include "calendar.c"
@@ -19,33 +19,33 @@
 #include "roller.c"
 #include "textarea.c"
 
-static int lugl_obj_create(lua_State *L);
+static int luavgl_obj_create(lua_State *L);
 
 static const luaL_Reg widget_create_methods[] = {
-    {"Object",   lugl_obj_create     },
-    {"Calendar", lugl_calendar_create},
-    {"Checkbox", lugl_checkbox_create},
-    {"Dropdown", lugl_dropdown_create},
-    {"Image",    lugl_img_create     },
-    {"Textarea", lugl_textarea_create},
-    {"Keyboard", lugl_keyboard_create},
-    {"Label",    lugl_label_create   },
-    {"Led",      lugl_led_create     },
-    {"List",     lugl_list_create    },
-    {"Roller",   lugl_roller_create  },
+    {"Object",   luavgl_obj_create     },
+    {"Calendar", luavgl_calendar_create},
+    {"Checkbox", luavgl_checkbox_create},
+    {"Dropdown", luavgl_dropdown_create},
+    {"Image",    luavgl_img_create     },
+    {"Textarea", luavgl_textarea_create},
+    {"Keyboard", luavgl_keyboard_create},
+    {"Label",    luavgl_label_create   },
+    {"Led",      luavgl_led_create     },
+    {"List",     luavgl_list_create    },
+    {"Roller",   luavgl_roller_create  },
     {NULL,       NULL                }
 };
 
-static void lugl_widgets_init(lua_State *L)
+static void luavgl_widgets_init(lua_State *L)
 {
-  lugl_img_init(L);
-  lugl_label_init(L);
-  lugl_led_init(L);
-  lugl_list_init(L);
-  lugl_textarea_init(L);
-  lugl_keyboard_init(L);
-  lugl_checkbox_init(L);
-  lugl_calendar_init(L);
-  lugl_roller_init(L);
-  lugl_dropdown_init(L);
+  luavgl_img_init(L);
+  luavgl_label_init(L);
+  luavgl_led_init(L);
+  luavgl_list_init(L);
+  luavgl_textarea_init(L);
+  luavgl_keyboard_init(L);
+  luavgl_checkbox_init(L);
+  luavgl_calendar_init(L);
+  luavgl_roller_init(L);
+  luavgl_dropdown_init(L);
 }

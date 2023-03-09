@@ -1,8 +1,8 @@
-local container = lugl.Object(nil, {
-    w = lugl.HOR_RES(),
-    h = lugl.VER_RES(),
+local container = lvgl.Object(nil, {
+    w = lvgl.HOR_RES(),
+    h = lvgl.VER_RES(),
     bg_color = "#888",
-    bg_opa = lugl.OPA(100),
+    bg_opa = lvgl.OPA(100),
     border_width = 0,
     radius = 0,
     flex = {
@@ -15,10 +15,10 @@ print("created container", container)
 
 local function createBtn(parent, name)
     local root = parent:Object {
-        w = lugl.SIZE_CONTENT,
-        h = lugl.SIZE_CONTENT,
+        w = lvgl.SIZE_CONTENT,
+        h = lvgl.SIZE_CONTENT,
         bg_color = "#ccc",
-        bg_opa = lugl.OPA(100),
+        bg_opa = lvgl.OPA(100),
         border_width = 0,
         radius = 10,
         pad_all = 20,
@@ -32,7 +32,7 @@ local function createBtn(parent, name)
     root:Label {
         text = name,
         text_color = "#333",
-        align = lugl.ALIGN.CENTER,
+        align = lvgl.ALIGN.CENTER,
     }
 end
 

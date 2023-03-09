@@ -1,12 +1,12 @@
 #include <lauxlib.h>
 #include <lua.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx)
+static luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx)
 {
-  lugl_obj_t *lobj = lua_touserdata(L, idx);
+  luavgl_obj_t *lobj = lua_touserdata(L, idx);
   if (lobj == NULL) {
     goto fail;
   }
@@ -24,7 +24,7 @@ fail:
   return NULL;
 }
 
-static int lugl_is_callable(lua_State *L, int index)
+static int luavgl_is_callable(lua_State *L, int index)
 {
   if (luaL_getmetafield(L, index, "__call") != LUA_TNIL) {
     // getmetatable(x).__call must be a function for x() to work
@@ -35,20 +35,20 @@ static int lugl_is_callable(lua_State *L, int index)
   return lua_isfunction(L, index);
 }
 
-static void lugl_check_callable(lua_State *L, int index)
+static void luavgl_check_callable(lua_State *L, int index)
 {
-  if (lugl_is_callable(L, index))
+  if (luavgl_is_callable(L, index))
     return;
 
   luaL_argerror(L, index, "function or callable table expected");
 }
 
-static int lugl_check_continuation(lua_State *L, int index)
+static int luavgl_check_continuation(lua_State *L, int index)
 {
   if (lua_isnoneornil(L, index))
     return LUA_NOREF;
 
-  lugl_check_callable(L, index);
+  luavgl_check_callable(L, index);
   lua_pushvalue(L, index);
   return luaL_ref(L, LUA_REGISTRYINDEX);
 }
@@ -121,11 +121,12 @@ static void dumpstack(lua_State *L)
  * Create a table(used as object metatable), using clz as key in lua
  * registry. The name is set to metatable.__name if not NULL
  */
-LUALIB_API int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
-                                        const char *name, const luaL_Reg *l,
-                                        int n)
+LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
+                                          const lv_obj_class_t *clz,
+                                          const char *name, const luaL_Reg *l,
+                                          int n)
 {
-  if (lugl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
+  if (luavgl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
     return 0; /* leave previous value on top, but return 0 */
   lua_pop(L, 1);
 
@@ -153,7 +154,7 @@ LUALIB_API int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
   luaL_setfuncs(L, l, 0);   /* set methods to t */
   if (clz != &lv_obj_class) {
     /* b = getmatatable(clz.base_clz) */
-    if (lugl_obj_getmetatable(L, clz->base_class) == LUA_TNIL) {
+    if (luavgl_obj_getmetatable(L, clz->base_class) == LUA_TNIL) {
       return luaL_error(L, "need to init base class firstly: %s.", name);
     }
 
@@ -165,7 +166,7 @@ LUALIB_API int lugl_obj_createmetatable(lua_State *L, const lv_obj_class_t *clz,
   return 1;
 }
 
-int lugl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz)
+int luavgl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz)
 {
   lua_pushlightuserdata(L, (void *)clz);
   return lua_rawget(L, LUA_REGISTRYINDEX);
@@ -175,9 +176,9 @@ int lugl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz)
  * get metatable of clz, and set it as the metatable of table on stack idx
  * return 0 if failed.
  */
-int lugl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz)
+int luavgl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz)
 {
-  if (lugl_obj_getmetatable(L, clz) == LUA_TNIL) {
+  if (luavgl_obj_getmetatable(L, clz) == LUA_TNIL) {
     lua_pop(L, 1);
     return 0;
   }
@@ -206,7 +207,7 @@ static int msghandler(lua_State *L)
 
   /* show it on screen */
   lv_obj_t *root = NULL;
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
   root = lv_obj_create(ctx->root ? ctx->root : lv_scr_act());
   lv_obj_set_size(root, LV_PCT(80), LV_PCT(80));
   lv_obj_center(root);
@@ -227,7 +228,7 @@ static int msghandler(lua_State *L)
   return 1;
 }
 
-LUALIB_API int lugl_pcall(lua_State *L, int nargs, int nresult)
+LUALIB_API int luavgl_pcall(lua_State *L, int nargs, int nresult)
 {
   int base = lua_gettop(L) - nargs; /* function index */
   lua_pushcfunction(L, msghandler); /* push message handler */
@@ -241,16 +242,16 @@ LUALIB_API int lugl_pcall(lua_State *L, int nargs, int nresult)
   return status;
 }
 
-LUALIB_API lv_obj_t *lugl_to_obj(lua_State *L, int idx)
+LUALIB_API lv_obj_t *luavgl_to_obj(lua_State *L, int idx)
 {
-  lugl_obj_t *lobj = lugl_to_lobj(L, idx);
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, idx);
   if (lobj == NULL)
     return NULL;
 
   return lobj->obj;
 }
 
-LUALIB_API int lugl_tointeger(lua_State *L, int idx)
+LUALIB_API int luavgl_tointeger(lua_State *L, int idx)
 {
   int v = 0;
   if (lua_isboolean(L, idx)) {
@@ -264,7 +265,7 @@ LUALIB_API int lugl_tointeger(lua_State *L, int idx)
   return v;
 }
 
-LUALIB_API lv_color_t lugl_tocolor(lua_State *L, int idx)
+LUALIB_API lv_color_t luavgl_tocolor(lua_State *L, int idx)
 {
   lv_color_t color = {0};
   if (lua_type(L, idx) == LUA_TSTRING) {
@@ -296,13 +297,13 @@ LUALIB_API lv_color_t lugl_tocolor(lua_State *L, int idx)
       return color;
     }
   } else {
-    color = lv_color_hex(lugl_tointeger(L, idx)); /* make to lv_color_t */
+    color = lv_color_hex(luavgl_tointeger(L, idx)); /* make to lv_color_t */
   }
 
   return color;
 }
 
-LUALIB_API const char *lugl_toimgsrc(lua_State *L, int idx)
+LUALIB_API const char *luavgl_toimgsrc(lua_State *L, int idx)
 {
   const char *src = NULL;
   if (lua_isuserdata(L, idx)) {
@@ -318,8 +319,8 @@ LUALIB_API const char *lugl_toimgsrc(lua_State *L, int idx)
   return src;
 }
 
-LUALIB_API void lugl_iterate(lua_State *L, int index,
-                             int (*cb)(lua_State *, void *), void *cb_para)
+LUALIB_API void luavgl_iterate(lua_State *L, int index,
+                               int (*cb)(lua_State *, void *), void *cb_para)
 {
   int i = index < 0 ? index - 1 : index;
   lua_pushnil(L); /* nil as initial key to iterate through table */
@@ -337,9 +338,9 @@ LUALIB_API void lugl_iterate(lua_State *L, int index,
   }
 }
 
-LUALIB_API int lugl_set_property_array(lua_State *L, void *obj,
-                                       const lugl_value_setter_t table[],
-                                       uint32_t len)
+LUALIB_API int luavgl_set_property_array(lua_State *L, void *obj,
+                                         const luavgl_value_setter_t table[],
+                                         uint32_t len)
 {
   const char *key = lua_tostring(L, -2);
   if (key == NULL) {
@@ -348,7 +349,7 @@ LUALIB_API int lugl_set_property_array(lua_State *L, void *obj,
   }
 
   for (int i = 0; i < len; i++) {
-    const lugl_value_setter_t *p = &table[i];
+    const luavgl_value_setter_t *p = &table[i];
     if (strcmp(key, p->key))
       continue;
 
@@ -364,11 +365,11 @@ LUALIB_API int lugl_set_property_array(lua_State *L, void *obj,
       p->setter(obj, v);
     } else if (p->type == SETTER_TYPE_COLOR) {
       /* color */
-      lv_color_t color = lugl_tocolor(L, -1);
+      lv_color_t color = luavgl_tocolor(L, -1);
       p->setter(obj, color.full);
     } else if (p->type == SETTER_TYPE_IMGSRC) {
       /* img src */
-      p->setter_pointer(obj, (void *)lugl_toimgsrc(L, -1));
+      p->setter_pointer(obj, (void *)luavgl_toimgsrc(L, -1));
     } else if (p->type == SETTER_TYPE_STACK) {
       p->setter_stack(obj, L);
     } else if (p->type == SETTER_TYPE_POINTER) {

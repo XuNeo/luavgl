@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
 #include "anim.c"
@@ -17,24 +17,24 @@
 #include "timer.c"
 #include "util.c"
 
-static const struct luaL_Reg lugl_methods[] = {
-    {"Timer", lugl_timer_create}, /* timer.c */
-    {"Font",  lugl_font_create }, /* font.c */
-    {"Style", lugl_style_create}, /* style.c */
+static const struct luaL_Reg luavgl_methods[] = {
+    {"Timer", luavgl_timer_create}, /* timer.c */
+    {"Font",  luavgl_font_create }, /* font.c */
+    {"Style", luavgl_style_create}, /* style.c */
 
-    {NULL,    NULL             },
+    {NULL,    NULL               },
 };
 
-LUALIB_API lugl_ctx_t *lugl_context(lua_State *L)
+LUALIB_API luavgl_ctx_t *luavgl_context(lua_State *L)
 {
-  static const char *lualvgl_key = "lugl_key";
+  static const char *luavglgl_key = "luavgl_key";
 
-  lugl_ctx_t *ctx;
-  lua_pushstring(L, lualvgl_key);
+  luavgl_ctx_t *ctx;
+  lua_pushstring(L, luavglgl_key);
   lua_rawget(L, LUA_REGISTRYINDEX);
 
   /**
-   * ctx = registry[lugl_key]
+   * ctx = registry[luavgl_key]
    * if ctx == nil then
    *    ctx = new ctx
    * else
@@ -44,28 +44,28 @@ LUALIB_API lugl_ctx_t *lugl_context(lua_State *L)
 
   if (lua_isnil(L, -1)) {
     // create it if not exist in registry
-    lua_pushstring(L, lualvgl_key);
-    ctx = (lugl_ctx_t *)lua_newuserdata(L, sizeof(*ctx));
+    lua_pushstring(L, luavglgl_key);
+    ctx = (luavgl_ctx_t *)lua_newuserdata(L, sizeof(*ctx));
     memset(ctx, 0, sizeof(*ctx));
     lua_rawset(L, LUA_REGISTRYINDEX);
   } else {
-    ctx = (lugl_ctx_t *)lua_touserdata(L, -1);
+    ctx = (luavgl_ctx_t *)lua_touserdata(L, -1);
   }
 
   lua_pop(L, 1);
   return ctx;
 }
 
-LUALIB_API void lugl_set_root(lua_State *L, lv_obj_t *root)
+LUALIB_API void luavgl_set_root(lua_State *L, lv_obj_t *root)
 {
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
   ctx->root = root;
 }
 
-LUALIB_API void lugl_set_font_extension(lua_State *L, make_font_cb make,
-                                        delete_font_cb d)
+LUALIB_API void luavgl_set_font_extension(lua_State *L, make_font_cb make,
+                                          delete_font_cb d)
 {
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
   ctx->make_font = make;
   ctx->delete_font = d;
 }
@@ -73,7 +73,7 @@ LUALIB_API void lugl_set_font_extension(lua_State *L, make_font_cb make,
 static int root_gc(lua_State *L)
 {
   debug("enter.\n");
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
   lv_obj_del(ctx->root);
   return 0;
 }
@@ -81,16 +81,16 @@ static int root_gc(lua_State *L)
 static int root_clean(lua_State *L)
 {
   debug("enter.\n");
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
   lv_obj_clean(ctx->root);
   return 0;
 }
 
-LUALIB_API int luaopen_lugl(lua_State *L)
+LUALIB_API int luaopen_lvgl(lua_State *L)
 {
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
 
-  luaL_newlib(L, lugl_methods);
+  luaL_newlib(L, luavgl_methods);
 
   luaL_newmetatable(L, "root.meta");
   lua_pushstring(L, "__gc");
@@ -121,19 +121,20 @@ LUALIB_API int luaopen_lugl(lua_State *L)
   lv_obj_set_size(root, LV_HOR_RES, LV_VER_RES);
   lv_obj_clear_flag(root, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
 
-  lugl_obj_init(L);
-  lugl_widgets_init(L);
-  lugl_anim_init(L);
-  lugl_timer_init(L);
-  lugl_style_init(L);
-  lugl_fs_init(L);
-  lugl_indev_init(L);
-  lugl_group_init(L);
-  lugl_disp_init(L);
+  luavgl_obj_init(L);
+  luavgl_widgets_init(L);
+  luavgl_anim_init(L);
+  luavgl_timer_init(L);
+  luavgl_style_init(L);
+  luavgl_fs_init(L);
+  luavgl_indev_init(L);
+  luavgl_group_init(L);
+  luavgl_disp_init(L);
 
-  lugl_constants_init(L);
+  luavgl_constants_init(L);
 
-  /* Methods to create widget locate in widgets table, check `lugl_obj_init` */
+  /* Methods to create widget locate in widgets table, check `luavgl_obj_init`
+   */
   luaL_getmetatable(L, "widgets");
   lua_setmetatable(L, -2);
 

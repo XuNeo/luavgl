@@ -4,12 +4,12 @@
 #include <lvgl.h>
 #include <stdlib.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-static int lugl_img_create(lua_State *L)
+static int luavgl_img_create(lua_State *L)
 {
-  return lugl_obj_create_helper(L, lv_img_create);
+  return luavgl_obj_create_helper(L, lv_img_create);
 }
 
 static void _lv_img_set_pivot(void *obj, lua_State *L)
@@ -31,7 +31,7 @@ static void _lv_img_set_pivot(void *obj, lua_State *L)
   lv_img_set_pivot(obj, x, y);
 }
 
-static const lugl_value_setter_t img_property_table[] = {
+static const luavgl_value_setter_t img_property_table[] = {
     {"src",       SETTER_TYPE_STACK, {.setter_stack = _lv_dummy_set}               },
     {"offset_x",  0,                 {.setter = (setter_int_t)lv_img_set_offset_x} },
     {"offset_y",  0,                 {.setter = (setter_int_t)lv_img_set_offset_y} },
@@ -41,17 +41,17 @@ static const lugl_value_setter_t img_property_table[] = {
     {"pivot",     SETTER_TYPE_STACK, {.setter_stack = _lv_img_set_pivot}           },
 };
 
-static int lugl_img_set_property_kv(lua_State *L, void *data)
+static int luavgl_img_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
-  int ret = lugl_set_property(L, obj, img_property_table);
+  int ret = luavgl_set_property(L, obj, img_property_table);
 
   if (ret == 0) {
     return 0;
   }
 
   /* a base obj property? */
-  ret = lugl_obj_set_property_kv(L, obj);
+  ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
     debug("unkown property for image.\n");
   }
@@ -59,9 +59,9 @@ static int lugl_img_set_property_kv(lua_State *L, void *data)
   return -1;
 }
 
-static int lugl_img_set(lua_State *L)
+static int luavgl_img_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -86,7 +86,7 @@ static int lugl_img_set(lua_State *L)
   }
   lua_pop(L, 1);
 
-  lugl_iterate(L, -1, lugl_img_set_property_kv, obj);
+  luavgl_iterate(L, -1, luavgl_img_set_property_kv, obj);
 
   return 0;
 }
@@ -94,15 +94,15 @@ static int lugl_img_set(lua_State *L)
 /**
  * img.set_src(img, "path")
  */
-static int lugl_img_set_src(lua_State *L)
+static int luavgl_img_set_src(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
   }
 
-  const char *src = lugl_toimgsrc(L, 2);
+  const char *src = luavgl_toimgsrc(L, 2);
   if (src != NULL) {
     lv_img_set_src(obj, src);
   }
@@ -115,9 +115,9 @@ static int lugl_img_set_src(lua_State *L)
  * img:set_offset({x=10})
  * img:set_offset({x=10, y=100})
  */
-static int lugl_img_set_offset(lua_State *L)
+static int luavgl_img_set_offset(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -148,9 +148,9 @@ static int lugl_img_set_offset(lua_State *L)
 /**
  * img:set_pivot({x=10, y=100})
  */
-static int lugl_img_set_pivot(lua_State *L)
+static int luavgl_img_set_pivot(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -177,9 +177,9 @@ static int lugl_img_set_pivot(lua_State *L)
  * img:get_img_size() -- get size of this image
  * img:get_img_size("src") -- get size of img "src"
  */
-static int lugl_get_img_size(lua_State *L)
+static int luavgl_get_img_size(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -189,7 +189,7 @@ static int lugl_get_img_size(lua_State *L)
   if (lua_isnoneornil(L, 2)) {
     src = lv_img_get_src(obj);
   } else {
-    src = lugl_toimgsrc(L, 2);
+    src = luavgl_toimgsrc(L, 2);
   }
 
   lv_img_header_t header;
@@ -204,19 +204,19 @@ static int lugl_get_img_size(lua_State *L)
   return 2;
 }
 
-static const luaL_Reg lugl_img_methods[] = {
-    {"set",          lugl_img_set       },
+static const luaL_Reg luavgl_img_methods[] = {
+    {"set",          luavgl_img_set       },
 
-    {"set_src",      lugl_img_set_src   },
-    {"set_offset",   lugl_img_set_offset},
-    {"set_pivot",    lugl_img_set_pivot },
-    {"get_img_size", lugl_get_img_size  },
+    {"set_src",      luavgl_img_set_src   },
+    {"set_offset",   luavgl_img_set_offset},
+    {"set_pivot",    luavgl_img_set_pivot },
+    {"get_img_size", luavgl_get_img_size  },
 
     {NULL,           NULL               },
 };
 
-static void lugl_img_init(lua_State *L)
+static void luavgl_img_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_img_class, "lv_img", lugl_img_methods);
+  luavgl_obj_newmetatable(L, &lv_img_class, "lv_img", luavgl_img_methods);
   lua_pop(L, 1);
 }

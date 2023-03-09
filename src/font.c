@@ -1,9 +1,10 @@
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
 #define FONT_DEFAULT_SIZE 12
 
 #define _ARRAY_LEN(a) (sizeof(a) / sizeof(a[0]))
+
 /**
  * Follow css style, specify the name by name family, name size,
  * name weight. Font weight can be numeric value or 'bold'. Alls strings
@@ -151,7 +152,7 @@ static const struct {
 #endif
 };
 
-static int lugl_get_named_weight(const char *name)
+static int luavgl_get_named_weight(const char *name)
 {
   if (name == NULL) {
     return FONT_DEFAULT_SIZE;
@@ -173,8 +174,8 @@ static char *to_lower(char *str)
   return str;
 }
 
-static const lv_font_t *_lugl_font_create(lua_State *L, const char *name,
-                                          int size, int weight)
+static const lv_font_t *_luavgl_font_create(lua_State *L, const char *name,
+                                            int size, int weight)
 {
   /* check builtin font firstly. */
   if (strcmp(name, "montserrat") == 0) {
@@ -220,7 +221,7 @@ static const lv_font_t *_lugl_font_create(lua_State *L, const char *name,
 #endif
 
   /* not built-in font, check extension  */
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
   if (ctx->make_font) {
     return ctx->make_font(name, size, weight);
   }
@@ -235,7 +236,7 @@ static const lv_font_t *_lugl_font_create(lua_State *L, const char *name,
  *
  * lvgl.Font("MiSansW medium, montserrat", 24, "normal")
  */
-static int lugl_font_create(lua_State *L)
+static int luavgl_font_create(lua_State *L)
 {
   int weight;
   int size;
@@ -264,7 +265,7 @@ static int lugl_font_create(lua_State *L)
       }
       char s[len + 1];
       strcpy(s, luastr);
-      weight = lugl_get_named_weight(to_lower(s));
+      weight = luavgl_get_named_weight(to_lower(s));
     }
   } else {
     weight = FONT_WEIGHT_NORMAL;
@@ -294,7 +295,7 @@ static int lugl_font_create(lua_State *L)
       *trim-- = '\0'; /* trailing space. */
     }
 
-    font = _lugl_font_create(L, name, size, weight);
+    font = _luavgl_font_create(L, name, size, weight);
     if (font) {
       break;
     }

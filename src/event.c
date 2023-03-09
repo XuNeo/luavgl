@@ -1,9 +1,9 @@
 #include <assert.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-static void lugl_obj_event_cb(lv_event_t *e)
+static void luavgl_obj_event_cb(lv_event_t *e)
 {
   lua_State *L = e->user_data;
   if (L == NULL) {
@@ -14,7 +14,7 @@ static void lugl_obj_event_cb(lv_event_t *e)
 
   lua_pushlightuserdata(L, obj);
   lua_rawget(L, LUA_REGISTRYINDEX);
-  lugl_obj_t *lobj = lugl_to_lobj(L, -1);
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, -1);
   if (lobj == NULL || lobj->obj == NULL)
     return;
 
@@ -39,11 +39,11 @@ static void lugl_obj_event_cb(lv_event_t *e)
   lua_pushinteger(L, e->code);
 
   /* args: obj, code */
-  lugl_pcall(L, 2, 0);
+  luavgl_pcall(L, 2, 0);
 }
 
-static void lugl_obj_remove_event(lua_State *L, lv_obj_t *obj,
-                                  struct event_callback_s *event)
+static void luavgl_obj_remove_event(lua_State *L, lv_obj_t *obj,
+                                    struct event_callback_s *event)
 {
   luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
   event->code = -1; /* mark it as unused. */
@@ -52,12 +52,12 @@ static void lugl_obj_remove_event(lua_State *L, lv_obj_t *obj,
   event->dsc = NULL;
 }
 
-/* obj:onevent(lugl.EVENT.PRESSED, function(code, value) -- end) */
-static int lugl_obj_on_event(lua_State *L)
+/* obj:onevent(luavgl.EVENT.PRESSED, function(code, value) -- end) */
+static int luavgl_obj_on_event(lua_State *L)
 {
   bool remove_all; /* if third parameter is noneornil, remove all events. */
 
-  lugl_obj_t *lobj = lugl_to_lobj(L, 1);
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, 1);
   lv_obj_t *obj = lobj->obj;
   if (obj == NULL) {
     luaL_argerror(L, 1, "expect obj userdata.\n");
@@ -78,7 +78,7 @@ static int lugl_obj_on_event(lua_State *L)
     for (; slot < lobj->n_events; slot++) {
       struct event_callback_s *event = &lobj->events[slot];
       if (event->code == code) { /* same event can only be added once. */
-        lugl_obj_remove_event(L, obj, event);
+        luavgl_obj_remove_event(L, obj, event);
         if (remove_all)
           continue; /* continue to remove all events associated. */
         else
@@ -124,40 +124,40 @@ static int lugl_obj_on_event(lua_State *L)
 
   /* setup event callback */
 
-  void *dsc = lv_obj_add_event_cb(obj, lugl_obj_event_cb, code, L);
+  void *dsc = lv_obj_add_event_cb(obj, luavgl_obj_event_cb, code, L);
   struct event_callback_s *event = &events[slot];
   event->code = code;
-  event->ref = lugl_check_continuation(L, 3);
+  event->ref = luavgl_check_continuation(L, 3);
   event->dsc = dsc;
 
   return 0;
 }
 
 /* obj:onClicked(function(code, value) end) */
-static int lugl_obj_on_clicked(lua_State *L)
+static int luavgl_obj_on_clicked(lua_State *L)
 {
   /* stack: obj, function cb */
   lua_pushinteger(L, LV_EVENT_CLICKED);
   lua_insert(L, 2);
 
-  return lugl_obj_on_event(L);
+  return luavgl_obj_on_event(L);
 }
 
 /* obj:onPressed(function(code, value) end) */
-static int lugl_obj_on_pressed(lua_State *L)
+static int luavgl_obj_on_pressed(lua_State *L)
 {
   lua_pushinteger(L, LV_EVENT_PRESSED);
   lua_insert(L, 2);
 
-  return lugl_obj_on_event(L);
+  return luavgl_obj_on_event(L);
 }
 
-static void lugl_obj_event_init(lugl_obj_t *lobj) { lobj->n_events = 0; }
+static void luavgl_obj_event_init(luavgl_obj_t *lobj) { lobj->n_events = 0; }
 
 /**
  * Remove all events added, and free memory of events
  */
-static void lugl_obj_remove_event_all(lua_State *L, lugl_obj_t *lobj)
+static void luavgl_obj_remove_event_all(lua_State *L, luavgl_obj_t *lobj)
 {
   if (lobj == NULL || lobj->events == NULL) {
     return;
@@ -169,7 +169,7 @@ static void lugl_obj_remove_event_all(lua_State *L, lugl_obj_t *lobj)
   for (; i < lobj->n_events; i++) {
     struct event_callback_s *event = &lobj->events[i];
     if (event->code != -1) {
-      lugl_obj_remove_event(L, lobj->obj, event);
+      luavgl_obj_remove_event(L, lobj->obj, event);
     }
   }
 

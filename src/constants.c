@@ -1,7 +1,7 @@
 #include "private.h"
 
 /* clang-format off */
-static void lugl_event_code_init(lua_State* L)
+static void luavgl_event_code_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -52,7 +52,7 @@ static void lugl_event_code_init(lua_State* L)
   lua_pushstring(L, "GET_SELF_SIZE"); lua_pushinteger(L, LV_EVENT_GET_SELF_SIZE); lua_settable(L, -3);
 }
 
-static void lugl_obj_flag_init(lua_State* L)
+static void luavgl_obj_flag_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -88,7 +88,7 @@ static void lugl_obj_flag_init(lua_State* L)
   lua_pushstring(L, "USER_4"); lua_pushinteger(L, LV_OBJ_FLAG_USER_4); lua_settable(L, -3);
 }
 
-static void lugl_state_init(lua_State* L)
+static void luavgl_state_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -108,7 +108,7 @@ static void lugl_state_init(lua_State* L)
   lua_pushstring(L, "ANY"); lua_pushinteger(L, LV_STATE_ANY); lua_settable(L, -3);
 }
 
-static void lugl_part_init(lua_State* L)
+static void luavgl_part_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "MAIN"); lua_pushinteger(L, LV_PART_MAIN); lua_settable(L, -3);
@@ -123,7 +123,7 @@ static void lugl_part_init(lua_State* L)
   lua_pushstring(L, "ANY"); lua_pushinteger(L, LV_PART_ANY); lua_settable(L, -3);
 }
 
-static void lugl_align_init(lua_State* L)
+static void luavgl_align_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -151,7 +151,7 @@ static void lugl_align_init(lua_State* L)
   lua_pushstring(L, "OUT_RIGHT_BOTTOM"); lua_pushinteger(L, LV_ALIGN_OUT_RIGHT_BOTTOM); lua_settable(L, -3);
 }
 
-static void lugl_label_const_init(lua_State* L)
+static void luavgl_label_const_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -162,7 +162,7 @@ static void lugl_label_const_init(lua_State* L)
   lua_pushstring(L, "LONG_CLIP"); lua_pushinteger(L, LV_LABEL_LONG_CLIP); lua_settable(L, -3);
 
 }
-static void lugl_builtin_font_init(lua_State* L)
+static void luavgl_builtin_font_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -303,7 +303,7 @@ static void lugl_builtin_font_init(lua_State* L)
 #endif
 }
 
-static void lugl_scr_load_anim_init(lua_State* L)
+static void luavgl_scr_load_anim_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -325,7 +325,7 @@ static void lugl_scr_load_anim_init(lua_State* L)
   lua_pushstring(L, "OUT_BOTTOM"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_BOTTOM); lua_settable(L, -3);
 }
 
-static void lugl_scrollbar_mode_init(lua_State* L)
+static void luavgl_scrollbar_mode_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "OFF"); lua_pushinteger(L, LV_SCROLLBAR_MODE_OFF); lua_settable(L, -3);
@@ -334,7 +334,7 @@ static void lugl_scrollbar_mode_init(lua_State* L)
   lua_pushstring(L, "AUTO"); lua_pushinteger(L, LV_SCROLLBAR_MODE_AUTO); lua_settable(L, -3);
 }
 
-static void lugl_dir_init(lua_State* L)
+static void luavgl_dir_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "NONE"); lua_pushinteger(L, LV_DIR_NONE); lua_settable(L, -3);
@@ -347,7 +347,7 @@ static void lugl_dir_init(lua_State* L)
   lua_pushstring(L, "ALL"); lua_pushinteger(L, LV_DIR_ALL); lua_settable(L, -3);
 }
 
-static void lugl_keyboard_mode_init(lua_State* L)
+static void luavgl_keyboard_mode_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "TEXT_LOWER"); lua_pushinteger(L, LV_KEYBOARD_MODE_TEXT_LOWER); lua_settable(L, -3);
@@ -364,7 +364,7 @@ static void lugl_keyboard_mode_init(lua_State* L)
 #endif
 }
 
-static void lugl_flex_flow_init(lua_State* L)
+static void luavgl_flex_flow_init(lua_State* L)
 {
   lua_newtable(L);
 
@@ -378,7 +378,7 @@ static void lugl_flex_flow_init(lua_State* L)
   lua_pushstring(L, "COLUMN_WRAP_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN_WRAP_REVERSE); lua_settable(L, -3);
 }
 
-static void lugl_flex_align_init(lua_State* L)
+static void luavgl_flex_align_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "START"); lua_pushinteger(L, LV_FLEX_ALIGN_START); lua_settable(L, -3);
@@ -389,7 +389,7 @@ static void lugl_flex_align_init(lua_State* L)
   lua_pushstring(L, "SPACE_BETWEEN"); lua_pushinteger(L, LV_FLEX_ALIGN_SPACE_BETWEEN); lua_settable(L, -3);
 }
 
-static void lugl_grid_align_init(lua_State* L)
+static void luavgl_grid_align_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "START"); lua_pushinteger(L, LV_GRID_ALIGN_START); lua_settable(L, -3);
@@ -401,14 +401,14 @@ static void lugl_grid_align_init(lua_State* L)
   lua_pushstring(L, "SPACE_BETWEEN"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_BETWEEN); lua_settable(L, -3);
 }
 
-static void lugl_roller_mode_init(lua_State* L)
+static void luavgl_roller_mode_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "NORMAL"); lua_pushinteger(L, LV_ROLLER_MODE_NORMAL); lua_settable(L, -3);
   lua_pushstring(L, "INFINITE"); lua_pushinteger(L, LV_ROLLER_MODE_INFINITE); lua_settable(L, -3);
 }
 
-static void lugl_key_init(lua_State* L)
+static void luavgl_key_init(lua_State* L)
 {
   lua_newtable(L);
   lua_pushstring(L, "UP"); lua_pushinteger(L, LV_KEY_UP); lua_settable(L, -3);
@@ -425,16 +425,16 @@ static void lugl_key_init(lua_State* L)
   lua_pushstring(L, "END"); lua_pushinteger(L, LV_KEY_END); lua_settable(L, -3);
 }
 
-static int lugl_LV_PCT(lua_State*L)
+static int luavgl_LV_PCT(lua_State*L)
 {
   int pct = lua_tointeger(L, 1);
   lua_pushinteger(L, LV_PCT(pct));
   return 1;
 }
 
-static int lugl_LV_OPA(lua_State*L)
+static int luavgl_LV_OPA(lua_State*L)
 {
-  int opa = lugl_tointeger(L, 1) * LV_OPA_100 / 100;
+  int opa = luavgl_tointeger(L, 1) * LV_OPA_100 / 100;
   if (opa > 255)
     opa = 255;
   if (opa < 0)
@@ -444,52 +444,52 @@ static int lugl_LV_OPA(lua_State*L)
   return 1;
 }
 
-static int lugl_LV_HOR_RES(lua_State*L)
+static int luavgl_LV_HOR_RES(lua_State*L)
 {
   lua_pushinteger(L, LV_HOR_RES);
   return 1;
 }
 
-static int lugl_LV_VER_RES(lua_State*L)
+static int luavgl_LV_VER_RES(lua_State*L)
 {
   lua_pushinteger(L, LV_VER_RES);
   return 1;
 }
 
 /* clang-format on */
-static void lugl_constants_init(lua_State *L)
+static void luavgl_constants_init(lua_State *L)
 {
-  lugl_event_code_init(L);
+  luavgl_event_code_init(L);
   lua_setfield(L, -2, "EVENT");
-  lugl_obj_flag_init(L);
+  luavgl_obj_flag_init(L);
   lua_setfield(L, -2, "FLAG");
-  lugl_state_init(L);
+  luavgl_state_init(L);
   lua_setfield(L, -2, "STATE");
-  lugl_part_init(L);
+  luavgl_part_init(L);
   lua_setfield(L, -2, "PART");
-  lugl_align_init(L);
+  luavgl_align_init(L);
   lua_setfield(L, -2, "ALIGN");
-  lugl_builtin_font_init(L);
+  luavgl_builtin_font_init(L);
   lua_setfield(L, -2, "BUILTIN_FONT");
-  lugl_label_const_init(L);
+  luavgl_label_const_init(L);
   lua_setfield(L, -2, "LABEL");
-  lugl_scr_load_anim_init(L);
+  luavgl_scr_load_anim_init(L);
   lua_setfield(L, -2, "SCR_LOAD_ANIM");
-  lugl_scrollbar_mode_init(L);
+  luavgl_scrollbar_mode_init(L);
   lua_setfield(L, -2, "SCROLLBAR_MODE");
-  lugl_dir_init(L);
+  luavgl_dir_init(L);
   lua_setfield(L, -2, "DIR");
-  lugl_keyboard_mode_init(L);
+  luavgl_keyboard_mode_init(L);
   lua_setfield(L, -2, "KEYBOARD_MODE");
-  lugl_flex_flow_init(L);
+  luavgl_flex_flow_init(L);
   lua_setfield(L, -2, "FLEX_FLOW");
-  lugl_flex_align_init(L);
+  luavgl_flex_align_init(L);
   lua_setfield(L, -2, "FLEX_ALIGN");
-  lugl_grid_align_init(L);
+  luavgl_grid_align_init(L);
   lua_setfield(L, -2, "GRID_ALIGN");
-  lugl_roller_mode_init(L);
+  luavgl_roller_mode_init(L);
   lua_setfield(L, -2, "ROLLER_MODE");
-  lugl_key_init(L);
+  luavgl_key_init(L);
   lua_setfield(L, -2, "KEY");
   /* miscellaneous. */
 
@@ -498,10 +498,10 @@ static void lugl_constants_init(lua_State *L)
   lua_pushinteger(L, LV_ANIM_PLAYTIME_INFINITE);
   lua_setfield(L, -2, "ANIM_PLAYTIME_INFINITE");
 
-  lua_pushcfunction(L, lugl_LV_OPA);
+  lua_pushcfunction(L, luavgl_LV_OPA);
   lua_setfield(L, -2, "OPA");
 
-  lua_pushcfunction(L, lugl_LV_PCT);
+  lua_pushcfunction(L, luavgl_LV_PCT);
   lua_setfield(L, -2, "PCT");
 
   lua_pushinteger(L, LV_SIZE_CONTENT);
@@ -546,9 +546,9 @@ static void lugl_constants_init(lua_State *L)
   lua_pushinteger(L, LV_LAYOUT_GRID);
   lua_setfield(L, -2, "LAYOUT_GRID");
 
-  lua_pushcfunction(L, lugl_LV_HOR_RES);
+  lua_pushcfunction(L, luavgl_LV_HOR_RES);
   lua_setfield(L, -2, "HOR_RES");
 
-  lua_pushcfunction(L, lugl_LV_VER_RES);
+  lua_pushcfunction(L, luavgl_LV_VER_RES);
   lua_setfield(L, -2, "VER_RES");
 }

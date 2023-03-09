@@ -1,9 +1,9 @@
 #include <assert.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-typedef struct lugl_anim_s {
+typedef struct luavgl_anim_s {
   lv_anim_t *aa; /* the handler returns be lv_anim_start */
   lv_anim_t cfg; /* the configuration, must not be the first element. */
   lv_obj_t *obj;
@@ -17,19 +17,19 @@ typedef struct lugl_anim_s {
    * deleted = ref == LUA_NOREF
    */
   bool paused;
-} lugl_anim_t;
+} luavgl_anim_t;
 
-typedef lugl_anim_t *lugl_anim_handle_t;
+typedef luavgl_anim_t *luavgl_anim_handle_t;
 
-static lugl_anim_t *lugl_check_anim(lua_State *L, int index)
+static luavgl_anim_t *luavgl_check_anim(lua_State *L, int index)
 {
-  lugl_anim_t *v = *(lugl_anim_t **)luaL_checkudata(L, index, "lv_anim");
+  luavgl_anim_t *v = *(luavgl_anim_t **)luaL_checkudata(L, index, "lv_anim");
   return v;
 }
 
-static void lugl_anim_exec_cb(void *var, int32_t value)
+static void luavgl_anim_exec_cb(void *var, int32_t value)
 {
-  lugl_anim_t *a = var;
+  luavgl_anim_t *a = var;
   lua_State *L = a->L;
   int ref = a->ref;
 
@@ -45,11 +45,11 @@ static void lugl_anim_exec_cb(void *var, int32_t value)
   lua_rawget(L, LUA_REGISTRYINDEX); /* this should not fail*/
   lua_pushinteger(L, value);
 
-  lugl_pcall(L, 2, 0);
+  luavgl_pcall(L, 2, 0);
 }
 
-static inline void lugl_obj_remove_anim(lua_State *L, lugl_obj_t *lobj,
-                                        lugl_anim_t *a)
+static inline void luavgl_obj_remove_anim(lua_State *L, luavgl_obj_t *lobj,
+                                          luavgl_anim_t *a)
 {
   if (a->ref == LUA_NOREF) {
     /* no callback assigned to it, it must be deleted. */
@@ -57,7 +57,7 @@ static inline void lugl_obj_remove_anim(lua_State *L, lugl_obj_t *lobj,
   }
 
   if (a->aa) {
-    lv_anim_del(a->cfg.var, lugl_anim_exec_cb);
+    lv_anim_del(a->cfg.var, luavgl_anim_exec_cb);
   } else {
     debug("anim %p already stopped.\n", a);
   }
@@ -73,7 +73,7 @@ static inline void lugl_obj_remove_anim(lua_State *L, lugl_obj_t *lobj,
   /* find a slot to store this anim */
   int slot = 0;
   for (; slot < lobj->n_anim; slot++) {
-    lugl_anim_handle_t anim = lobj->anims[slot];
+    luavgl_anim_handle_t anim = lobj->anims[slot];
     if (anim == a) {
       lobj->anims[slot] = NULL;
       return;
@@ -86,9 +86,9 @@ static inline void lugl_obj_remove_anim(lua_State *L, lugl_obj_t *lobj,
 /* could be called: 1. manually delete anim. 2. anim done, 3. manually stop
  * anim.
  */
-static void lugl_anim_delete_cb(lv_anim_t *_a)
+static void luavgl_anim_delete_cb(lv_anim_t *_a)
 {
-  lugl_anim_t *a = _a->var;
+  luavgl_anim_t *a = _a->var;
   a->aa = NULL; /* handler deleted by lvgl */
 
   /* deleted or paused. if a->ref == NOREF, it's deleted */
@@ -140,7 +140,7 @@ static void _lv_anim_set_path(void *obj, lua_State *L)
 }
 
 /* clang-format off */
-static const lugl_value_setter_t anim_property_table[] = {
+static const luavgl_value_setter_t anim_property_table[] = {
     { "run", SETTER_TYPE_STACK, { .setter_stack = _lv_dummy_set } },
     { "start_value", 0, { .setter = (setter_int_t)_lv_anim_set_start_value } },
     { "end_value", 0, { .setter = (setter_int_t)_lv_anim_set_end_value } },
@@ -152,11 +152,12 @@ static const lugl_value_setter_t anim_property_table[] = {
     { "path", SETTER_TYPE_STACK, { .setter_stack = _lv_anim_set_path } },
     { "exec_cb", SETTER_TYPE_STACK, { .setter_stack = _lv_dummy_set } },
 };
+
 /* clang-format on */
 
 static int anim_set_para_cb(lua_State *L, void *data)
 {
-  int ret = lugl_set_property(L, data, anim_property_table);
+  int ret = luavgl_set_property(L, data, anim_property_table);
 
   if (ret != 0) {
     debug("failed\n");
@@ -165,7 +166,7 @@ static int anim_set_para_cb(lua_State *L, void *data)
   return ret;
 }
 
-static inline void _lugl_anim_start(lua_State *L, lugl_anim_t *a)
+static inline void _luavgl_anim_start(lua_State *L, luavgl_anim_t *a)
 {
   lv_anim_t *new_a = lv_anim_start(&a->cfg);
   a->aa = new_a;
@@ -177,6 +178,7 @@ static inline void _lugl_anim_start(lua_State *L, lugl_anim_t *a)
   lua_pushlightuserdata(L, a);
   lua_rawset(L, LUA_REGISTRYINDEX);
 }
+
 /**
  * setup anim, parameter is in stack[2] and is a table.
  * {
@@ -192,8 +194,8 @@ static inline void _lugl_anim_start(lua_State *L, lugl_anim_t *a)
  *                    -- ease_in_out, overshoot, bounce, step
  * }
  */
-static inline int lugl_anim_setup(lua_State *L, lv_obj_t *obj,
-                                  lugl_anim_t *anim)
+static inline int luavgl_anim_setup(lua_State *L, lv_obj_t *obj,
+                                    luavgl_anim_t *anim)
 {
   lv_anim_t *cfg = &anim->cfg;
 
@@ -209,20 +211,20 @@ static inline int lugl_anim_setup(lua_State *L, lv_obj_t *obj,
   anim->paused = true;
 
   lv_anim_init(cfg);
-  cfg->var = anim; /* var: lugl_anim_t, which contains everything we need */
-  cfg->deleted_cb = lugl_anim_delete_cb;
-  cfg->exec_cb = lugl_anim_exec_cb;
+  cfg->var = anim; /* var: luavgl_anim_t, which contains everything we need */
+  cfg->deleted_cb = luavgl_anim_delete_cb;
+  cfg->exec_cb = luavgl_anim_exec_cb;
 
   /* check exec_cb firstly, since it could fail. */
   lua_getfield(L, -2, "exec_cb");
-  anim->ref = lugl_check_continuation(L, -1);
+  anim->ref = luavgl_check_continuation(L, -1);
   lua_pop(L, 1);
 
   lua_getfield(L, -2, "run");
   bool run = lua_toboolean(L, -1);
   lua_pop(L, 1);
 
-  lugl_iterate(L, -2, anim_set_para_cb, cfg);
+  luavgl_iterate(L, -2, anim_set_para_cb, cfg);
 
   /* different to obj events and styles, return userdata so lua can control
    * anim using start/stop etc. */
@@ -231,7 +233,7 @@ static inline int lugl_anim_setup(lua_State *L, lv_obj_t *obj,
   lua_pop(L, 2);       /* remove obj and parameter table */
 
   if (run) {
-    _lugl_anim_start(L, anim);
+    _luavgl_anim_start(L, anim);
   } else {
     /* added to registry any way to avoid early gc */
     lua_pushvalue(L, -1);
@@ -248,11 +250,11 @@ static inline int lugl_anim_setup(lua_State *L, lv_obj_t *obj,
  * a = obj:anim{anim parameters}
  * a:start()
  */
-static int lugl_anim_create(lua_State *L)
+static int luavgl_anim_create(lua_State *L)
 {
   bool remove_all; /* if third parameter is noneornil, remove all anims. */
 
-  lugl_obj_t *lobj = lugl_to_lobj(L, 1);
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, 1);
   lv_obj_t *obj = lobj->obj;
   if (obj == NULL) {
     return luaL_argerror(L, 1, "expect obj userdata.\n");
@@ -267,9 +269,9 @@ static int lugl_anim_create(lua_State *L)
   int slot = 0;
   if (lobj && lobj->anims) {
     for (; slot < lobj->n_anim; slot++) {
-      lugl_anim_handle_t anim = lobj->anims[slot];
+      luavgl_anim_handle_t anim = lobj->anims[slot];
       if (remove_all) {
-        lugl_obj_remove_anim(L, lobj, anim);
+        luavgl_obj_remove_anim(L, lobj, anim);
       } else if (anim == NULL) {
         /* this callback has been removed, thus, we can use this
          * slot */
@@ -281,18 +283,18 @@ static int lugl_anim_create(lua_State *L)
   if (remove_all) /* no need to add, just return */
     return 0;
 
-  lugl_anim_handle_t *anims = lobj->anims;
+  luavgl_anim_handle_t *anims = lobj->anims;
 
   /* create lobj->anims, if NULL, realloc if existing and find no slot
    */
   if (anims == NULL) {
-    anims = calloc(sizeof(lugl_anim_handle_t), 1);
+    anims = calloc(sizeof(luavgl_anim_handle_t), 1);
     lobj->anims = anims;
     lobj->n_anim = 1;
   } else {
     /* realloc? */
     if (slot && slot == lobj->n_anim) {
-      lugl_anim_handle_t *_anims;
+      luavgl_anim_handle_t *_anims;
       _anims = realloc(lobj->anims, (lobj->n_anim + 1) * sizeof(*_anims));
       if (_anims == NULL) {
         return luaL_error(L, "No memory.");
@@ -304,20 +306,20 @@ static int lugl_anim_create(lua_State *L)
     /* else: we have found a slot to reuse, use it. */
   }
 
-  lugl_anim_t *a = malloc(sizeof(*a));
+  luavgl_anim_t *a = malloc(sizeof(*a));
   if (a == NULL) {
     return luaL_error(L, "no memory.");
   }
 
   anims[slot] = a;
 
-  return lugl_anim_setup(L, obj, a);
+  return luavgl_anim_setup(L, obj, a);
 }
 
 /**
  * a = obj:anims{{anim1 para}, {anim2 para}}
  */
-static int lugl_anims_create(lua_State *L)
+static int luavgl_anims_create(lua_State *L)
 {
   /* two argument expected: obj, table{table} */
   if (!lua_istable(L, 2)) {
@@ -325,13 +327,13 @@ static int lugl_anims_create(lua_State *L)
   }
 
   lua_newtable(L); /* create a table to store created anims */
-  /* the lugl_anim_create expect obj + table */
+  /* the luavgl_anim_create expect obj + table */
   int len = lua_rawlen(L, 2); /* number of anims */
   int status;
 
   for (int i = 1; i <= len; i++) {
     /* stack now: obj, table{table}, {result} */
-    lua_pushcfunction(L, lugl_anim_create);
+    lua_pushcfunction(L, luavgl_anim_create);
     lua_pushvalue(L, 1);  /* obj */
     lua_rawgeti(L, 2, i); /* get the parameter table */
     status = lua_pcall(L, 2, 1, 0);
@@ -346,9 +348,9 @@ static int lugl_anims_create(lua_State *L)
 }
 
 /* anim:set({}) */
-static int lugl_anim_set(lua_State *L)
+static int luavgl_anim_set(lua_State *L)
 {
-  lugl_anim_t *a = lugl_check_anim(L, 1);
+  luavgl_anim_t *a = luavgl_check_anim(L, 1);
 
   if (!a->paused) {
     return luaL_error(L, "cannot change para while running.");
@@ -358,7 +360,7 @@ static int lugl_anim_set(lua_State *L)
   lua_getfield(L, 2, "exec_cb");
   if (!lua_isnoneornil(L, -1)) {
     /* update exec_cb */
-    int ref = lugl_check_continuation(L, -1);
+    int ref = luavgl_check_continuation(L, -1);
     if (a->ref != LUA_NOREF) {
       luaL_unref(L, LUA_REGISTRYINDEX, a->ref);
     }
@@ -370,21 +372,21 @@ static int lugl_anim_set(lua_State *L)
   bool run = lua_toboolean(L, -1);
   lua_pop(L, 1);
 
-  lugl_iterate(L, 2, anim_set_para_cb, &a->cfg);
+  luavgl_iterate(L, 2, anim_set_para_cb, &a->cfg);
 
   if (run)
-    _lugl_anim_start(L, a);
+    _luavgl_anim_start(L, a);
 
   return 0;
 }
 
-static void lugl_obj_anim_init(lugl_obj_t *lobj)
+static void luavgl_obj_anim_init(luavgl_obj_t *lobj)
 {
   lobj->anims = NULL;
   lobj->n_anim = 0;
 }
 
-static int lugl_obj_remove_all_anim_int(lua_State *L, lugl_obj_t *lobj)
+static int luavgl_obj_remove_all_anim_int(lua_State *L, luavgl_obj_t *lobj)
 {
   debug("obj: %p\n", lobj->obj);
 
@@ -394,9 +396,9 @@ static int lugl_obj_remove_all_anim_int(lua_State *L, lugl_obj_t *lobj)
 
   int i = 0;
   for (; i < lobj->n_anim; i++) {
-    lugl_anim_handle_t anim = lobj->anims[i];
+    luavgl_anim_handle_t anim = lobj->anims[i];
     if (anim != NULL)
-      lugl_obj_remove_anim(L, lobj, anim);
+      luavgl_obj_remove_anim(L, lobj, anim);
     /* else, it's an empty slot, anim already removed */
   }
 
@@ -410,18 +412,18 @@ static int lugl_obj_remove_all_anim_int(lua_State *L, lugl_obj_t *lobj)
 /**
  * Remove all anims added, and free memory of anims
  */
-static int lugl_obj_remove_all_anim(lua_State *L)
+static int luavgl_obj_remove_all_anim(lua_State *L)
 {
   debug("\n");
-  lugl_obj_t *lobj = lugl_to_lobj(L, 1);
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, 1);
 
-  lugl_obj_remove_all_anim_int(L, lobj);
+  luavgl_obj_remove_all_anim_int(L, lobj);
   return 0;
 }
 
-static int lugl_anim_start(lua_State *L)
+static int luavgl_anim_start(lua_State *L)
 {
-  lugl_anim_t *a = lugl_check_anim(L, -1);
+  luavgl_anim_t *a = luavgl_check_anim(L, -1);
 
   if (!a->paused) {
     debug("already running.\n");
@@ -438,52 +440,52 @@ static int lugl_anim_start(lua_State *L)
   return 0;
 }
 
-static int lugl_anim_stop(lua_State *L)
+static int luavgl_anim_stop(lua_State *L)
 {
-  lugl_anim_t *a = lugl_check_anim(L, -1);
+  luavgl_anim_t *a = luavgl_check_anim(L, -1);
 
   if (a->paused) {
     debug("already stopped");
     return 0;
   }
 
-  lv_anim_del(a->cfg.var, lugl_anim_exec_cb);
+  lv_anim_del(a->cfg.var, luavgl_anim_exec_cb);
 
-  /* work done in lugl_anim_delete_cb */
+  /* work done in luavgl_anim_delete_cb */
   return 0;
 }
 
 /* remove anim from obj,  */
-static int lugl_anim_delete(lua_State *L)
+static int luavgl_anim_delete(lua_State *L)
 {
   debug("\n");
-  lugl_anim_t *a = lugl_check_anim(L, -1);
+  luavgl_anim_t *a = luavgl_check_anim(L, -1);
 
   lua_pushlightuserdata(L, a->obj);
   lua_rawget(L, LUA_REGISTRYINDEX);
-  lugl_obj_t *lobj = lugl_to_lobj(L, -1);
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, -1);
   lua_pop(L, 1);
-  lugl_obj_remove_anim(L, lobj, a);
+  luavgl_obj_remove_anim(L, lobj, a);
 
   return 0;
 }
 
-static int lugl_anim_gc(lua_State *L)
+static int luavgl_anim_gc(lua_State *L)
 {
   debug("\n");
 
-  lugl_anim_t *a = lugl_check_anim(L, -1);
+  luavgl_anim_t *a = luavgl_check_anim(L, -1);
 
   /* stop anim if not stopped. */
-  lugl_anim_delete(L);
+  luavgl_anim_delete(L);
 
   free(a);
   return 0;
 }
 
-static int lugl_anim_tostring(lua_State *L)
+static int luavgl_anim_tostring(lua_State *L)
 {
-  lugl_anim_t *a = lugl_check_anim(L, -1);
+  luavgl_anim_t *a = luavgl_check_anim(L, -1);
 
   lua_pushfstring(L,
                   "anim %p: %s, value: [%d..%d], current: %d, repeat_cnt: %d",
@@ -492,27 +494,27 @@ static int lugl_anim_tostring(lua_State *L)
   return 1;
 }
 
-static const luaL_Reg lugl_anim_methods[] = {
+static const luaL_Reg luavgl_anim_methods[] = {
   // anim.c
-    {"set",    lugl_anim_set   },
-    {"start",  lugl_anim_start },
-    {"stop",   lugl_anim_stop  },
-    {"delete", lugl_anim_delete},
+    {"set",    luavgl_anim_set   },
+    {"start",  luavgl_anim_start },
+    {"stop",   luavgl_anim_stop  },
+    {"delete", luavgl_anim_delete},
 
-    {NULL,     NULL            }
+    {NULL,     NULL              }
 };
 
-static void lugl_anim_init(lua_State *L)
+static void luavgl_anim_init(lua_State *L)
 {
   luaL_newmetatable(L, "lv_anim");
 
-  lua_pushcfunction(L, lugl_anim_tostring);
+  lua_pushcfunction(L, luavgl_anim_tostring);
   lua_setfield(L, -2, "__tostring");
 
-  lua_pushcfunction(L, lugl_anim_gc);
+  lua_pushcfunction(L, luavgl_anim_gc);
   lua_setfield(L, -2, "__gc");
 
-  luaL_newlib(L, lugl_anim_methods); /* methods belong to this type */
+  luaL_newlib(L, luavgl_anim_methods); /* methods belong to this type */
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop __index table */

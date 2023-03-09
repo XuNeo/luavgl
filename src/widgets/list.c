@@ -4,31 +4,31 @@
 #include <lvgl.h>
 #include <stdlib.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-static int lugl_list_create(lua_State *L)
+static int luavgl_list_create(lua_State *L)
 {
-  return lugl_obj_create_helper(L, lv_list_create);
+  return luavgl_obj_create_helper(L, lv_list_create);
 }
 
 /* clang-format off */
-static const lugl_value_setter_t list_property_table[] = {
+static const luavgl_value_setter_t list_property_table[] = {
     {"dummy", SETTER_TYPE_STACK, {.setter_stack = _lv_dummy_set}},
 };
 /* clang-format on */
 
-static int lugl_list_set_property_kv(lua_State *L, void *data)
+static int luavgl_list_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
-  int ret = lugl_set_property(L, obj, list_property_table);
+  int ret = luavgl_set_property(L, obj, list_property_table);
 
   if (ret == 0) {
     return 0;
   }
 
   /* a base obj property? */
-  ret = lugl_obj_set_property_kv(L, obj);
+  ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
     debug("unkown property for list.\n");
   }
@@ -36,9 +36,9 @@ static int lugl_list_set_property_kv(lua_State *L, void *data)
   return -1;
 }
 
-static int lugl_list_set(lua_State *L)
+static int luavgl_list_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -49,51 +49,51 @@ static int lugl_list_set(lua_State *L)
     return 0;
   }
 
-  lugl_iterate(L, -1, lugl_list_set_property_kv, obj);
+  luavgl_iterate(L, -1, luavgl_list_set_property_kv, obj);
 
   return 0;
 }
 
-static int lugl_list_add_text(lua_State *L)
+static int luavgl_list_add_text(lua_State *L)
 {
-  lv_obj_t *list = lugl_to_obj(L, 1);
+  lv_obj_t *list = luavgl_to_obj(L, 1);
   const char *str = lua_tostring(L, 2);
   lv_obj_t *obj = lv_list_add_text(list, str);
-  lugl_add_lobj(L, obj)->lua_created = true;
+  luavgl_add_lobj(L, obj)->lua_created = true;
   return 1;
 }
 
-static int lugl_list_add_btn(lua_State *L)
+static int luavgl_list_add_btn(lua_State *L)
 {
-  lv_obj_t *list = lugl_to_obj(L, 1);
-  const void *icon = lugl_toimgsrc(L, 2);
+  lv_obj_t *list = luavgl_to_obj(L, 1);
+  const void *icon = luavgl_toimgsrc(L, 2);
   const char *str = lua_tostring(L, 3);
   lv_obj_t *obj = lv_list_add_btn(list, icon, str);
-  lugl_add_lobj(L, obj)->lua_created = true;
+  luavgl_add_lobj(L, obj)->lua_created = true;
   return 1;
 }
 
-static int lugl_get_btn_text(lua_State *L)
+static int luavgl_get_btn_text(lua_State *L)
 {
-  lv_obj_t *list = lugl_to_obj(L, 1);
-  lv_obj_t *btn = lugl_to_obj(L, 2);
+  lv_obj_t *list = luavgl_to_obj(L, 1);
+  lv_obj_t *btn = luavgl_to_obj(L, 2);
 
   lua_pushstring(L, lv_list_get_btn_text(list, btn));
   return 1;
 }
 
-static const luaL_Reg lugl_list_methods[] = {
-    {"set",          lugl_list_set     },
+static const luaL_Reg luavgl_list_methods[] = {
+    {"set",          luavgl_list_set     },
 
-    {"add_text",     lugl_list_add_text},
-    {"add_btn",      lugl_list_add_btn },
-    {"get_btn_text", lugl_get_btn_text },
+    {"add_text",     luavgl_list_add_text},
+    {"add_btn",      luavgl_list_add_btn },
+    {"get_btn_text", luavgl_get_btn_text },
 
     {NULL,           NULL              },
 };
 
-static void lugl_list_init(lua_State *L)
+static void luavgl_list_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_list_class, "lv_list", lugl_list_methods);
+  luavgl_obj_newmetatable(L, &lv_list_class, "lv_list", luavgl_list_methods);
   lua_pop(L, 1);
 }

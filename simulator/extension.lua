@@ -6,7 +6,7 @@
 --- @param parent? Object | nil
 --- @param property? ObjectStyle
 --- @return Extension
-function lugl.Extension(parent, property)
+function luavgl.Extension(parent, property)
 end
 
 --- Create Extension widget on obj

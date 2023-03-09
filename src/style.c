@@ -4,12 +4,12 @@
 #include <lvgl.h>
 #include <stdlib.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
 typedef struct {
   lv_style_t style;
-} lugl_style_t;
+} luavgl_style_t;
 
 typedef enum {
   STYLE_TYPE_INT = 1,
@@ -159,9 +159,9 @@ static const struct style_map_s {
  * lv_style
  */
 
-static lugl_style_t *lugl_check_style(lua_State *L, int index)
+static luavgl_style_t *luavgl_check_style(lua_State *L, int index)
 {
-  lugl_style_t *v = *(lugl_style_t **)luaL_checkudata(L, index, "lv_style");
+  luavgl_style_t *v = *(luavgl_style_t **)luaL_checkudata(L, index, "lv_style");
   return v;
 }
 
@@ -193,7 +193,7 @@ static uint8_t to_int(char c)
   return -1;
 }
 
-static lv_flex_align_t lugl_to_flex_align(lua_State *L, int idx)
+static lv_flex_align_t luavgl_to_flex_align(lua_State *L, int idx)
 {
   if (lua_type(L, idx) != LUA_TSTRING)
     return LV_FLEX_ALIGN_START;
@@ -220,7 +220,8 @@ static lv_flex_align_t lugl_to_flex_align(lua_State *L, int idx)
   return LV_FLEX_ALIGN_START;
 }
 
-static int lugl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb, void *args)
+static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
+                                     void *args)
 {
   if (!lua_istable(L, -1)) {
     debug("para should be table.");
@@ -281,7 +282,7 @@ static int lugl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb, void *args)
    */
   lua_getfield(L, -1, "justify_content");
   if (lua_type(L, -1) == LUA_TSTRING) {
-    align = lugl_to_flex_align(L, -1);
+    align = luavgl_to_flex_align(L, -1);
     value.num = align;
     cb(LV_STYLE_FLEX_MAIN_PLACE, value, args);
   }
@@ -294,7 +295,7 @@ static int lugl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb, void *args)
    */
   lua_getfield(L, -1, "align_items");
   if (lua_type(L, -1) == LUA_TSTRING) {
-    align = lugl_to_flex_align(L, -1);
+    align = luavgl_to_flex_align(L, -1);
     value.num = align;
     cb(LV_STYLE_FLEX_CROSS_PLACE, value, args);
   }
@@ -307,7 +308,7 @@ static int lugl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb, void *args)
    */
   lua_getfield(L, -1, "align_content");
   if (lua_type(L, -1) == LUA_TSTRING) {
-    align = lugl_to_flex_align(L, -1);
+    align = luavgl_to_flex_align(L, -1);
     value.num = align;
     cb(LV_STYLE_FLEX_TRACK_PLACE, value, args);
   }
@@ -317,7 +318,7 @@ static int lugl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb, void *args)
 }
 
 /* is the style value on stack top is inherit special value */
-static inline bool lugl_is_style_inherit(lua_State *L)
+static inline bool luavgl_is_style_inherit(lua_State *L)
 {
   const char *str;
   return (lua_type(L, -1) == LUA_TSTRING) && (str = lua_tostring(L, -1)) &&
@@ -331,7 +332,7 @@ static inline bool lugl_is_style_inherit(lua_State *L)
  *
  * @return 0 if succeed, -1 if failed.
  */
-static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
+static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 {
   const char *key = lua_tostring(L, -2);
   if (key == NULL) {
@@ -355,21 +356,21 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
   style_type_t type = p->type & 0x0f;
   int v;
 
-  if (!lugl_is_style_inherit(L)) {
+  if (!luavgl_is_style_inherit(L)) {
     /* get normal values */
     switch (type) {
     case STYLE_TYPE_INT:
-      v = lugl_tointeger(L, -1);
+      v = luavgl_tointeger(L, -1);
       value.num = v;
       break;
     case STYLE_TYPE_COLOR:
-      value.color = lugl_tocolor(L, -1);
+      value.color = luavgl_tocolor(L, -1);
       break;
     case STYLE_TYPE_POINTER:
       value.ptr = lua_touserdata(L, -1);
       break;
     case STYLE_TYPE_IMGSRC:
-      value.ptr = lugl_toimgsrc(L, -1);
+      value.ptr = luavgl_toimgsrc(L, -1);
       break;
     case STYLE_TYPE_TABLE:
       break;
@@ -441,7 +442,7 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 
     case _LV_STYLE_FLEX: {
       /* value is all on table */
-      lugl_set_flex_layout_kv(L, cb, args);
+      luavgl_set_flex_layout_kv(L, cb, args);
       break;
     }
     default:
@@ -459,9 +460,9 @@ static int lugl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 /**
  * style:set({x = 0, y = 0, bg_opa = 123})
  */
-static int lugl_style_set(lua_State *L)
+static int luavgl_style_set(lua_State *L)
 {
-  lugl_style_t *s = lugl_check_style(L, 1);
+  luavgl_style_t *s = luavgl_check_style(L, 1);
 
   if (!lua_istable(L, 2)) {
     luaL_argerror(L, 2, "expect a table on 2nd para.");
@@ -479,10 +480,10 @@ static int lugl_style_set(lua_State *L)
     }
 
     /* special value check */
-    bool inherit = lugl_is_style_inherit(L);
+    bool inherit = luavgl_is_style_inherit(L);
 
-    lugl_set_style_kv(L, inherit ? lv_style_set_inherit_cb : lv_style_set_cb,
-                      s);
+    luavgl_set_style_kv(L, inherit ? lv_style_set_inherit_cb : lv_style_set_cb,
+                        s);
     lua_pop(L, 1); /* remove value, keep the key to continue. */
   }
 
@@ -490,7 +491,7 @@ static int lugl_style_set(lua_State *L)
 }
 
 /**
- * lugl.Style({
+ * luavgl.Style({
  *  bg_color = 0xff0000,
  *  border_width = 1,
  * })
@@ -498,9 +499,9 @@ static int lugl_style_set(lua_State *L)
  * For simplicity, style need to be manually deleted `style:delete()` in order
  * to be gc'ed.
  */
-static int lugl_style_create(lua_State *L)
+static int luavgl_style_create(lua_State *L)
 {
-  lugl_style_t *s = malloc(sizeof(lugl_style_t));
+  luavgl_style_t *s = malloc(sizeof(luavgl_style_t));
   if (s == NULL) {
     return luaL_error(L, "No memory.");
   }
@@ -517,7 +518,7 @@ static int lugl_style_create(lua_State *L)
 
   lua_rotate(L, 1, 1); /* stack after: style-user-data, para */
 
-  lugl_style_set(L);
+  luavgl_style_set(L);
 
   lua_pop(L, 1); /* remove parameter table */
   return 1;
@@ -526,9 +527,9 @@ static int lugl_style_create(lua_State *L)
 /**
  * style:remove_prop("width")
  */
-static int lugl_style_remove_prop(lua_State *L)
+static int luavgl_style_remove_prop(lua_State *L)
 {
-  lugl_style_t *s = lugl_check_style(L, 1);
+  luavgl_style_t *s = luavgl_check_style(L, 1);
   const char *name = lua_tostring(L, 2);
 
   for (int i = 0; i < STYLE_MAP_LEN; i++) {
@@ -542,9 +543,9 @@ static int lugl_style_remove_prop(lua_State *L)
   return luaL_error(L, "unknown prop name: %s", name);
 }
 
-static int lugl_style_delete(lua_State *L)
+static int luavgl_style_delete(lua_State *L)
 {
-  lugl_style_t *s = lugl_check_style(L, 1);
+  luavgl_style_t *s = luavgl_check_style(L, 1);
 
   lua_pushlightuserdata(L, s);
   lua_pushnil(L);
@@ -553,9 +554,9 @@ static int lugl_style_delete(lua_State *L)
   return 1;
 }
 
-static int lugl_style_gc(lua_State *L)
+static int luavgl_style_gc(lua_State *L)
 {
-  lugl_style_t *s = lugl_check_style(L, 1);
+  luavgl_style_t *s = luavgl_check_style(L, 1);
   lv_style_reset(&s->style);
   free(s);
   debug("gc style:%p\n", s);
@@ -586,7 +587,7 @@ static void obj_style_inherit_set_cb(lv_style_prop_t prop,
                                    info->selector);
 }
 
-static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
+static int luavgl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
 {
   struct obj_style_s info = {
       .obj = obj,
@@ -594,18 +595,18 @@ static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
   };
 
   /* special value check */
-  bool inherit = lugl_is_style_inherit(L);
+  bool inherit = luavgl_is_style_inherit(L);
 
-  return lugl_set_style_kv(
+  return luavgl_set_style_kv(
       L, inherit ? obj_style_inherit_set_cb : obj_style_set_cb, &info);
 }
 
 /**
  * obj:set_style({x = 0, y = 0, bg_opa = 123}, 0)
  */
-static int lugl_obj_set_style(lua_State *L)
+static int luavgl_obj_set_style(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
@@ -632,7 +633,7 @@ static int lugl_obj_set_style(lua_State *L)
       continue;
     }
 
-    lugl_obj_set_style_kv(L, obj, selector);
+    luavgl_obj_set_style_kv(L, obj, selector);
     lua_pop(L, 1); /* remove value, keep the key to continue. */
   }
 
@@ -642,10 +643,10 @@ static int lugl_obj_set_style(lua_State *L)
 /**
  * obj:add_style(style, 0)
  */
-static int lugl_obj_add_style(lua_State *L)
+static int luavgl_obj_add_style(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
-  lugl_style_t *s = lugl_check_style(L, 2);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
+  luavgl_style_t *s = luavgl_check_style(L, 2);
 
   int selector = 0;
   if (!lua_isnoneornil(L, 3)) {
@@ -660,10 +661,10 @@ static int lugl_obj_add_style(lua_State *L)
 /**
  * obj:remove_style(style, 0)
  */
-static int lugl_obj_remove_style(lua_State *L)
+static int luavgl_obj_remove_style(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
-  lugl_style_t *s = lugl_check_style(L, 2);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
+  luavgl_style_t *s = luavgl_check_style(L, 2);
 
   int selector = 0;
   if (!lua_isnoneornil(L, 3)) {
@@ -677,30 +678,30 @@ static int lugl_obj_remove_style(lua_State *L)
 /**
  * obj:remove_style_all()
  */
-static int lugl_obj_remove_style_all(lua_State *L)
+static int luavgl_obj_remove_style_all(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
 
   lv_obj_remove_style_all(obj);
   return 0;
 }
 
-static const luaL_Reg lugl_style_methods[] = {
-    {"set",         lugl_style_set        },
-    {"delete",      lugl_style_delete     },
-    {"remove_prop", lugl_style_remove_prop},
+static const luaL_Reg luavgl_style_methods[] = {
+    {"set",         luavgl_style_set        },
+    {"delete",      luavgl_style_delete     },
+    {"remove_prop", luavgl_style_remove_prop},
 
-    {NULL,          NULL                  }
+    {NULL,          NULL                    }
 };
 
-static void lugl_style_init(lua_State *L)
+static void luavgl_style_init(lua_State *L)
 {
   luaL_newmetatable(L, "lv_style");
 
-  lua_pushcfunction(L, lugl_style_gc);
+  lua_pushcfunction(L, luavgl_style_gc);
   lua_setfield(L, -2, "__gc");
 
-  luaL_newlib(L, lugl_style_methods); /* methods belong to this type */
+  luaL_newlib(L, luavgl_style_methods); /* methods belong to this type */
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop __index table */

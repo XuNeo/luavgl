@@ -1,9 +1,9 @@
-local lugl = require("lugl")
+local lvgl = require("lvgl")
 
 local flex = {}
 flex["flex-direction"] = 0
 
-local root = lugl.Object(nil, {
+local root = lvgl.Object(nil, {
     flex = {
         flex_direction = "row",
         flex_wrap = "wrap",
@@ -13,15 +13,15 @@ local root = lugl.Object(nil, {
     },
     w = 300,
     h = 75,
-    align = lugl.ALIGN.CENTER
+    align = lvgl.ALIGN.CENTER
 })
 
 for i = 1, 10 do
     local item = root:Object {
         w = 100,
-        h = lugl.PCT(100),
+        h = lvgl.PCT(100),
     }
-    item:clear_flag(lugl.FLAG.SCROLLABLE)
+    item:clear_flag(lvgl.FLAG.SCROLLABLE)
 
     local label = item:Label {
         text = string.format("label %d", i)

@@ -1,14 +1,14 @@
 ---@meta
 ---
---- lugl comments
+--- lvgl comments
 ---
 
-lugl = {}
+lvgl = {}
 
 --- constans table. Note that value listed here is only for linter.
 
 --- @enum ObjEventCode
-lugl.EVENT = {
+lvgl.EVENT = {
     ALL = 0,
     PRESSED = 0,
     PRESSING = 0,
@@ -58,7 +58,7 @@ lugl.EVENT = {
 
 --- object flag for obj:add_flag obj:clear_flag
 --- @enum ObjFlag
-lugl.FLAG = {
+lvgl.FLAG = {
     PRESSED = 0,
     HIDDEN = 0,
     CLICKABLE = 0,
@@ -92,7 +92,7 @@ lugl.FLAG = {
 }
 
 --- @enum ObjState
-lugl.STATE = {
+lvgl.STATE = {
     DEFAULT = 0,
     CHECKED = 0,
     FOCUSED = 0,
@@ -110,7 +110,7 @@ lugl.STATE = {
 }
 
 --- @enum ObjAlignType
-lugl.ALIGN = {
+lvgl.ALIGN = {
     DEFAULT = 0,
     TOP_LEFT = 0,
     TOP_MID = 0,
@@ -136,7 +136,7 @@ lugl.ALIGN = {
 }
 
 --- @enum BuiltinFont
-lugl.BUILTIN_FONT = {
+lvgl.BUILTIN_FONT = {
     MONTSERRAT_8 = 0,
     MONTSERRAT_10 = 0,
     MONTSERRAT_12 = 0,
@@ -167,7 +167,7 @@ lugl.BUILTIN_FONT = {
 }
 
 --- @enum LABEL
-lugl.LABEL = {
+lvgl.LABEL = {
     LONG_WRAP = 0,
     LONG_DOT = 0,
     LONG_SCROLL = 0,
@@ -176,7 +176,7 @@ lugl.LABEL = {
 }
 
 --- @enum SCR_LOAD_ANIM
-lugl.SCR_LOAD_ANIM = {
+lvgl.SCR_LOAD_ANIM = {
     NONE = 0,
     OVER_LEFT = 0,
     OVER_RIGHT = 0,
@@ -196,7 +196,7 @@ lugl.SCR_LOAD_ANIM = {
 }
 
 --- @enum ScrollbarMode
-lugl.SCROLLBAR_MODE = {
+lvgl.SCROLLBAR_MODE = {
     OFF = 0,
     ON = 0,
     ACTIVE = 0,
@@ -204,7 +204,7 @@ lugl.SCROLLBAR_MODE = {
 }
 
 --- @enum Dir
-lugl.DIR = {
+lvgl.DIR = {
     NONE = 0,
     LEFT = 0,
     RIGHT = 0,
@@ -216,7 +216,7 @@ lugl.DIR = {
 }
 
 --- @enum KeyboardMode
-lugl.KEYBOARD_MODE = {
+lvgl.KEYBOARD_MODE = {
     TEXT_LOWER = 0,
     TEXT_UPPER = 0,
     SPECIAL = 0,
@@ -229,7 +229,7 @@ lugl.KEYBOARD_MODE = {
 }
 
 --- @enum FlexFlow
-lugl.FLEX_FLOW = {
+lvgl.FLEX_FLOW = {
     ROW = 0,
     COLUMN = 0,
     ROW_WRAP = 0,
@@ -241,7 +241,7 @@ lugl.FLEX_FLOW = {
 }
 
 --- @enum FlexAlign
-lugl.FLEX_FLOW = {
+lvgl.FLEX_FLOW = {
     START = 0,
     END = 0,
     CENTER = 0,
@@ -251,7 +251,7 @@ lugl.FLEX_FLOW = {
 }
 
 --- @enum GridAlign
-lugl.GRID_ALIGN = {
+lvgl.GRID_ALIGN = {
     START = 0,
     CENTER = 0,
     END = 0,
@@ -262,56 +262,56 @@ lugl.GRID_ALIGN = {
 }
 
 --- @enum RollerMode
-lugl.ROLLER_MODE = {
+lvgl.ROLLER_MODE = {
     NORMAL = 0,
     INFINITE = 0,
 }
 
-lugl.ANIM_REPEAT_INFINITE = 0
-lugl.ANIM_PLAYTIME_INFINITE = 0
-lugl.SIZE_CONTENT = 0
-lugl.RADIUS_CIRCLE = 0
-lugl.COORD_MAX = 0
-lugl.COORD_MIN = 0
-lugl.IMG_ZOOM_NONE = 0
-lugl.BTNMATRIX_BTN_NONE = 0
-lugl.CHART_POINT_NONE = 0
-lugl.DROPDOWN_POS_LAST = 0
-lugl.LABEL_DOT_NUM = 0
-lugl.LABEL_POS_LAST = 0
-lugl.LABEL_TEXT_SELECTION_OFF = 0
-lugl.TABLE_CELL_NONE = 0
-lugl.TEXTAREA_CURSOR_LAST = 0
+lvgl.ANIM_REPEAT_INFINITE = 0
+lvgl.ANIM_PLAYTIME_INFINITE = 0
+lvgl.SIZE_CONTENT = 0
+lvgl.RADIUS_CIRCLE = 0
+lvgl.COORD_MAX = 0
+lvgl.COORD_MIN = 0
+lvgl.IMG_ZOOM_NONE = 0
+lvgl.BTNMATRIX_BTN_NONE = 0
+lvgl.CHART_POINT_NONE = 0
+lvgl.DROPDOWN_POS_LAST = 0
+lvgl.LABEL_DOT_NUM = 0
+lvgl.LABEL_POS_LAST = 0
+lvgl.LABEL_TEXT_SELECTION_OFF = 0
+lvgl.TABLE_CELL_NONE = 0
+lvgl.TEXTAREA_CURSOR_LAST = 0
 
 --- return a opacity value in lvgl unit(0..255)
 ---@param p integer opacity value in range of 0..100
 ---@return integer
-function lugl.OPA(p)
+function lvgl.OPA(p)
 end
 
 --- return a layout in percent
 ---@param p integer
 ---@return integer
-function lugl.PCT(p)
+function lvgl.PCT(p)
 end
 
 ---
 --[[
     ### Create basic object
-    - when parent is nil, object is created on lugl root.
+    - when parent is nil, object is created on lvgl root.
     - property can be used to set any object style, like using `lv_obj_set_style`
 ]]
 --- @param parent? Object | nil
 --- @param property? StyleProp
 --- @return Object
-function lugl.Object(parent, property)
+function lvgl.Object(parent, property)
 end
 
 --- Create Calendar widget on parent
 --- @param parent? Object | nil
 --- @param property? StyleProp
 --- @return Calendar
-function lugl.Calendar(parent, property)
+function lvgl.Calendar(parent, property)
 end
 
 
@@ -320,7 +320,7 @@ end
 --- @param parent? Object | nil
 --- @param property? CheckboxStyle
 --- @return Checkbox
-function lugl.Checkbox(parent, property)
+function lvgl.Checkbox(parent, property)
 end
 
 ---
@@ -328,7 +328,7 @@ end
 --- @param parent? Object | nil
 --- @param property? DropdownStyle
 --- @return Dropdown
-function lugl.Dropdown(parent, property)
+function lvgl.Dropdown(parent, property)
 end
 
 ---
@@ -336,7 +336,7 @@ end
 --- @param parent? Object | nil
 --- @param property? ImageStyle
 --- @return Image
-function lugl.Image(parent, property)
+function lvgl.Image(parent, property)
 end
 
 ---
@@ -344,7 +344,7 @@ end
 --- @param parent? Object | nil
 --- @param property? LabelStyle
 --- @return Label
-function lugl.Label(parent, property)
+function lvgl.Label(parent, property)
 end
 
 ---
@@ -352,7 +352,7 @@ end
 --- @param parent? Object | nil
 --- @param property? TextareaStyle
 --- @return Textarea
-function lugl.Textarea(parent, property)
+function lvgl.Textarea(parent, property)
 end
 
 ---
@@ -360,7 +360,7 @@ end
 --- @param parent? Object | nil
 --- @param property? KeyboardStyle
 --- @return Keyboard
-function lugl.Keyboard(parent, property)
+function lvgl.Keyboard(parent, property)
 end
 
 
@@ -369,7 +369,7 @@ end
 --- @param parent? Object | nil
 --- @param property? LedStyle
 --- @return Led
-function lugl.Led(parent, property)
+function lvgl.Led(parent, property)
 end
 
 ---
@@ -377,7 +377,7 @@ end
 --- @param parent? Object | nil
 --- @param property? LabelStyle
 --- @return List
-function lugl.List(parent, property)
+function lvgl.List(parent, property)
 end
 
 ---
@@ -385,14 +385,14 @@ end
 --- @param parent? Object | nil
 --- @param property? RollerStyle
 --- @return Roller
-function lugl.Roller(parent, property)
+function lvgl.Roller(parent, property)
 end
 
 ---
 --- Create Timer
 --- @param p TimerPara
 --- @return Timer
-function lugl.Timer(p)
+function lvgl.Timer(p)
 end
 
 --[[
@@ -415,14 +415,14 @@ Return a font which is lightuserdata, to be used for label etc.
 --- @return Font
 ---
 --- [View Wiki](https://github.com/sumneko/lua-language-server/wiki/Annotations#class)
-function lugl.Font(family, size, weight)
+function lvgl.Font(family, size, weight)
 end
 
 ---
 --- Create style
 --- @param p? StyleProp
 --- @return Style
-function lugl.Style(p)
+function lvgl.Style(p)
 end
 
 ---
@@ -722,12 +722,12 @@ end
 function obj:mark_layout_as_dirty()
 end
 
---- Align an object to the center on its parent. same as obj:set{align={type = lugl.ALIGN.CENTER}}
+--- Align an object to the center on its parent. same as obj:set{align={type = lvgl.ALIGN.CENTER}}
 ---@return nil
 function obj:center()
 end
 
---- Align an object to the center on its parent. same as obj:set{align={type = lugl.ALIGN.CENTER}}
+--- Align an object to the center on its parent. same as obj:set{align={type = lvgl.ALIGN.CENTER}}
 ---@return nil
 function obj:invalidate()
 end
@@ -744,14 +744,14 @@ function obj:onevent(code, cb)
 end
 
 ---
---- set object pressed event callback, same as obj:onevent(lugl.EVENT.PRESSED, cb)
+--- set object pressed event callback, same as obj:onevent(lvgl.EVENT.PRESSED, cb)
 --- @param cb EventCallback
 --- @return nil
 function obj:onPressed(cb)
 end
 
 ---
---- set object clicked event callback, same as obj:onevent(lugl.EVENT.CLICKED, cb)
+--- set object clicked event callback, same as obj:onevent(lvgl.EVENT.CLICKED, cb)
 --- @param cb EventCallback
 --- @return nil
 function obj:onClicked(cb)
@@ -1150,7 +1150,7 @@ end
 --[[
 Font is a light userdata that can be uset to set style text_font.
 ]]
---- @class Font : BuiltinFont
+--- @class Font
 ---
 
 local font = {}
@@ -1372,7 +1372,7 @@ end
 --- @field start_value integer start value
 --- @field end_value integer
 --- @field duration integer Anim duration in milisecond
---- @field repeat_count integer Anim repeat count, default: 1, set to 0 to disable repeat, set to lugl.ANIM_REPEAT_INFINITE for infinite repeat, set to any other integer for specified repeate count
+--- @field repeat_count integer Anim repeat count, default: 1, set to 0 to disable repeat, set to lvgl.ANIM_REPEAT_INFINITE for infinite repeat, set to any other integer for specified repeate count
 --- @field early_apply boolean set start_value right now or not. default: true
 
 
@@ -1417,4 +1417,4 @@ end
 --- @field y2 integer
 ---
 
-return lugl
+return lvgl

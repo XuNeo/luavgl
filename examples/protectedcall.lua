@@ -21,12 +21,12 @@ local function testCrash6()
     testCrash5()
 end
 
-lugl.Label(nil, {
+lvgl.Label(nil, {
     text = "crash in 1 second.",
-    align = lugl.ALIGN.CENTER
+    align = lvgl.ALIGN.CENTER
 })
 
-lugl.Timer {
+lvgl.Timer {
     period = 1000,
     cb = function(t)
         t:delete()

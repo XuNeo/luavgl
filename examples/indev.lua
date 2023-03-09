@@ -1,43 +1,43 @@
 local function indev_example()
-    local indev = lugl.indev.get_act()
+    local indev = lvgl.indev.get_act()
     print("act indev: ", indev)
 
-    local obj_act = lugl.indev.get_obj_act()
+    local obj_act = lvgl.indev.get_obj_act()
     print("obj_act: ", obj_act)
 
-    local root = lugl.Object(nil, {
-            w = lugl.PCT(30),
-            h = lugl.PCT(30),
-            align = lugl.ALIGN.CENTER,
+    local root = lvgl.Object(nil, {
+            w = lvgl.PCT(30),
+            h = lvgl.PCT(30),
+            align = lvgl.ALIGN.CENTER,
             bg_color = "#aaa",
         })
 
     root:Object({
         w = 1000,
         h = 1000,
-        align = lugl.ALIGN.CENTER,
+        align = lvgl.ALIGN.CENTER,
         bg_color = "#555",
-    }):onevent(lugl.EVENT.ALL, function(obj, code)
-        local indev = lugl.indev.get_act()
+    }):onevent(lvgl.EVENT.ALL, function(obj, code)
+        local indev = lvgl.indev.get_act()
 
         if not indev then return end
 
-        if code == lugl.EVENT.PRESSED then
+        if code == lvgl.EVENT.PRESSED then
             local x, y = indev:get_point()
             print("pressed: ", x, y)
         end
 
-        if code == lugl.EVENT.PRESSING then
+        if code == lvgl.EVENT.PRESSING then
             local x, y = indev:get_vect()
             print("vect: ", x, y)
         end
 
-        if code == lugl.EVENT.GESTURE then
+        if code == lvgl.EVENT.GESTURE then
             local gesture_dir = indev:get_gesture_dir()
             print("gesture_dir: ", gesture_dir)
         end
 
-        if code == lugl.EVENT.RELEASED then
+        if code == lvgl.EVENT.RELEASED then
             local scroll_dir = indev:get_scroll_dir()
             print("scroll_dir: ", scroll_dir)
 

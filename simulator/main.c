@@ -13,7 +13,7 @@
 #include <lua.h>
 #include <lualib.h>
 
-#include <lugl.h>
+#include <luavgl.h>
 #include "extension.h"
 
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
   lv_obj_t *root;
   make_font_cb make_font;
   delete_font_cb delete_font;
-} lua_lugl_args_t;
+} luavgl_args_t;
 
 /**
  * Initialize the Hardware Abstraction Layer (HAL) for the LVGL graphics
@@ -140,7 +140,7 @@ static int msghandler(lua_State *L)
   lua_pop(L, 1);
 
   lv_obj_t *root = NULL;
-  lugl_ctx_t *ctx = lugl_context(L);
+  luavgl_ctx_t *ctx = luavgl_context(L);
   root = ctx->root ? ctx->root : lv_scr_act();
   lv_obj_t *label = lv_label_create(root);
   lv_label_set_text(label, msg);
@@ -167,14 +167,14 @@ static int pmain(lua_State *L)
   int status;
   const char *script = lua_tostring(L, 1);
 
-  lua_lugl_args_t *args = lua_touserdata(L, 2);
+  luavgl_args_t *args = lua_touserdata(L, 2);
   if (args == NULL || args->root == NULL) {
     printf("Null root object.\n");
     return 0;
   }
 
-  lugl_set_root(L, args->root);
-  lugl_set_font_extension(L, args->make_font, args->delete_font);
+  luavgl_set_root(L, args->root);
+  luavgl_set_font_extension(L, args->make_font, args->delete_font);
 
   /**
    * Set global variable RESOURCE_ROOT, to make image src path easier.
@@ -214,9 +214,9 @@ static int pmain(lua_State *L)
 
   lua_atpanic(L, &lua_panic);
 
-  luaL_requiref(L, "lugl", luaopen_lugl, 1);
+  luaL_requiref(L, "lvgl", luaopen_lvgl, 1);
   lua_pop(L, 1);
-  lugl_extension_init(L);
+  luavgl_extension_init(L);
 
   lua_pushcfunction(L, msghandler); /* push message handler */
   int base = lua_gettop(L);
@@ -236,7 +236,7 @@ static int pmain(lua_State *L)
   return 1;
 }
 
-lua_context_t *lua_load_script(const char *script, lua_lugl_args_t *args)
+lua_context_t *lua_load_script(const char *script, luavgl_args_t *args)
 {
   int ret, status;
   /* create the thread to run script. */
@@ -292,7 +292,7 @@ int lua_terminate(lua_context_t *luactx)
 }
 
 static lua_context_t *lua_ctx;
-static lua_lugl_args_t args;
+static luavgl_args_t args;
 
 static void reload_cb(lv_event_t *e)
 {
@@ -301,7 +301,7 @@ static void reload_cb(lv_event_t *e)
     lua_terminate(lua_ctx);
   }
 
-  lua_ctx = lua_load_script(LUGL_EXAMPLE_DIR "/examples.lua", &args);
+  lua_ctx = lua_load_script(LUAVGL_EXAMPLE_DIR "/examples.lua", &args);
 }
 
 int main(int argc, char **argv)
@@ -317,7 +317,7 @@ int main(int argc, char **argv)
 
   args.root = lv_scr_act();
 
-  lua_ctx = lua_load_script(LUGL_EXAMPLE_DIR "/examples.lua", &args);
+  lua_ctx = lua_load_script(LUAVGL_EXAMPLE_DIR "/examples.lua", &args);
 
   lv_obj_t *btn = lv_btn_create(lv_layer_sys());
   lv_obj_align(btn, LV_ALIGN_BOTTOM_RIGHT, 0, -50);

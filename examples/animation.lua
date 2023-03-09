@@ -1,5 +1,5 @@
-local root = lugl.Object()
-root:set { w = lugl.HOR_RES(), h = lugl.VER_RES() }
+local root = lvgl.Object()
+root:set { w = lvgl.HOR_RES(), h = lvgl.VER_RES() }
 
 -- create obj on root
 local obj = root:Object()
@@ -17,7 +17,7 @@ local img = root:Image {
 
 img:set {
     src = "/assets/lvgl-logo.png",
-    align = lugl.ALIGN.CENTER,
+    align = lvgl.ALIGN.CENTER,
 }
 
 -- create animation on object
@@ -35,7 +35,7 @@ local anim = img:anim {
     end
 }
 
-lugl.Timer {
+lvgl.Timer {
     period = 1000,
     cb = function(t)
         print("stop animation in timer.")
@@ -50,9 +50,9 @@ lugl.Timer {
 -- create Label on root and set its font
 local label = root:Label {
     text = string.format("Hello %03d", 123),
-    text_font = lugl.Font("montserrat", 24, "normal"),
+    text_font = lvgl.Font("montserrat", 24, "normal"),
     align = {
-        type = lugl.ALIGN.CENTER,
+        type = lvgl.ALIGN.CENTER,
         x_ofs = 0,
         y_ofs = 100,
     }

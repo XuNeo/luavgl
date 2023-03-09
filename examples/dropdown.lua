@@ -1,25 +1,25 @@
 -- a dropdown on top left
-local dd = lugl.Dropdown(nil, {
+local dd = lvgl.Dropdown(nil, {
     -- note there are two "Orange"
     options = "Apple\nBanana\nOrange\nCherry\nGrape\nRaspberry\nMelon\nOrange\nLemon\nNuts",
     symbol = "\xEF\x81\x94",
-    dir = lugl.DIR.RIGHT,
+    dir = lvgl.DIR.RIGHT,
     highlight = false,
     text = nil,
     align = {
-        type = lugl.ALIGN.TOP_LEFT,
+        type = lvgl.ALIGN.TOP_LEFT,
         x_ofs = 20,
         y_ofs = 20,
     }
 })
 local list = dd:get("list")
 print("get dropdown list: ", list)
-list:set { text_font = lugl.BUILTIN_FONT.MONTSERRAT_20 }
+list:set { text_font = lvgl.BUILTIN_FONT.MONTSERRAT_20 }
 
 print("available options:", dd:get("options"))
 
 local cnt = 0
-dd:onevent(lugl.EVENT.VALUE_CHANGED,
+dd:onevent(lvgl.EVENT.VALUE_CHANGED,
     ---comment
     ---@param obj Dropdown
     ---@param code ObjEventCode
@@ -31,23 +31,23 @@ dd:onevent(lugl.EVENT.VALUE_CHANGED,
 )
 
 -- another dropdown on top left
-local dd = lugl.Dropdown(nil, {
+local dd = lvgl.Dropdown(nil, {
     options = "Apple\nBanana\nOrange\nCherry\nGrape\nRaspberry\nMelon\nOrange\nLemon\nNuts",
     symbol = "\xEF\x81\xB7",
-    dir = lugl.DIR.BOTTOM,
+    dir = lvgl.DIR.BOTTOM,
     text = "SetText",
     selected = 5,
-    text_font = lugl.BUILTIN_FONT.MONTSERRAT_20,
+    text_font = lvgl.BUILTIN_FONT.MONTSERRAT_20,
     align = {
-        type = lugl.ALIGN.BOTTOM_MID,
+        type = lvgl.ALIGN.BOTTOM_MID,
         x_ofs = 0,
         y_ofs = -20,
     }
 })
 
 
-dd:get("list"):set { text_font = lugl.Font("montserrat", 24) }
-dd:onevent(lugl.EVENT.VALUE_CHANGED, function(obj, code)
+dd:get("list"):set { text_font = lvgl.Font("montserrat", 24) }
+dd:onevent(lvgl.EVENT.VALUE_CHANGED, function(obj, code)
     print(obj:get("selected_str") .. ":" .. obj:get("selected"),
         "dir:" .. obj:get("dir"),
         "option_index" .. dd:get("option_index", obj:get("selected_str")))
@@ -55,7 +55,7 @@ end)
 
 
 
-lugl.Timer {
+lvgl.Timer {
     period = 1000,
     cb = function(t)
         t:delete()
@@ -64,7 +64,7 @@ lugl.Timer {
     end
 }
 
-lugl.Timer {
+lvgl.Timer {
     period = 2000,
     cb = function(t)
         t:delete()

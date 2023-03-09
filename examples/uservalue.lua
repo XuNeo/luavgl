@@ -14,7 +14,7 @@ collectgarbage("collect")
 print("after string collect: ", collectgarbage("count"))
 
 for i = 1, 10 do
-    local label = lugl.Label(nil)
+    local label = lvgl.Label(nil)
     label:set_text_static(str)
     label:delete()
 end
@@ -29,6 +29,6 @@ print("again2: ", collectgarbage("count"))
 collectgarbage("collect")
 print("again3: ", collectgarbage("count"))
 
-local label = lugl.Label(nil)
+local label = lvgl.Label(nil)
 label:set({ text = "Test Done" })
 label:center()

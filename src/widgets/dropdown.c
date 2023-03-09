@@ -4,12 +4,12 @@
 #include <lvgl.h>
 #include <stdlib.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-static int lugl_dropdown_create(lua_State *L)
+static int luavgl_dropdown_create(lua_State *L)
 {
-  return lugl_obj_create_helper(L, lv_dropdown_create);
+  return luavgl_obj_create_helper(L, lv_dropdown_create);
 }
 
 static void _lv_dropdown_set_text(void *obj, lua_State *L)
@@ -20,7 +20,7 @@ static void _lv_dropdown_set_text(void *obj, lua_State *L)
 }
 
 /* clang-format off */
-static const lugl_value_setter_t dropdown_property_table[] = {
+static const luavgl_value_setter_t dropdown_property_table[] = {
     {"text", SETTER_TYPE_STACK, {.setter_stack = _lv_dropdown_set_text}},
     {"options", SETTER_TYPE_STACK, {.setter_stack = _lv_dummy_set}},
     {"selected", 0, {.setter = (setter_int_t)lv_dropdown_set_selected}},
@@ -30,17 +30,17 @@ static const lugl_value_setter_t dropdown_property_table[] = {
 };
 /* clang-format on */
 
-static int lugl_dropdown_set_property_kv(lua_State *L, void *data)
+static int luavgl_dropdown_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
-  int ret = lugl_set_property(L, obj, dropdown_property_table);
+  int ret = luavgl_set_property(L, obj, dropdown_property_table);
 
   if (ret == 0) {
     return 0;
   }
 
   /* a base obj property? */
-  ret = lugl_obj_set_property_kv(L, obj);
+  ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
     debug("unkown property for dropdown.\n");
   }
@@ -48,9 +48,9 @@ static int lugl_dropdown_set_property_kv(lua_State *L, void *data)
   return -1;
 }
 
-static int lugl_dropdown_set(lua_State *L)
+static int luavgl_dropdown_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
@@ -68,14 +68,14 @@ static int lugl_dropdown_set(lua_State *L)
   }
   lua_pop(L, 1);
 
-  lugl_iterate(L, -1, lugl_dropdown_set_property_kv, obj);
+  luavgl_iterate(L, -1, luavgl_dropdown_set_property_kv, obj);
 
   return 0;
 }
 
-static int lugl_dropdown_get(lua_State *L)
+static int luavgl_dropdown_get(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "obj could already been deleted.");
     return 0;
@@ -92,7 +92,7 @@ static int lugl_dropdown_get(lua_State *L)
     lua_rawget(L, LUA_REGISTRYINDEX);
     if (lua_isnoneornil(L, -1)) {
       lua_pop(L, 1);
-      lugl_add_lobj(L, list)->lua_created = false;
+      luavgl_add_lobj(L, list)->lua_created = false;
     }
     return 1;
   }
@@ -143,30 +143,30 @@ static int lugl_dropdown_get(lua_State *L)
   return 0;
 }
 
-static int lugl_dropdown_open(lua_State *L)
+static int luavgl_dropdown_open(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_dropdown_open(obj);
   return 0;
 }
 
-static int lugl_dropdown_close(lua_State *L)
+static int luavgl_dropdown_close(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_dropdown_close(obj);
   return 0;
 }
 
-static int lugl_dropdown_is_open(lua_State *L)
+static int luavgl_dropdown_is_open(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   lua_pushboolean(L, lv_dropdown_is_open(obj));
   return 1;
 }
 
-static int lugl_dropdown_add_option(lua_State *L)
+static int luavgl_dropdown_add_option(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   const char *str = lua_tostring(L, 2);
   uint32_t pos = lua_tointeger(L, 3);
   lv_dropdown_add_option(obj, str, pos);
@@ -174,30 +174,30 @@ static int lugl_dropdown_add_option(lua_State *L)
   return 0;
 }
 
-static int lugl_dropdown_clear_option(lua_State *L)
+static int luavgl_dropdown_clear_option(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
 
   lv_dropdown_clear_options(obj);
   return 0;
 }
 
-static const luaL_Reg lugl_dropdown_methods[] = {
+static const luaL_Reg luavgl_dropdown_methods[] = {
   // dropdown.c
-    {"set",          lugl_dropdown_set         },
-    {"get",          lugl_dropdown_get         },
-    {"open",         lugl_dropdown_open        },
-    {"close",        lugl_dropdown_close       },
-    {"is_open",      lugl_dropdown_is_open     },
-    {"add_option",   lugl_dropdown_add_option  },
-    {"clear_option", lugl_dropdown_clear_option},
+    {"set",          luavgl_dropdown_set         },
+    {"get",          luavgl_dropdown_get         },
+    {"open",         luavgl_dropdown_open        },
+    {"close",        luavgl_dropdown_close       },
+    {"is_open",      luavgl_dropdown_is_open     },
+    {"add_option",   luavgl_dropdown_add_option  },
+    {"clear_option", luavgl_dropdown_clear_option},
 
     {NULL,           NULL                      },
 };
 
-static void lugl_dropdown_init(lua_State *L)
+static void luavgl_dropdown_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_dropdown_class, "lv_dropdown",
-                        lugl_dropdown_methods);
+  luavgl_obj_newmetatable(L, &lv_dropdown_class, "lv_dropdown",
+                        luavgl_dropdown_methods);
   lua_pop(L, 1);
 }

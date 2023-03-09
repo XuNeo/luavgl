@@ -4,12 +4,12 @@
 #include <lvgl.h>
 #include <stdlib.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-static int lugl_textarea_create(lua_State *L)
+static int luavgl_textarea_create(lua_State *L)
 {
-  return lugl_obj_create_helper(L, lv_textarea_create);
+  return luavgl_obj_create_helper(L, lv_textarea_create);
 }
 
 static void _lv_textarea_set_txt(void *obj, lua_State *L)
@@ -53,7 +53,7 @@ static void _lv_textarea_set_accepted_chars(void *obj, lua_State *L)
 }
 
 /* clang-format off */
-static const lugl_value_setter_t textarea_property_table[] = {
+static const luavgl_value_setter_t textarea_property_table[] = {
     {"text", SETTER_TYPE_STACK, {.setter_stack = _lv_textarea_set_txt}},
     {"placeholder", SETTER_TYPE_STACK, {.setter_stack = _lv_textarea_set_placeholder_txt}},
     {"cursor", SETTER_TYPE_INT, {.setter = (setter_int_t)lv_textarea_set_cursor_pos}},
@@ -66,17 +66,17 @@ static const lugl_value_setter_t textarea_property_table[] = {
 };
 /* clang-format on */
 
-static int lugl_textarea_set_property_kv(lua_State *L, void *data)
+static int luavgl_textarea_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
-  int ret = lugl_set_property(L, obj, textarea_property_table);
+  int ret = luavgl_set_property(L, obj, textarea_property_table);
 
   if (ret == 0) {
     return 0;
   }
 
   /* a base obj property? */
-  ret = lugl_obj_set_property_kv(L, obj);
+  ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
     debug("unkown property for textarea: %s\n", lua_tostring(L, -2));
   }
@@ -84,9 +84,9 @@ static int lugl_textarea_set_property_kv(lua_State *L, void *data)
   return -1;
 }
 
-static int lugl_textarea_set(lua_State *L)
+static int luavgl_textarea_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -97,7 +97,7 @@ static int lugl_textarea_set(lua_State *L)
     return 0;
   }
 
-  lugl_iterate(L, -1, lugl_textarea_set_property_kv, obj);
+  luavgl_iterate(L, -1, luavgl_textarea_set_property_kv, obj);
 
   return 0;
 }
@@ -105,9 +105,9 @@ static int lugl_textarea_set(lua_State *L)
 /**
  * obj:get_text()
  */
-static int lugl_textarea_get_text(lua_State *L)
+static int luavgl_textarea_get_text(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -118,17 +118,17 @@ static int lugl_textarea_get_text(lua_State *L)
   return 1;
 }
 
-static const luaL_Reg lugl_textarea_methods[] = {
+static const luaL_Reg luavgl_textarea_methods[] = {
   // widget/textarea.c
-    {"set",      lugl_textarea_set     },
-    {"get_text", lugl_textarea_get_text},
+    {"set",      luavgl_textarea_set     },
+    {"get_text", luavgl_textarea_get_text},
 
     {NULL,       NULL                  },
 };
 
-static void lugl_textarea_init(lua_State *L)
+static void luavgl_textarea_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_textarea_class, "lv_textarea",
-                        lugl_textarea_methods);
+  luavgl_obj_newmetatable(L, &lv_textarea_class, "lv_textarea",
+                        luavgl_textarea_methods);
   lua_pop(L, 1);
 }

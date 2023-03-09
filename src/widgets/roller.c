@@ -4,12 +4,12 @@
 #include <lvgl.h>
 #include <stdlib.h>
 
-#include "lugl.h"
+#include "luavgl.h"
 #include "private.h"
 
-static int lugl_roller_create(lua_State *L)
+static int luavgl_roller_create(lua_State *L)
 {
-  return lugl_obj_create_helper(L, lv_roller_create);
+  return luavgl_obj_create_helper(L, lv_roller_create);
 }
 
 static void _lv_roller_set_options(void *obj, lua_State *L)
@@ -47,7 +47,7 @@ static void _lv_roller_set_selected(void *obj, lua_State *L)
     selected = lua_tointeger(L, -1);
     lua_pop(L, 1);
     lua_getfield(L, -1, "anim");
-    anim = lugl_tointeger(L, -1);
+    anim = luavgl_tointeger(L, -1);
     lua_pop(L, 1);
   } else {
     selected = lua_tointeger(L, -1);
@@ -56,24 +56,24 @@ static void _lv_roller_set_selected(void *obj, lua_State *L)
   lv_roller_set_selected(obj, selected, anim);
 }
 
-static const lugl_value_setter_t roller_property_table[] = {
+static const luavgl_value_setter_t roller_property_table[] = {
     {"options",     SETTER_TYPE_STACK, {.setter_stack = _lv_roller_set_options}                 },
     {"selected",    SETTER_TYPE_STACK, {.setter_stack = _lv_roller_set_selected}                },
     {"visible_cnt",
      0,                                {.setter = (setter_int_t)lv_roller_set_visible_row_count}},
 };
 
-static int lugl_roller_set_property_kv(lua_State *L, void *data)
+static int luavgl_roller_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
-  int ret = lugl_set_property(L, obj, roller_property_table);
+  int ret = luavgl_set_property(L, obj, roller_property_table);
 
   if (ret == 0) {
     return 0;
   }
 
   /* a base obj property? */
-  ret = lugl_obj_set_property_kv(L, obj);
+  ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
     debug("unkown property for roller.\n");
   }
@@ -81,9 +81,9 @@ static int lugl_roller_set_property_kv(lua_State *L, void *data)
   return -1;
 }
 
-static int lugl_roller_set(lua_State *L)
+static int luavgl_roller_set(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
     luaL_argerror(L, 1, "null obj");
     return 0;
@@ -94,54 +94,54 @@ static int lugl_roller_set(lua_State *L)
     return 0;
   }
 
-  lugl_iterate(L, -1, lugl_roller_set_property_kv, obj);
+  luavgl_iterate(L, -1, luavgl_roller_set_property_kv, obj);
 
   return 0;
 }
 
-static int lugl_roller_get_options(lua_State *L)
+static int luavgl_roller_get_options(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   lua_pushstring(L, lv_roller_get_options(obj));
   return 1;
 }
 
-static int lugl_roller_get_selected(lua_State *L)
+static int luavgl_roller_get_selected(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   lua_pushinteger(L, lv_roller_get_selected(obj));
   return 1;
 }
 
-static int lugl_roller_get_selected_str(lua_State *L)
+static int luavgl_roller_get_selected_str(lua_State *L)
 {
   char buf[64];
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_roller_get_selected_str(obj, buf, sizeof(buf));
   lua_pushstring(L, buf);
   return 1;
 }
 
-static int lugl_roller_get_options_cnt(lua_State *L)
+static int luavgl_roller_get_options_cnt(lua_State *L)
 {
-  lv_obj_t *obj = lugl_to_obj(L, 1);
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
   lua_pushinteger(L, lv_roller_get_option_cnt(obj));
   return 1;
 }
 
-static const luaL_Reg lugl_roller_methods[] = {
+static const luaL_Reg luavgl_roller_methods[] = {
   // roller.c
-    {"set",              lugl_roller_set             },
-    {"get_options",      lugl_roller_get_options     },
-    {"get_selected",     lugl_roller_get_selected    },
-    {"get_selected_str", lugl_roller_get_selected_str},
-    {"get_options_cnt",  lugl_roller_get_options_cnt },
+    {"set",              luavgl_roller_set             },
+    {"get_options",      luavgl_roller_get_options     },
+    {"get_selected",     luavgl_roller_get_selected    },
+    {"get_selected_str", luavgl_roller_get_selected_str},
+    {"get_options_cnt",  luavgl_roller_get_options_cnt },
 
     {NULL,               NULL                        },
 };
 
-static void lugl_roller_init(lua_State *L)
+static void luavgl_roller_init(lua_State *L)
 {
-  lugl_obj_newmetatable(L, &lv_roller_class, "lv_roller", lugl_roller_methods);
+  luavgl_obj_newmetatable(L, &lv_roller_class, "lv_roller", luavgl_roller_methods);
   lua_pop(L, 1);
 }

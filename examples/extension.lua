@@ -1,10 +1,10 @@
--- demo of external widget added to lugl. See simulator/extension.c
+-- demo of external widget added to lvgl. See simulator/extension.c
 
-local extension = lugl.Extension(nil, {
+local extension = lvgl.Extension(nil, {
     border_width = 1,
-    w = lugl.PCT(20),
-    h = lugl.PCT(20),
-    align = lugl.ALIGN.CENTER,
+    w = lvgl.PCT(20),
+    h = lvgl.PCT(20),
+    align = lvgl.ALIGN.CENTER,
 })
 
 extension:onClicked(function ()

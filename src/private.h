@@ -10,8 +10,8 @@
 
 /* clang-format off */
 #define debug(format, ...)
-// fprintf(stdout, "[lugl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
-// syslog(LOG_DEBUG, "[lugl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
+// fprintf(stdout, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
+// syslog(LOG_DEBUG, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 /* clang-format on */
 
 struct event_callback_s {
@@ -23,21 +23,21 @@ struct event_callback_s {
 static void dumpstack(lua_State *L);
 static void dumptable(lua_State *L, int index);
 
-static lugl_obj_t *lugl_to_lobj(lua_State *L, int idx);
-static lugl_obj_t *lugl_obj_touserdatauv(lua_State *L, int idx);
+static luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx);
+static luavgl_obj_t *luavgl_obj_touserdatauv(lua_State *L, int idx);
 
 /* metatable */
-int lugl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz);
-int lugl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz);
+int luavgl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz);
+int luavgl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz);
 
-static void lugl_obj_event_init(lugl_obj_t *lobj);
-static void lugl_obj_anim_init(lugl_obj_t *lobj);
-static void lugl_obj_remove_event_all(lua_State *L, lugl_obj_t *obj);
-static int lugl_obj_remove_all_anim_int(lua_State *L, lugl_obj_t *lobj);
+static void luavgl_obj_event_init(luavgl_obj_t *lobj);
+static void luavgl_obj_anim_init(luavgl_obj_t *lobj);
+static void luavgl_obj_remove_event_all(lua_State *L, luavgl_obj_t *obj);
+static int luavgl_obj_remove_all_anim_int(lua_State *L, luavgl_obj_t *lobj);
 
 /* util functions */
-static int lugl_is_callable(lua_State *L, int index);
-static void lugl_check_callable(lua_State *L, int index);
-static int lugl_check_continuation(lua_State *L, int index);
+static int luavgl_is_callable(lua_State *L, int index);
+static void luavgl_check_callable(lua_State *L, int index);
+static int luavgl_check_continuation(lua_State *L, int index);
 
-static int lugl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector);
+static int luavgl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector);

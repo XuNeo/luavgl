@@ -1,7 +1,7 @@
-# lugl
-lua + lvgl = lugl
+# lvgl-lua-binding
+lua + lvgl = luavgl
 
-lugl is currently under development. A flappy bird game is ready for showoff. See simulator instructions below.
+luavgl is currently under development. A flappy bird game is ready for showoff. See simulator instructions below.
 
 <p align="center">
   <img src="https://i.ibb.co/nbgYvZW/flappybird.gif" />
@@ -9,11 +9,11 @@ lugl is currently under development. A flappy bird game is ready for showoff. Se
 
 ## Introduction
 
-lugl is a wrapper around lvgl core functions and widgets with class inherence in mind, which is lvgl trying to do in `C`. Lua makes widgets inherence smoothly.
+luavgl is a wrapper around lvgl core functions and widgets with class inherence in mind, which is lvgl trying to do in `C`. Lua makes widgets inherence smoothly.
 
 ```lua
-local root = lugl.Object()
-root:set { w = lugl.HOR_RES(), h = lugl.VER_RES() }
+local root = lvgl.Object()
+root:set { w = lvgl.HOR_RES(), h = lvgl.VER_RES() }
 
 -- create obj on root
 local obj = root:Object()
@@ -31,7 +31,7 @@ local img = root:Image {
 
 img:set {
     src = "/assets/lvgl-logo.png",
-    align = lugl.ALIGN.CENTER,
+    align = lvgl.ALIGN.CENTER,
 }
 
 -- create animation on object
@@ -52,9 +52,9 @@ img:anim {
 -- create Label on root and set its font
 local label = root:Label {
     text = string.format("Hello %03d", 123),
-    text_font = lugl.Font("montserrat", 24, "normal"),
+    text_font = lvgl.Font("montserrat", 24, "normal"),
     align = {
-        type = lugl.ALIGN.CENTER,
+        type = lvgl.ALIGN.CENTER,
         x_ofs = 0,
         y_ofs = 100,
     }
@@ -63,26 +63,26 @@ local label = root:Label {
 
 ```
 
-lugl mainly targets for embedded device, a simulator on Ubuntu has been provided for preview.
+luavgl mainly targets for embedded device, a simulator on Ubuntu has been provided for preview.
 
 ### Embedded device
 
-For embedded device, assume the lvgl environment has already been setup, simply add the `lugl.c` to sources for compiling. And make sure `luaopen_lugl` is added to global lib. Below is example from `simulator/main.c` shows this exact method.
+For embedded device, assume the lvgl environment has already been setup, simply add the `luavgl.c` to sources for compiling. And make sure `luaopen_lvgl` is added to global lib. Below is example from `simulator/main.c` shows this exact method.
 
 ```c
-  luaL_requiref(L, "lugl", luaopen_lugl, 1);
+  luaL_requiref(L, "lvgl", luaopen_luavgl, 1);
   lua_pop(L, 1);
 ```
 
 ### PC simulator
 
-Currently compile lugl to `so` is not available, lugl depends on lvgl and various configurations(`lv_conf.h`).
-The simulator provided in this repo can be used as example if lugl is required on PC.
+Currently compile luavgl to `so` is not available, luavgl depends on lvgl and various configurations(`lv_conf.h`).
+The simulator provided in this repo can be used as example if luavgl is required on PC.
 
-Make sure clone the submodules, lugl simulator comes directly from lvgl simulator with lua added.
+Make sure clone the submodules, luavgl simulator comes directly from lvgl simulator with lua added.
 
 ```
-git clone --recursive https://github.com/XuNeo/lugl.git
+git clone --recursive https://github.com/XuNeo/luavgl.git
 ```
 
 #### Dependencies
@@ -105,8 +105,8 @@ make run # run simulator
 ```
 ## Custom Widget
 
-lugl support custom widget, and use them in `lua` just like lvgl core widgets.
-An example is provided in [`simulator/extension.c`](https://github.com/XuNeo/lugl/blob/master/simulator/extension.c#L62)
+luavgl support custom widget, and use them in `lua` just like lvgl core widgets.
+An example is provided in [`simulator/extension.c`](https://github.com/XuNeo/luavgl/blob/master/simulator/extension.c#L62)
 
-For custom widget, it should be registered to Lua after lugl lib loaded.
+For custom widget, it should be registered to Lua after luavgl lib loaded.
 
