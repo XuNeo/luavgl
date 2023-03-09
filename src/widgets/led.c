@@ -40,10 +40,6 @@ static int luavgl_led_set_property_kv(lua_State *L, void *data)
 static int luavgl_led_set(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_error(L, "expect a table on 2nd para.");
@@ -58,11 +54,6 @@ static int luavgl_led_set(lua_State *L)
 static int luavgl_led_on(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_led_on(obj);
   return 0;
 }
@@ -70,11 +61,6 @@ static int luavgl_led_on(lua_State *L)
 static int luavgl_led_off(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_led_off(obj);
   return 0;
 }
@@ -82,11 +68,6 @@ static int luavgl_led_off(lua_State *L)
 static int luavgl_led_toggle(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_led_toggle(obj);
   return 0;
 }

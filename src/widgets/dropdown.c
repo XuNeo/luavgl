@@ -51,10 +51,6 @@ static int luavgl_dropdown_set_property_kv(lua_State *L, void *data)
 static int luavgl_dropdown_set(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_error(L, "expect a table on 2nd para.");
@@ -76,10 +72,6 @@ static int luavgl_dropdown_set(lua_State *L)
 static int luavgl_dropdown_get(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
-    return 0;
-  }
 
   if (lua_type(L, 2) != LUA_TSTRING) {
     return luaL_argerror(L, 2, "expect string");

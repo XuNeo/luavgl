@@ -159,10 +159,11 @@ static int luavgl_obj_delete(lua_State *L)
 
 static int luavgl_obj_clean(lua_State *L)
 {
-  lv_obj_t *obj = luavgl_to_obj(L, -1);
-  if (obj == NULL)
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, -1);
+  if (lobj == NULL || lobj->obj == NULL)
     return 0;
 
+  lv_obj_t *obj = lobj->obj;
   uint32_t cnt = lv_obj_get_child_cnt(obj);
 
   for (int i = cnt - 1; i >= 0; i--) {
@@ -181,10 +182,6 @@ static int luavgl_obj_clean(lua_State *L)
 static int luavgl_obj_set(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_error(L, "expect a table on 2nd para.");
@@ -201,9 +198,6 @@ static int luavgl_obj_set(lua_State *L)
 static int luavgl_obj_align_to(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    return luaL_argerror(L, 1, "null obj");
-  }
 
   if (!lua_istable(L, 2)) {
     debug("para should be table.");
@@ -237,17 +231,7 @@ static int luavgl_obj_align_to(lua_State *L)
 static int luavgl_obj_set_parent(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_t *parent = luavgl_to_obj(L, 2);
-  if (parent == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_set_parent(obj, parent);
   return 0;
 }
@@ -255,11 +239,6 @@ static int luavgl_obj_set_parent(lua_State *L)
 static int luavgl_obj_get_screen(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_t *screen = lv_obj_get_screen(obj);
 
   /* check if userdata is added to this obj, so lua can access it. */
@@ -279,11 +258,6 @@ static int luavgl_obj_get_screen(lua_State *L)
 static int luavgl_obj_get_parent(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_t *parent = lv_obj_get_parent(obj);
 
   /* check if userdata is added to this obj, so lua can access it. */
@@ -302,17 +276,9 @@ static int luavgl_obj_get_parent(lua_State *L)
 static int luavgl_obj_set_get_parent(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   if (!lua_isnoneornil(L, 2)) {
     lv_obj_t *parent = luavgl_to_obj(L, 2);
-    if (parent == NULL) {
-      luaL_argerror(L, 1, "null obj");
-      return 0;
-    }
+    lv_obj_set_parent(obj, parent);
   }
 
   return luavgl_obj_get_parent(L);
@@ -321,10 +287,6 @@ static int luavgl_obj_set_get_parent(lua_State *L)
 static int luavgl_obj_get_child(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   int id = luavgl_tointeger(L, 2);
   lv_obj_t *child = lv_obj_get_child(obj, id);
@@ -346,11 +308,6 @@ static int luavgl_obj_get_child(lua_State *L)
 static int luavgl_obj_get_child_cnt(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lua_pushinteger(L, lv_obj_get_child_cnt(obj));
   return 1;
 }
@@ -358,11 +315,6 @@ static int luavgl_obj_get_child_cnt(lua_State *L)
 static int luavgl_obj_get_state(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_state_t state = lv_obj_get_state(obj);
   lua_pushinteger(L, state);
 
@@ -377,10 +329,6 @@ static int luavgl_obj_get_state(lua_State *L)
 static int luavgl_obj_scroll_to(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_argerror(L, -1, "should be table {x=0,y=0,anim=true}");
@@ -411,11 +359,6 @@ static int luavgl_obj_scroll_to(lua_State *L)
 static int luavgl_obj_is_visible(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lua_pushboolean(L, lv_obj_is_visible(obj));
 
   return 1;
@@ -424,11 +367,6 @@ static int luavgl_obj_is_visible(lua_State *L)
 static int luavgl_obj_add_flag(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_flag_t flag = lua_tointeger(L, 2);
   lv_obj_add_flag(obj, flag);
 
@@ -438,11 +376,6 @@ static int luavgl_obj_add_flag(lua_State *L)
 static int luavgl_obj_clear_flag(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_flag_t flag = lua_tointeger(L, 2);
   lv_obj_clear_flag(obj, flag);
 
@@ -452,11 +385,6 @@ static int luavgl_obj_clear_flag(lua_State *L)
 static int luavgl_obj_add_state(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_state_t state = lua_tointeger(L, 2);
   lv_obj_add_state(obj, state);
   return 0;
@@ -465,11 +393,6 @@ static int luavgl_obj_add_state(lua_State *L)
 static int luavgl_obj_clear_state(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_state_t state = lua_tointeger(L, 2);
   lv_obj_clear_state(obj, state);
   return 0;
@@ -481,11 +404,6 @@ static int luavgl_obj_clear_state(lua_State *L)
 static int luavgl_obj_scroll_by(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   int x = luavgl_tointeger(L, 2);
   int y = luavgl_tointeger(L, 3);
   int anim_en = luavgl_tointeger(L, 4);
@@ -497,11 +415,6 @@ static int luavgl_obj_scroll_by(lua_State *L)
 static int luavgl_obj_scroll_by_bounded(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   int dx = luavgl_tointeger(L, 2);
   int dy = luavgl_tointeger(L, 3);
   int anim_en = luavgl_tointeger(L, 4);
@@ -513,11 +426,6 @@ static int luavgl_obj_scroll_by_bounded(lua_State *L)
 static int luavgl_obj_scroll_to_view(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   int anim_en = luavgl_tointeger(L, 2);
 
   lv_obj_scroll_to_view(obj, anim_en);
@@ -527,11 +435,6 @@ static int luavgl_obj_scroll_to_view(lua_State *L)
 static int luavgl_obj_scroll_to_view_recursive(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   int anim_en = luavgl_tointeger(L, 2);
 
   lv_obj_scroll_to_view_recursive(obj, anim_en);
@@ -541,11 +444,6 @@ static int luavgl_obj_scroll_to_view_recursive(lua_State *L)
 static int luavgl_obj_scroll_by_raw(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   int x = luavgl_tointeger(L, 2);
   int y = luavgl_tointeger(L, 3);
 
@@ -556,11 +454,6 @@ static int luavgl_obj_scroll_by_raw(lua_State *L)
 static int luavgl_obj_is_scrolling(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lua_pushboolean(L, lv_obj_is_scrolling(obj));
   return 1;
 }
@@ -568,11 +461,6 @@ static int luavgl_obj_is_scrolling(lua_State *L)
 static int luavgl_obj_scrollbar_invalidate(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_scrollbar_invalidate(obj);
   return 0;
 }
@@ -580,11 +468,6 @@ static int luavgl_obj_scrollbar_invalidate(lua_State *L)
 static int luavgl_obj_readjust_scroll(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   int anim_en = luavgl_tointeger(L, 2);
   lv_obj_readjust_scroll(obj, anim_en);
   return 0;
@@ -593,11 +476,6 @@ static int luavgl_obj_readjust_scroll(lua_State *L)
 static int luavgl_obj_is_editable(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lua_pushboolean(L, lv_obj_is_editable(obj));
   return 1;
 }
@@ -605,11 +483,6 @@ static int luavgl_obj_is_editable(lua_State *L)
 static int luavgl_obj_is_group_def(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lua_pushboolean(L, lv_obj_is_group_def(obj));
   return 1;
 }
@@ -617,11 +490,6 @@ static int luavgl_obj_is_group_def(lua_State *L)
 static int luavgl_obj_is_layout_positioned(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lua_pushboolean(L, lv_obj_is_layout_positioned(obj));
   return 1;
 }
@@ -629,11 +497,6 @@ static int luavgl_obj_is_layout_positioned(lua_State *L)
 static int luavgl_obj_mark_layout_as_dirty(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_mark_layout_as_dirty(obj);
   return 0;
 }
@@ -641,11 +504,6 @@ static int luavgl_obj_mark_layout_as_dirty(lua_State *L)
 static int luavgl_obj_center(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_center(obj);
   return 0;
 }
@@ -653,11 +511,6 @@ static int luavgl_obj_center(lua_State *L)
 static int luavgl_obj_invalidate(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_invalidate(obj);
   return 0;
 }
@@ -665,11 +518,6 @@ static int luavgl_obj_invalidate(lua_State *L)
 static int luavgl_obj_set_flex_flow(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_flex_flow_t flow = luavgl_tointeger(L, 2);
 
   lv_obj_set_flex_flow(obj, flow);
@@ -679,11 +527,6 @@ static int luavgl_obj_set_flex_flow(lua_State *L)
 static int luavgl_obj_set_flex_align(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_flex_align_t m = luavgl_tointeger(L, 2);
   lv_flex_align_t c = luavgl_tointeger(L, 3);
   lv_flex_align_t t = luavgl_tointeger(L, 4);
@@ -695,11 +538,6 @@ static int luavgl_obj_set_flex_align(lua_State *L)
 static int luavgl_obj_set_flex_grow(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   uint8_t grow = luavgl_tointeger(L, 2);
 
   lv_obj_set_flex_grow(obj, grow);
@@ -709,11 +547,6 @@ static int luavgl_obj_set_flex_grow(lua_State *L)
 static int luavgl_obj_indev_search(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_point_t point;
   if (lua_istable(L, 2)) {
     lua_geti(L, 2, 1);
@@ -746,11 +579,6 @@ static int luavgl_obj_get_coords(lua_State *L)
 {
   lv_area_t area;
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_obj_get_coords(obj, &area);
   lua_newtable(L);
 
@@ -775,11 +603,6 @@ static int luavgl_obj_get_coords(lua_State *L)
 static int luavgl_obj_get_pos(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lua_newtable(L);
 
   lua_pushinteger(L, lv_obj_get_x(obj));
@@ -945,7 +768,6 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
     parent = ctx->root;
   } else {
     parent = luavgl_to_obj(L, 1);
-    parent = parent ? parent : ctx->root;
   }
 
   /* remove parent, in order to keep clean stack to call obj.set */
@@ -987,6 +809,9 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj)
 {
   luavgl_obj_t *lobj;
 
+  /* In rare case, obj may be deleted but not gc'ed in lua, and lvgl quickly
+   * creates another obj but happen to malloced same address, thus using obj
+   * light userdata as key may have some potential issues. */
   lua_pushlightuserdata(L, obj);
   lua_rawget(L, LUA_REGISTRYINDEX);
   if (!lua_isnoneornil(L, -1)) {

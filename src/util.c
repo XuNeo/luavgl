@@ -244,9 +244,11 @@ LUALIB_API int luavgl_pcall(lua_State *L, int nargs, int nresult)
 
 LUALIB_API lv_obj_t *luavgl_to_obj(lua_State *L, int idx)
 {
-  luavgl_obj_t *lobj = luavgl_to_lobj(L, idx);
-  if (lobj == NULL)
+  luavgl_obj_t *lobj = lua_touserdata(L, idx);
+  if (lobj == NULL || lobj->obj == NULL) {
+    luaL_argerror(L, idx, "expect lua lvgl object, got null");
     return NULL;
+  }
 
   return lobj->obj;
 }

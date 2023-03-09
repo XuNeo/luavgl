@@ -96,10 +96,6 @@ static int luavgl_indev_reset(lua_State *L)
 {
   luavgl_indev_t *i = luavgl_check_indev(L, 1);
   lv_obj_t *obj = luavgl_to_obj(L, 2);
-  if (obj == NULL) {
-    return luaL_argerror(L, 2, "expect lvgl obj.");
-  }
-
   lv_indev_reset(i->indev, obj);
   return 0;
 }
@@ -116,10 +112,6 @@ static int luavgl_indev_set_cursor(lua_State *L)
 {
   luavgl_indev_t *i = luavgl_check_indev(L, 1);
   lv_obj_t *obj = luavgl_to_obj(L, 2);
-  if (obj == NULL) {
-    return luaL_argerror(L, 2, "expect lvgl obj.");
-  }
-
   lv_indev_set_cursor(i->indev, obj);
   return 0;
 }

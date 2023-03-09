@@ -124,10 +124,6 @@ static int luavgl_group_add_obj(lua_State *L)
 {
   luavgl_group_t *g = luavgl_check_group(L, 1);
   lv_obj_t *obj = luavgl_to_obj(L, 2);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   lv_group_add_obj(g->group, obj);
   return 0;
@@ -257,11 +253,6 @@ static int luavgl_group_get_focused(lua_State *L)
 static int luavgl_group_remove_obj(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_group_remove_obj(obj);
   return 0;
 }
@@ -269,11 +260,6 @@ static int luavgl_group_remove_obj(lua_State *L)
 static int luavgl_group_focus_obj(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   lv_group_focus_obj(obj);
   return 0;
 }

@@ -43,7 +43,7 @@ typedef struct {
 } luavgl_value_setter_t;
 
 typedef struct luavgl_obj_s {
-  lv_obj_t *obj;
+  lv_obj_t *obj;    /* NULL means obj deleted, but not gc'ed in lua */
   bool lua_created; /* this object is created from lua */
 
   /* internally used variables */

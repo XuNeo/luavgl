@@ -62,10 +62,6 @@ static int luavgl_img_set_property_kv(lua_State *L, void *data)
 static int luavgl_img_set(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_error(L, "expect a table on 2nd para.");
@@ -97,11 +93,6 @@ static int luavgl_img_set(lua_State *L)
 static int luavgl_img_set_src(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
-
   const char *src = luavgl_toimgsrc(L, 2);
   if (src != NULL) {
     lv_img_set_src(obj, src);
@@ -118,10 +109,6 @@ static int luavgl_img_set_src(lua_State *L)
 static int luavgl_img_set_offset(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_argerror(L, -1, "should be table {x=0,y=0,anim=true}");
@@ -151,10 +138,6 @@ static int luavgl_img_set_offset(lua_State *L)
 static int luavgl_img_set_pivot(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_argerror(L, -1, "should be table {x=0,y=0,anim=true}");
@@ -180,10 +163,6 @@ static int luavgl_img_set_pivot(lua_State *L)
 static int luavgl_get_img_size(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   const void *src = NULL;
   if (lua_isnoneornil(L, 2)) {

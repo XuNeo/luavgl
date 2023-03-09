@@ -38,10 +38,6 @@ static int luavgl_extension_set_property_kv(lua_State *L, void *data)
 static int luavgl_extension_set(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_error(L, "expect a table on 2nd para.");

@@ -80,10 +80,6 @@ static int luavgl_calendar_set_property_kv(lua_State *L, void *data)
 static int luavgl_calendar_set(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (obj == NULL) {
-    luaL_argerror(L, 1, "null obj");
-    return 0;
-  }
 
   if (!lua_istable(L, -1)) {
     luaL_error(L, "expect a table on 2nd para.");
@@ -168,12 +164,12 @@ static const luaL_Reg luavgl_calendar_methods[] = {
     {"Arrow",       luavgl_calendar_create_arrow   },
     {"Dropdown",    luavgl_calendar_create_dropdown},
 
-    {NULL,          NULL                         },
+    {NULL,          NULL                           },
 };
 
 static void luavgl_calendar_init(lua_State *L)
 {
   luavgl_obj_newmetatable(L, &lv_calendar_class, "lv_calendar",
-                        luavgl_calendar_methods);
+                          luavgl_calendar_methods);
   lua_pop(L, 1);
 }
