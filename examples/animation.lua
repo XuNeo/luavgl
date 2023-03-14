@@ -6,7 +6,7 @@ local obj = root:Object()
 
 -- create image on root and set position/img src/etc. properties.
 local img = root:Image {
-    src = "/assets/lvgl-logo.png",
+    src = SCRIPT_PATH .. "/assets/lvgl-logo.png",
     x = 0,
     y = 0,
     bg_color = 0x004400,
@@ -16,7 +16,7 @@ local img = root:Image {
 -- change image properties.
 
 img:set {
-    src = "/assets/lvgl-logo.png",
+    src = SCRIPT_PATH .. "/assets/lvgl-logo.png",
     align = lvgl.ALIGN.CENTER,
 }
 

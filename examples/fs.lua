@@ -1,6 +1,6 @@
 local function fs_example()
-    -- local f <close>, msg, code = lvgl.open_file("/tmp.txt") -- for lua 5.4
-    local f, msg, code = lvgl.fs.open_file("/tmp.txt", "rw")
+    -- local f <close>, msg, code = lvgl.open_file(SCRIPT_PATH .. "/tmp.txt") -- for lua 5.4
+    local f, msg, code = lvgl.fs.open_file(SCRIPT_PATH .. "/tmp.txt", "rw")
     if not f then
         print("failed: ", msg, code)
         return
@@ -35,8 +35,8 @@ local function fs_example()
     })
     list:add_text("Directory list:")
 
-    -- local dir <close>, msg, code = lvgl.fs.open_dir("/")
-    local dir, msg, code = lvgl.fs.open_dir("/")
+    -- local dir <close>, msg, code = lvgl.fs.open_dir(SCRIPT_PATH .. "/")
+    local dir, msg, code = lvgl.fs.open_dir(SCRIPT_PATH .. "/")
     if not dir then
         print("open dir failed: ", msg, code)
         return

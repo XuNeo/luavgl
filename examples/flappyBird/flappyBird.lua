@@ -1,5 +1,4 @@
 local lvgl = require("lvgl")
-local CONST = lvgl.const
 
 local MOVE_SPEED = 480 / 8000 -- 8s for 480 pixel, pixel per ms
 local PIXEL_PER_METER = 80
@@ -8,6 +7,19 @@ local BOTTOM_Y = 480 - 112
 local PIPE_COUNT = 5
 local PIPE_GAP = 100
 local PIPE_SPACE = 120
+
+-- SCRIPT_PATH is set in simulator/main.c, used to get the abs path of first
+-- lua script lua get called. In this example, SCRIPT_PATH is set to
+-- path of `examples.lua`, flappyBird.lua is called when button is clicked.
+
+local IMAGE_PATH = SCRIPT_PATH
+if not IMAGE_PATH then
+    IMAGE_PATH = "/"
+    print("Note image root path is set to: ", IMAGE_PATH)
+end
+
+IMAGE_PATH = IMAGE_PATH .. "/flappyBird/"
+print("IMAGE_PATH:", IMAGE_PATH)
 
 local function randomY()
     return math.random(TOP_Y + 30, BOTTOM_Y - 50 - 50)
@@ -123,8 +135,8 @@ local function Frames(parent, src, fps)
 end
 
 local function Pipe(parent)
-    local up = Image(parent, "/flappyBird/pipe_up.png")
-    local down = Image(parent, "/flappyBird/pipe_down.png")
+    local up = Image(parent, IMAGE_PATH .. "pipe_up.png")
+    local down = Image(parent, IMAGE_PATH .. "pipe_down.png")
     local pipe = {
         up = up.widget,
         down = down.widget,
@@ -347,7 +359,7 @@ end
 local function Bird(parent, birdMovedCB)
     -- create bird Frame(sprite) in 5FPS
     local bird = Frames(parent,
-        {"/flappyBird/bird1.png", "/flappyBird/bird2.png", "/flappyBird/bird3.png"}, 5)
+        {IMAGE_PATH .. "bird1.png", IMAGE_PATH .. "bird2.png", IMAGE_PATH .. "bird3.png"}, 5)
 
     local function birdVarInit()
         bird.x = 240 - bird.w // 2
@@ -478,9 +490,9 @@ local function Background(root, bgEventCB)
     local bgLayer = screenCreate(root) -- background layer
     bgLayer:add_flag(lvgl.FLAG.CLICKABLE) --  we accept event here
 
-    local bg = ImageScroll(bgLayer, "/flappyBird/bg_day.png", MOVE_SPEED * 0.4, 0)
+    local bg = ImageScroll(bgLayer, IMAGE_PATH .. "bg_day.png", MOVE_SPEED * 0.4, 0)
     local pipes = Pipes(bgLayer)
-    local land = ImageScroll(bgLayer, "/flappyBird/land.png", MOVE_SPEED, BOTTOM_Y)
+    local land = ImageScroll(bgLayer, IMAGE_PATH .. "land.png", MOVE_SPEED, BOTTOM_Y)
 
     bgLayer:onevent(lvgl.EVENT.PRESSED, function(obj, code)
         bgEventCB(lvgl.EVENT.PRESSED)
@@ -501,7 +513,7 @@ local function SysLayer(root)
 end
 
 local function createPlayBtn(sysLayer, onEvent)
-    local playBtn = Image(sysLayer, "/flappyBird/button_play.png").widget
+    local playBtn = Image(sysLayer, IMAGE_PATH .. "button_play.png").widget
     playBtn:add_flag(lvgl.FLAG.CLICKABLE)
     playBtn:set{
         align = {
@@ -574,7 +586,7 @@ local function entry()
             scoreBest = scoreNow
         end
 
-        local gameoverImg = Image(sysLayer, "/flappyBird/text_game_over.png").widget
+        local gameoverImg = Image(sysLayer, IMAGE_PATH .. "text_game_over.png").widget
         gameoverImg:set{
             align = {
                 type = lvgl.ALIGN.TOP_MID,
@@ -596,7 +608,7 @@ local function entry()
             end
         }
 
-        local scoreImg = Image(sysLayer, "/flappyBird/score.png").widget
+        local scoreImg = Image(sysLayer, IMAGE_PATH .. "score.png").widget
         scoreImg:set{
             align = {
                 type = lvgl.ALIGN.CENTER,
@@ -709,7 +721,7 @@ local function entry()
     -- system layer, score etc.
     sysLayer = SysLayer(scr)
 
-    local title = Image(sysLayer, "/flappyBird/title.png").widget
+    local title = Image(sysLayer, IMAGE_PATH .. "title.png").widget
     title:set{
         align = {
             type = lvgl.ALIGN.TOP_MID,
@@ -726,7 +738,7 @@ local function entry()
         title:delete()
         title = nil
 
-        local medal = Image(sysLayer, "/flappyBird/medals.png").widget
+        local medal = Image(sysLayer, IMAGE_PATH .. "medals.png").widget
         medal:set{
             align = {
                 type = lvgl.ALIGN.TOP_MID,

@@ -1,8 +1,5 @@
 local lvgl = require("lvgl")
 
-local flex = {}
-flex["flex-direction"] = 0
-
 local root = lvgl.Object(nil, {
     flex = {
         flex_direction = "row",

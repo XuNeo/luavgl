@@ -177,7 +177,7 @@ static int pmain(lua_State *L)
   luavgl_set_font_extension(L, args->make_font, args->delete_font);
 
   /**
-   * Set global variable RESOURCE_ROOT, to make image src path easier.
+   * Set global variable SCRIPT_PATH, to make image src path easier.
    */
   char *path = strdup(script);
   if (path == NULL) {
@@ -195,7 +195,7 @@ static int pmain(lua_State *L)
 
   printf("script path: %s\n", path);
   lua_pushstring(L, path);
-  lua_setglobal(L, "RESOURCE_ROOT");
+  lua_setglobal(L, "SCRIPT_PATH");
   luaL_openlibs(L);
 
   lua_getglobal(L, "package");
