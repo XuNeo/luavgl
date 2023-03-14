@@ -632,12 +632,14 @@ static int luavgl_obj_gc(lua_State *L)
 
   debug("\n");
 
-  lv_obj_t *obj = luavgl_to_obj(L, 1);
-  debug("GC for obj: %p\n", obj);
-
-  if (obj) {
-    luavgl_obj_delete(L);
+  luavgl_obj_t *lobj = lua_touserdata(L, 1);
+  if (lobj == NULL || lobj->obj == NULL) {
+    /* obj is already deleted. It's ok. */
+    return 0;
   }
+
+  debug("GC for obj: %p\n", lobj->obj);
+  luavgl_obj_delete(L);
 
   return 0;
 }
