@@ -175,7 +175,6 @@ static int luavgl_dropdown_clear_option(lua_State *L)
 }
 
 static const luaL_Reg luavgl_dropdown_methods[] = {
-  // dropdown.c
     {"set",          luavgl_dropdown_set         },
     {"get",          luavgl_dropdown_get         },
     {"open",         luavgl_dropdown_open        },

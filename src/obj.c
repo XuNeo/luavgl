@@ -134,7 +134,6 @@ static int luavgl_obj_delete(lua_State *L)
     luavgl_obj_delete(L);
   }
 
-  // luavgl_obj_remove_all_anim_int(L, lobj);
   luavgl_obj_remove_event_all(L, lobj);
 
   /* delete obj firstly, then cleanup memory */

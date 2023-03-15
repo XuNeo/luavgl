@@ -44,7 +44,7 @@ LUALIB_API luavgl_ctx_t *luavgl_context(lua_State *L)
    */
 
   if (lua_isnil(L, -1)) {
-    // create it if not exist in registry
+    /* create it if not exist in registry */
     lua_pushstring(L, luavglgl_key);
     ctx = (luavgl_ctx_t *)lua_newuserdata(L, sizeof(*ctx));
     memset(ctx, 0, sizeof(*ctx));

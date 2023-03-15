@@ -109,7 +109,6 @@ static int luavgl_textarea_get_text(lua_State *L)
 }
 
 static const luaL_Reg luavgl_textarea_methods[] = {
-  // widget/textarea.c
     {"set",      luavgl_textarea_set     },
     {"get_text", luavgl_textarea_get_text},
 

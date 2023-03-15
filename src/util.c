@@ -27,7 +27,7 @@ fail:
 static int luavgl_is_callable(lua_State *L, int index)
 {
   if (luaL_getmetafield(L, index, "__call") != LUA_TNIL) {
-    // getmetatable(x).__call must be a function for x() to work
+    /* getmetatable(x).__call must be a function for x() to work */
     int callable = lua_isfunction(L, -1);
     lua_pop(L, 1);
     return callable;
@@ -108,12 +108,6 @@ static void dumpstack(lua_State *L)
     case LUA_TNIL:
       printf("nil: %s\n", "nil");
       break;
-    // case LUA_TUSERDATA:
-    //   lua_getfield(L, i, "__name");
-    //   printf("userdata: %s\n", lua_tostring(L, -1));
-    //   lua_pop(L, 1);
-    //   break;
-
     default:
       printf("pointer: %p\n", lua_topointer(L, i));
       break;

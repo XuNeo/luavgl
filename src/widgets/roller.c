@@ -126,7 +126,6 @@ static int luavgl_roller_get_options_cnt(lua_State *L)
 }
 
 static const luaL_Reg luavgl_roller_methods[] = {
-  // roller.c
     {"set",              luavgl_roller_set             },
     {"get_options",      luavgl_roller_get_options     },
     {"get_selected",     luavgl_roller_get_selected    },
