@@ -130,12 +130,17 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
     return 0; /* leave previous value on top, but return 0 */
   lua_pop(L, 1);
 
-  /* create metatable, 3 elements, normally for __index, __gc and __name*/
-  lua_createtable(L, 0, 3);
+  /* create metatable, 4 elements, normally for __magic, __index, __gc and
+   * __name. */
+  lua_createtable(L, 0, 4);
   if (name) {
     lua_pushstring(L, name);
     lua_setfield(L, -2, "__name"); /* metatable.__name = tname */
   }
+
+  /** A magic string we used to check if userdata is a luavgl object. */
+  lua_pushstring(L, "luavglObj");
+  lua_setfield(L, -2, "__magic");
 
   /* add to registry */
   lua_pushlightuserdata(L, (void *)clz);
@@ -242,9 +247,27 @@ LUALIB_API int luavgl_pcall(lua_State *L, int nargs, int nresult)
   return status;
 }
 
+LUALIB_API void *luavgl_test_obj(lua_State *L, int ud)
+{
+  void *p = lua_touserdata(L, ud);
+  if (p != NULL) {                    /* value is a userdata? */
+    if (lua_getmetatable(L, ud)) {    /* does it have a metatable? */
+      lua_getfield(L, -1, "__magic"); /* get the magic string */
+      lua_pushstring(L, "luavglObj");
+      /* strings are interned, so no need to use strcmp. */
+      if (!lua_rawequal(L, -1, -2)) /* not the same? */
+        p = NULL;    /* value is a userdata with wrong metatable */
+      lua_pop(L, 3); /* remove metatable and two strings */
+      return p;
+    }
+  }
+
+  return NULL; /* value is not a userdata with a metatable */
+}
+
 LUALIB_API lv_obj_t *luavgl_to_obj(lua_State *L, int idx)
 {
-  luavgl_obj_t *lobj = lua_touserdata(L, idx);
+  luavgl_obj_t *lobj = luavgl_test_obj(L, idx);
   if (lobj == NULL || lobj->obj == NULL) {
     luaL_argerror(L, idx, "expect lua lvgl object, got null");
     return NULL;
