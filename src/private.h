@@ -9,8 +9,7 @@
 #include <stdlib.h>
 
 /* clang-format off */
-#define debug(format, ...)
-// fprintf(stdout, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
+#define debug(format, ...) fprintf(stderr, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 // syslog(LOG_DEBUG, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 /* clang-format on */
 
@@ -31,9 +30,7 @@ int luavgl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz);
 int luavgl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz);
 
 static void luavgl_obj_event_init(luavgl_obj_t *lobj);
-static void luavgl_obj_anim_init(luavgl_obj_t *lobj);
 static void luavgl_obj_remove_event_all(lua_State *L, luavgl_obj_t *obj);
-static int luavgl_obj_remove_all_anim_int(lua_State *L, luavgl_obj_t *lobj);
 
 /* util functions */
 static int luavgl_is_callable(lua_State *L, int index);

@@ -108,6 +108,11 @@ static void dumpstack(lua_State *L)
     case LUA_TNIL:
       printf("nil: %s\n", "nil");
       break;
+    // case LUA_TUSERDATA:
+    //   lua_getfield(L, i, "__name");
+    //   printf("userdata: %s\n", lua_tostring(L, -1));
+    //   lua_pop(L, 1);
+    //   break;
 
     default:
       printf("pointer: %p\n", lua_topointer(L, i));

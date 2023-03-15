@@ -12,8 +12,6 @@
 #include "widgets/widgets.c"
 
 static int luavgl_anim_create(lua_State *L);
-static int luavgl_anims_create(lua_State *L);
-static int luavgl_obj_remove_all_anim(lua_State *L);
 static int luavgl_obj_delete(lua_State *L);
 
 static void _lv_obj_set_align(void *obj, lua_State *L)
@@ -136,7 +134,7 @@ static int luavgl_obj_delete(lua_State *L)
     luavgl_obj_delete(L);
   }
 
-  luavgl_obj_remove_all_anim_int(L, lobj);
+  // luavgl_obj_remove_all_anim_int(L, lobj);
   luavgl_obj_remove_event_all(L, lobj);
 
   /* delete obj firstly, then cleanup memory */
@@ -620,6 +618,16 @@ static int luavgl_obj_get_pos(lua_State *L)
   return 1;
 }
 
+/**
+ * Remove all animations associates to this object
+ */
+static int luavgl_obj_remove_anim_all(lua_State *L)
+{
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
+  lv_anim_del(obj, NULL);
+  return 1;
+}
+
 static int luavgl_obj_gc(lua_State *L)
 {
   if (lua_type(L, 1) != LUA_TUSERDATA) {
@@ -692,9 +700,9 @@ static const luaL_Reg luavgl_obj_methods[] = {
     {"onevent",                  luavgl_obj_on_event                },
     {"onPressed",                luavgl_obj_on_pressed              },
     {"onClicked",                luavgl_obj_on_clicked              },
-    {"anim",                     luavgl_anim_create                 }, /* in lua, we only support add anim to obj */
-    {"anims",                    luavgl_anims_create                }, /* create multiple anim */
-    {"remove_all_anim",          luavgl_obj_remove_all_anim         }, /* remove all */
+    {"anim",                     luavgl_anim_create                 },
+    {"Anim",                     luavgl_anim_create                 },
+    {"remove_all_anim",          luavgl_obj_remove_anim_all         }, /* remove all */
     {NULL,                       NULL                               },
 };
 
@@ -772,6 +780,7 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
     parent = luavgl_to_obj(L, 1);
   }
 
+  debug("create obj on: %p\n", parent);
   /* remove parent, in order to keep clean stack to call obj.set */
   lua_remove(L, 1);
 
@@ -834,7 +843,6 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj)
   lua_setmetatable(L, -2);
 
   memset(lobj, 0, sizeof(*lobj));
-  luavgl_obj_anim_init(lobj);
   luavgl_obj_event_init(lobj);
   lobj->obj = obj;
   lv_obj_add_event_cb(obj, obj_delete_cb, LV_EVENT_DELETE, L);

@@ -47,9 +47,7 @@ typedef struct luavgl_obj_s {
   bool lua_created; /* this object is created from lua */
 
   /* internally used variables */
-  int n_anim;
   int n_events;
-  struct luavgl_anim_s **anims; /* store handler to anim */
   struct event_callback_s *events;
 } luavgl_obj_t;
 

@@ -21,6 +21,7 @@ static const struct luaL_Reg luavgl_methods[] = {
     {"Timer", luavgl_timer_create}, /* timer.c */
     {"Font",  luavgl_font_create }, /* font.c */
     {"Style", luavgl_style_create}, /* style.c */
+    {"Anim",  luavgl_anim_create }, /* anim.c */
 
     {NULL,    NULL               },
 };

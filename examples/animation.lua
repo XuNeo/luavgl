@@ -40,6 +40,7 @@ lvgl.Timer {
     cb = function(t)
         print("stop animation in timer.")
         t:delete()
+        print(anim)
         anim:stop()
         anim = nil
         collectgarbage("collect")
