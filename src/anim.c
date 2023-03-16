@@ -188,6 +188,39 @@ static int luavgl_anim_start(lua_State *L)
 }
 
 /**
+ * anim:set { para }
+ * update anim parameter, stop anim if it's ongoing.
+ */
+static int luavgl_anim_set(lua_State *L)
+{
+  luavgl_anim_t *a = luavgl_check_anim(L, 1);
+  if (a->aa) {
+    luavgl_anim_stop(L);
+  }
+
+  /* update anim parameters */
+
+  lv_anim_t *cfg = &a->cfg;
+
+  lua_getfield(L, 2, "exec_cb");
+  if (!lua_isnoneornil(L, -1))
+    a->exec_cb = luavgl_check_continuation(L, -1);
+  lua_pop(L, 1);
+
+  lua_getfield(L, 2, "run");
+  bool run = lua_toboolean(L, -1);
+  lua_pop(L, 1);
+
+  luavgl_iterate(L, 2, anim_set_para_cb, cfg);
+
+  if (run) {
+    luavgl_anim_start(L);
+  }
+
+  return 1;
+}
+
+/**
  * a = obj:anim({anim parameters})
  * a = obj:Anim{anim parameters}
  * a = lvgl.Anim(var, anim_para)
@@ -223,21 +256,12 @@ static int luavgl_anim_create(lua_State *L)
   cfg->deleted_cb = luavgl_anim_delete_cb;
   cfg->exec_cb = luavgl_anim_exec_cb;
 
-  lua_getfield(L, 2, "exec_cb");
-  a->exec_cb = luavgl_check_continuation(L, -1);
-  lua_pop(L, 1);
+  /* leave only anim userdata and para table on stack */
+  lua_remove(L, 1);     /* para, anim */
+  lua_insert(L, 1);     /* anim, para */
 
-  lua_getfield(L, 2, "run");
-  bool run = lua_toboolean(L, -1);
-  lua_pop(L, 1);
-
-  luavgl_iterate(L, -2, anim_set_para_cb, cfg);
-
-  if (run) {
-    lua_insert(L, 1);
-    lua_pop(L, lua_gettop(L) - 1);
-    luavgl_anim_start(L);
-  }
+  luavgl_anim_set(L);
+  lua_pop(L, 1); /* anim */
 
   debug("create anim: %p, aa: %p\n", a, a->aa);
   return 1;
@@ -274,10 +298,7 @@ static const luaL_Reg luavgl_anim_meta[] = {
 };
 
 static const luaL_Reg luavgl_anim_methods[] = {
-#if 0
-    /* not supported for now. */
     {"set",    luavgl_anim_set   },
-#endif
     {"start",  luavgl_anim_start },
 
  /* in lua anim, stopped anim can be restarted. */
