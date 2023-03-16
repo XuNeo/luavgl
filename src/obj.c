@@ -94,7 +94,7 @@ static luavgl_obj_t *luavgl_obj_touserdatauv(lua_State *L, int idx)
   lua_rawset(L, -3);
 #endif
   lua_pushvalue(L, -1); /* leave one on stack */
-  lua_setuservalue(L, idx > 0 ? idx : idx - 2);
+  lua_setuservalue(L, idx > 0 ? idx : idx - 3);
   return lobj;
 }
 
