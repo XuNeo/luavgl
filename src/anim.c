@@ -115,6 +115,8 @@ static const luavgl_value_setter_t anim_property_table[] = {
     { "repeat_count", 0, { .setter = (setter_int_t)lv_anim_set_repeat_count } },
     { "repeat_delay", 0, { .setter = (setter_int_t)lv_anim_set_repeat_delay } },
     { "early_apply", 0, { .setter = (setter_int_t)lv_anim_set_early_apply } },
+    { "playback_time", 0, { .setter = (setter_int_t)lv_anim_set_playback_time } },
+    { "playback_delay", 0, { .setter = (setter_int_t)lv_anim_set_playback_delay } },
     { "path", SETTER_TYPE_STACK, { .setter_stack = _lv_anim_set_path } },
     { "exec_cb", SETTER_TYPE_STACK, { .setter_stack = _lv_dummy_set } },
 };
@@ -221,7 +223,7 @@ static int luavgl_anim_set(lua_State *L)
 }
 
 /**
- * a = obj:anim({anim parameters})
+ * a = obj:Anim({anim parameters})
  * a = obj:Anim{anim parameters}
  * a = lvgl.Anim(var, anim_para)
  *
@@ -257,8 +259,8 @@ static int luavgl_anim_create(lua_State *L)
   cfg->exec_cb = luavgl_anim_exec_cb;
 
   /* leave only anim userdata and para table on stack */
-  lua_remove(L, 1);     /* para, anim */
-  lua_insert(L, 1);     /* anim, para */
+  lua_remove(L, 1); /* para, anim */
+  lua_insert(L, 1); /* anim, para */
 
   luavgl_anim_set(L);
   lua_pop(L, 1); /* anim */

@@ -35,7 +35,7 @@ img:set {
 }
 
 -- create animation on object
-img:anim {
+img:Anim {
     run = true,
     start_value = 0,
     end_value = 3600,

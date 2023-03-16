@@ -78,7 +78,7 @@ local function ImageScroll(root, src, animSpeed, y)
         pad_all = 0
     }
 
-    img:anim{
+    img:Anim{
         run = true,
         start_value = 0,
         end_value = -480,
@@ -309,7 +309,7 @@ local function Pipes(parent)
     end
 
     pipes.preValue = 0
-    pipes.anim = pipes[1].up:anim{
+    pipes.anim = pipes[1].up:Anim{
         run = false,
         start_value = 0,
         end_value = 480,
@@ -416,7 +416,7 @@ local function Bird(parent, birdMovedCB)
     end
 
     -- y moving anim, in time.
-    bird.y_anim = bird.widget:anim{
+    bird.y_anim = bird.widget:Anim{
         run = false,
         start_value = 0,
         end_value = 1000,
@@ -594,7 +594,7 @@ local function entry()
             }
         }
 
-        gameoverImg:anim{
+        gameoverImg:Anim{
             run = true,
             start_value = 0,
             end_value = 3600,
@@ -616,7 +616,7 @@ local function entry()
                 x_ofs = 0
             }
         }
-        scoreImg:anim{
+        scoreImg:Anim{
             run = true,
             start_value = 480,
             end_value = 0,

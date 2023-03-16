@@ -761,14 +761,7 @@ end
 --- Create anim for object
 --- @param p AnimPara
 --- @return Anim
-function obj:anim(p)
-end
-
----
---- Create multiple animation for object
---- @param p AnimPara[]
---- @return Anim[] anim handlers in array
-function obj:anims(p)
+function obj:Anim(p)
 end
 
 ---
@@ -1098,21 +1091,21 @@ end
 --- Anim
 ---@class Anim
 ---
-local anim = {}
+local Anim = {}
 
 --- start animation
 --- @return nil
-function anim:start()
+function Anim:start()
 end
 
 --- stop animation
 --- @return nil
-function anim:stop()
+function Anim:stop()
 end
 
 --- delete animation
 --- @return nil
-function anim:delete()
+function Anim:delete()
 end
 
 ---
