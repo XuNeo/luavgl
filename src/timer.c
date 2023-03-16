@@ -23,12 +23,14 @@ static void luavgl_timer_cb(lv_timer_t *t)
     return;
   }
 
+  int top = lua_gettop(L);
   /* stack: 1. function, 2. timer userdata */
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
   lua_pushlightuserdata(L, t);
   lua_rawget(L, LUA_REGISTRYINDEX); /* this should not fail*/
 
   luavgl_pcall(L, 1, 0);
+  lua_settop(L, top);
 }
 
 static void luavgl_timer_set_cb(void *_t, lua_State *L)

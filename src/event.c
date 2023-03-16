@@ -10,13 +10,14 @@ static void luavgl_obj_event_cb(lv_event_t *e)
     debug("Null user data, should be L.\n");
   }
 
+  int top = lua_gettop(L);
   lv_obj_t *obj = e->current_target;
 
   lua_pushlightuserdata(L, obj);
   lua_rawget(L, LUA_REGISTRYINDEX);
   luavgl_obj_t *lobj = luavgl_to_lobj(L, -1);
   if (lobj == NULL || lobj->obj == NULL)
-    return;
+    goto event_exit;
 
   int ref = LUA_NOREF;
   for (int i = 0; i < lobj->n_events; i++) {
@@ -29,7 +30,7 @@ static void luavgl_obj_event_cb(lv_event_t *e)
 
   if (ref == LUA_NOREF) {
     /* nobody cares this event, something went wrong but can be ignored. */
-    return;
+    goto event_exit;
   }
 
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
@@ -40,6 +41,9 @@ static void luavgl_obj_event_cb(lv_event_t *e)
 
   /* args: obj, code */
   luavgl_pcall(L, 2, 0);
+
+event_exit:
+  lua_settop(L, top);
 }
 
 static void luavgl_obj_remove_event(lua_State *L, lv_obj_t *obj,
