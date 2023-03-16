@@ -200,6 +200,67 @@ static int luavgl_indev_wait_release(lua_State *L)
   return 0;
 }
 
+static void indev_feedback_cb(lv_indev_drv_t *driver, uint8_t code)
+{
+  lua_State *L = driver->user_data;
+  int top = lua_gettop(L);
+  lua_pushlightuserdata(L, driver);
+  lua_rawget(L, LUA_REGISTRYINDEX); /* get indev on stack */
+
+  lua_getuservalue(L, -1); /* stack: indev, uservalue-table */
+  lua_rawgeti(L, -1, code); /* indev, uservalue, cb */
+  if (lua_isnoneornil(L, -1)) {
+    lua_settop(L, top);
+    return;
+  }
+
+  lua_pushvalue(L, 1);
+  lua_pushinteger(L, code);
+  luavgl_pcall(L, 2, 0);
+  lua_settop(L, top);
+}
+
+/**
+ * indev:on_event(code, cb)
+ */
+static int luavgl_indev_on_event(lua_State *L)
+{
+  luavgl_indev_t *i = luavgl_check_indev(L, 1);
+  int code = lua_tointeger(L, 2);
+  luavgl_check_callable(L, 3);
+
+  lua_pushlightuserdata(L, i->indev->driver);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (lua_isnoneornil(L, -1)) {
+    lua_pop(L, 1);
+
+    /* set indev to registry using pointer as key */
+    lua_pushlightuserdata(L, i->indev->driver);
+    lua_pushvalue(L, 1);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+  }
+
+  int type = lua_getuservalue(L, 1);
+  if (type != LUA_TTABLE) {
+    lua_pop(L, 1);
+    lua_createtable(L, 0, 1);
+    lua_pushvalue(L, -1);
+    lua_setuservalue(L, 1);
+  }
+
+  debug("add feedback_cb code %d, for indev->driver: %p\n", code,
+        i->indev->driver);
+  lua_pushvalue(L, 3);
+  lua_rawseti(L, -2, code);
+
+  i->indev->driver->feedback_cb = indev_feedback_cb;
+  i->indev->driver->user_data = L;
+  dumpstack(L);
+  lua_settop(L, 1);
+  dumpstack(L);
+  return 1;
+}
+
 static int luavgl_indev_tostring(lua_State *L)
 {
   lua_pushfstring(L, "lv_indev: %p\n", luavgl_check_indev(L, 1));
@@ -209,6 +270,18 @@ static int luavgl_indev_tostring(lua_State *L)
 static int luavgl_indev_gc(lua_State *L)
 {
   debug("\n");
+
+  /* If set_feedback_cb is used, then the indev only gets gc'ed when lua vm
+   * exits.
+   */
+  luavgl_indev_t *i = luavgl_check_indev(L, 1);
+  lua_getuservalue(L, 1);
+  if(!lua_isnoneornil(L, -1)) {
+    lua_pushlightuserdata(L, i->indev->driver);
+    lua_pushnil(L);
+    lua_rawset(L, LUA_REGISTRYINDEX);
+    i->indev->driver->feedback_cb = NULL;
+  }
 
   return 0;
 }
@@ -240,6 +313,7 @@ static const luaL_Reg methods[] = {
     {"get_scroll_obj",   luavgl_indev_get_scroll_obj  },
     {"get_vect",         luavgl_indev_get_vect        },
     {"wait_release",     luavgl_indev_wait_release    },
+    {"on_event",         luavgl_indev_on_event        },
 
     {NULL,               NULL                         },
 };

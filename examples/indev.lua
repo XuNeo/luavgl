@@ -2,6 +2,10 @@ local function indev_example()
     local indev = lvgl.indev.get_act()
     print("act indev: ", indev)
 
+
+    indev:on_event(lvgl.EVENT.SHORT_CLICKED, function ()
+        print("indev pressed")
+    end)
     local obj_act = lvgl.indev.get_obj_act()
     print("obj_act: ", obj_act)
 
