@@ -255,9 +255,7 @@ static int luavgl_indev_on_event(lua_State *L)
 
   i->indev->driver->feedback_cb = indev_feedback_cb;
   i->indev->driver->user_data = L;
-  dumpstack(L);
   lua_settop(L, 1);
-  dumpstack(L);
   return 1;
 }
 
