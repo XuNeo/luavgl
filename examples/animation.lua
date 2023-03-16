@@ -20,6 +20,10 @@ root:Object():Image {
         obj:set {
             angle = value
         }
+    end,
+    done_cb = function (anim, obj)
+        print("anim done.: ", anim, "obj:", obj)
+        anim:delete()
     end
 }
 
@@ -31,6 +35,7 @@ local obj = root:Object {
 }
 obj:clear_flag(lvgl.FLAG.SCROLLABLE)
 
+--- @type AnimPara
 local animPara = {
     run = true,
     start_value = 10,
@@ -40,7 +45,6 @@ local animPara = {
     playback_time = 500,
     repeat_count = lvgl.ANIM_REPEAT_INFINITE,
     path = "ease_in_out",
-    exec_cb = nil
 }
 
 animPara.exec_cb = function(obj, value)

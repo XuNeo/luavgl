@@ -63,6 +63,14 @@ static void luavgl_anim_delete_cb(lv_anim_t *_a)
 
   lua_State *L = a->L;
 
+  if (a->done_cb != LUA_NOREF) {
+    /* stack: 1. function, 2. this anim, 3. obj-userdata */
+    lua_rawgeti(L, LUA_REGISTRYINDEX, a->done_cb);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, a->self_ref);
+    lua_rawgeti(L, LUA_REGISTRYINDEX, a->obj_ref);
+    luavgl_pcall(L, 2, 0);
+  }
+
   /* it's paused or deleted, thus can be gc'ed */
   luaL_unref(L, LUA_REGISTRYINDEX, a->self_ref);
   a->self_ref = LUA_NOREF;
@@ -205,8 +213,17 @@ static int luavgl_anim_set(lua_State *L)
   lv_anim_t *cfg = &a->cfg;
 
   lua_getfield(L, 2, "exec_cb");
-  if (!lua_isnoneornil(L, -1))
+  if (!lua_isnoneornil(L, -1)) {
+    luaL_unref(L, LUA_REGISTRYINDEX, a->exec_cb);
     a->exec_cb = luavgl_check_continuation(L, -1);
+  }
+  lua_pop(L, 1);
+
+  lua_getfield(L, 2, "done_cb");
+  if (!lua_isnoneornil(L, -1)) {
+    luaL_unref(L, LUA_REGISTRYINDEX, a->done_cb);
+    a->done_cb = luavgl_check_continuation(L, -1);
+  }
   lua_pop(L, 1);
 
   lua_getfield(L, 2, "run");

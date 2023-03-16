@@ -1360,13 +1360,21 @@ end
 
 ---
 --- Anim(for object) parameter
+--- @alias AnimExecCb fun(obj:any, value:integer): nil
+--- @alias AnimDoneCb fun(anim:Anim, obj:any): nil
+
 --- @class AnimPara
 --- @field run boolean run this anim right now, or later using anim:start(). default: false
 --- @field start_value integer start value
 --- @field end_value integer
 --- @field duration integer Anim duration in milisecond
 --- @field repeat_count integer Anim repeat count, default: 1, set to 0 to disable repeat, set to lvgl.ANIM_REPEAT_INFINITE for infinite repeat, set to any other integer for specified repeate count
+--- @field playback_delay integer
+--- @field playback_time integer
 --- @field early_apply boolean set start_value right now or not. default: true
+--- @field path string |  "linear" |  "ease_in" |  "ease_out" |  "ease_in_out" |  "overshoot" |  "bounce" |  "step"
+--- @field exec_cb AnimExecCb
+--- @field done_cb AnimDoneCb
 
 
 ---
