@@ -1098,6 +1098,12 @@ local Anim = {}
 function Anim:start()
 end
 
+--- set animation new parameters
+--- @param para AnimPara new animation parameters
+--- @return nil
+function Anim:set(para)
+end
+
 --- stop animation
 --- @return nil
 function Anim:stop()
@@ -1361,7 +1367,7 @@ end
 ---
 --- Anim(for object) parameter
 --- @alias AnimExecCb fun(obj:any, value:integer): nil
---- @alias AnimDoneCb fun(anim:Anim, obj:any): nil
+--- @alias AnimDoneCb fun(anim:Anim, var:any): nil
 
 --- @class AnimPara
 --- @field run boolean run this anim right now, or later using anim:start(). default: false
