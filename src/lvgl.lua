@@ -1374,6 +1374,7 @@ end
 --- @field start_value integer start value
 --- @field end_value integer
 --- @field duration integer Anim duration in milisecond
+--- @field delay integer Set a delay before starting the animation
 --- @field repeat_count integer Anim repeat count, default: 1, set to 0 to disable repeat, set to lvgl.ANIM_REPEAT_INFINITE for infinite repeat, set to any other integer for specified repeate count
 --- @field playback_delay integer
 --- @field playback_time integer

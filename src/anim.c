@@ -120,6 +120,7 @@ static const luavgl_value_setter_t anim_property_table[] = {
     { "end_value", 0, { .setter = (setter_int_t)_lv_anim_set_end_value } },
     { "time", 0, { .setter = (setter_int_t)lv_anim_set_time } },
     { "duration", 0, { .setter = (setter_int_t)lv_anim_set_time } },
+    { "delay", 0, { .setter = (setter_int_t)lv_anim_set_delay } },
     { "repeat_count", 0, { .setter = (setter_int_t)lv_anim_set_repeat_count } },
     { "repeat_delay", 0, { .setter = (setter_int_t)lv_anim_set_repeat_delay } },
     { "early_apply", 0, { .setter = (setter_int_t)lv_anim_set_early_apply } },
