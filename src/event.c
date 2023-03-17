@@ -40,7 +40,7 @@ static void luavgl_obj_event_cb(lv_event_t *e)
   lua_pushinteger(L, e->code);
 
   /* args: obj, code */
-  luavgl_pcall(L, 2, 0);
+  luavgl_pcall_int(L, 2, 0);
 
 event_exit:
   lua_settop(L, top);

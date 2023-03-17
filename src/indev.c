@@ -216,7 +216,7 @@ static void indev_feedback_cb(lv_indev_drv_t *driver, uint8_t code)
 
   lua_pushvalue(L, 1);
   lua_pushinteger(L, code);
-  luavgl_pcall(L, 2, 0);
+  luavgl_pcall_int(L, 2, 0);
   lua_settop(L, top);
 }
 

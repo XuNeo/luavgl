@@ -29,7 +29,7 @@ static void luavgl_timer_cb(lv_timer_t *t)
   lua_pushlightuserdata(L, t);
   lua_rawget(L, LUA_REGISTRYINDEX); /* this should not fail*/
 
-  luavgl_pcall(L, 1, 0);
+  luavgl_pcall_int(L, 1, 0);
   lua_settop(L, top);
 }
 

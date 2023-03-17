@@ -409,3 +409,8 @@ LUALIB_API int luavgl_set_property_array(lua_State *L, void *obj,
 }
 
 LUALIB_API void _lv_dummy_set(void *obj, lua_State *L) {}
+
+static int luavgl_pcall_int(lua_State *L, int nargs, int nresult)
+{
+  return luavgl_context(L)->pcall(L, nargs, nresult);
+}

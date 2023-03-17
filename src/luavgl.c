@@ -57,6 +57,12 @@ LUALIB_API luavgl_ctx_t *luavgl_context(lua_State *L)
   return ctx;
 }
 
+LUALIB_API void luavgl_set_pcall(lua_State *L, luavgl_pcall_t pcall)
+{
+  luavgl_ctx_t *ctx = luavgl_context(L);
+  ctx->pcall = pcall;
+}
+
 LUALIB_API void luavgl_set_root(lua_State *L, lv_obj_t *root)
 {
   luavgl_ctx_t *ctx = luavgl_context(L);
@@ -105,6 +111,9 @@ LUALIB_API int luaopen_lvgl(lua_State *L)
     root = lv_obj_create(lv_scr_act());
     ctx->root = root;
   }
+
+  if (ctx->pcall == NULL)
+    ctx->pcall = luavgl_pcall;
 
   lua_pushstring(L, "_root");
   *(void **)lua_newuserdata(L, sizeof(void *)) = root;

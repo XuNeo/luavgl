@@ -39,3 +39,5 @@ static void luavgl_check_callable(lua_State *L, int index);
 static int luavgl_check_continuation(lua_State *L, int index);
 
 static int luavgl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector);
+
+static int luavgl_pcall_int(lua_State *L, int nargs, int nresult);

@@ -11,11 +11,13 @@ extern "C" {
 typedef const lv_font_t *(*make_font_cb)(const char *name, int size,
                                          int weight);
 typedef void (*delete_font_cb)(const lv_font_t *);
+typedef int (*luavgl_pcall_t)(lua_State *L, int nargs, int nresults);
 
 typedef struct {
   lv_obj_t *root;
   make_font_cb make_font;
   delete_font_cb delete_font;
+  luavgl_pcall_t pcall;
 } luavgl_ctx_t;
 
 typedef enum {
@@ -58,6 +60,12 @@ typedef struct luavgl_obj_s {
   luavgl_set_property_array(L, obj, table, sizeof(table) / sizeof(table[0]))
 
 LUALIB_API luavgl_ctx_t *luavgl_context(lua_State *L);
+
+/**
+ * @brief set the protected call used in event callback.
+ * this must be called before luaopen_lvgl
+ */
+LUALIB_API void luavgl_set_pcall(lua_State *L, luavgl_pcall_t pcall);
 
 /**
  * @brief Set luavgl root object

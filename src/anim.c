@@ -52,7 +52,7 @@ static void luavgl_anim_exec_cb(void *var, int32_t value)
   lua_rawgeti(L, LUA_REGISTRYINDEX, a->obj_ref);
   lua_pushinteger(L, value);
 
-  luavgl_pcall(L, 2, 0);
+  luavgl_pcall_int(L, 2, 0);
 }
 
 /* callback when anim is deleted by lvgl */
@@ -68,7 +68,7 @@ static void luavgl_anim_delete_cb(lv_anim_t *_a)
     lua_rawgeti(L, LUA_REGISTRYINDEX, a->done_cb);
     lua_rawgeti(L, LUA_REGISTRYINDEX, a->self_ref);
     lua_rawgeti(L, LUA_REGISTRYINDEX, a->obj_ref);
-    luavgl_pcall(L, 2, 0);
+    luavgl_pcall_int(L, 2, 0);
   }
 
   /* it's paused or deleted, thus can be gc'ed */
