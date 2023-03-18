@@ -23,7 +23,7 @@ local img = root:Image {
     src = "res/image.png",
     x = 0,
     y = 0,
-    bg_color = 0x004400,
+    bg_color = "#112233" -- #RRGGBB, 0xRRGGBB or "#RGB",
     pad_all = 0
 }
 
