@@ -580,16 +580,16 @@ static int luavgl_obj_get_coords(lua_State *L)
   lua_newtable(L);
 
   lua_pushinteger(L, area.x1);
-  lua_setfield(L, -1, "x1");
+  lua_setfield(L, -2, "x1");
 
   lua_pushinteger(L, area.x2);
-  lua_setfield(L, -1, "x2");
+  lua_setfield(L, -2, "x2");
 
   lua_pushinteger(L, area.y1);
-  lua_setfield(L, -1, "y1");
+  lua_setfield(L, -2, "y1");
 
   lua_pushinteger(L, area.y2);
-  lua_setfield(L, -1, "y2");
+  lua_setfield(L, -2, "y2");
 
   return 1;
 }
@@ -603,16 +603,16 @@ static int luavgl_obj_get_pos(lua_State *L)
   lua_newtable(L);
 
   lua_pushinteger(L, lv_obj_get_x(obj));
-  lua_setfield(L, -1, "x1");
+  lua_setfield(L, -2, "x1");
 
   lua_pushinteger(L, lv_obj_get_x2(obj));
-  lua_setfield(L, -1, "x2");
+  lua_setfield(L, -2, "x2");
 
   lua_pushinteger(L, lv_obj_get_y(obj));
-  lua_setfield(L, -1, "y1");
+  lua_setfield(L, -2, "y1");
 
   lua_pushinteger(L, lv_obj_get_y2(obj));
-  lua_setfield(L, -1, "y2");
+  lua_setfield(L, -2, "y2");
 
   return 1;
 }
