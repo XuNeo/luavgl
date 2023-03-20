@@ -767,13 +767,13 @@ end
 ---
 --- Get coords of object
 --- @return Coords coords
-function obj:get_coords(p)
+function obj:get_coords()
 end
 
 ---
 --- Get real postion of object relative to its parent
 --- @return Coords coords
-function obj:get_pos(p)
+function obj:get_pos()
 end
 
 ---
