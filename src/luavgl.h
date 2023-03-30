@@ -110,6 +110,16 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
 LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj);
 
 /**
+ * @brief Get lua lvgl object on stack
+ *
+ * Return value in stack:
+ *    [1]: luavgl object.
+ *
+ * @return pointer to luavgl object
+ */
+LUALIB_API luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx);
+
+/**
  * @brief Create metatable for specified object class
  *
  * @param L
@@ -127,6 +137,14 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
                                           const lv_obj_class_t *clz,
                                           const char *name, const luaL_Reg *l,
                                           int n);
+
+/**
+ * @brief Get user value of userdata of lua lvgl object, create if not exists
+ *
+ * @return type of the uservalue, LUA_TTABLE
+ */
+LUALIB_API int luavgl_obj_getuserdatauv(lua_State *L, int idx);
+
 
 /* helper to get value from stack */
 
@@ -204,6 +222,12 @@ LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data);
  * @return negative error code or zero.
  */
 LUALIB_API int luavgl_pcall(lua_State *L, int nargs, int nresult);
+
+/**
+ * @brief Check if lua object is callable.
+ * @return true if callable, false otherwise.
+ */
+LUALIB_API int luavgl_is_callable(lua_State *L, int index);
 
 #ifdef __cplusplus
 } /*extern "C"*/

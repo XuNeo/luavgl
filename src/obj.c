@@ -75,16 +75,16 @@ pop_exit:
 
 /**
  * get the obj userdata and uservalue, if uservalue is not a table, then add
- * one. result stack: table(from uservalue) return succeeded or not
+ * one. result stack: table(from uservalue)
+ * return uservalue type: LUA_TTABLE
  */
-static luavgl_obj_t *luavgl_obj_touserdatauv(lua_State *L, int idx)
+LUALIB_API int luavgl_obj_getuserdatauv(lua_State *L, int idx)
 {
-  luavgl_obj_t *lobj = luavgl_to_lobj(L, idx);
-
   int type = lua_getuservalue(L, idx);
   if (type == LUA_TTABLE)
-    return lobj;
+    return type;
 
+  lua_pop(L, 1);
   /* initial element: 1 */
   lua_createtable(L, 0, 1);
 
@@ -95,7 +95,7 @@ static luavgl_obj_t *luavgl_obj_touserdatauv(lua_State *L, int idx)
 #endif
   lua_pushvalue(L, -1); /* leave one on stack */
   lua_setuservalue(L, idx > 0 ? idx : idx - 3);
-  return lobj;
+  return LUA_TTABLE;
 }
 
 static int luavgl_obj_create(lua_State *L)

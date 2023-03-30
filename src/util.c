@@ -4,7 +4,7 @@
 #include "luavgl.h"
 #include "private.h"
 
-static luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx)
+LUALIB_API luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx)
 {
   luavgl_obj_t *lobj = lua_touserdata(L, idx);
   if (lobj == NULL) {
@@ -24,7 +24,7 @@ fail:
   return NULL;
 }
 
-static int luavgl_is_callable(lua_State *L, int index)
+LUALIB_API int luavgl_is_callable(lua_State *L, int index)
 {
   if (luaL_getmetafield(L, index, "__call") != LUA_TNIL) {
     /* getmetatable(x).__call must be a function for x() to work */

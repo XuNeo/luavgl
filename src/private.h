@@ -23,9 +23,6 @@ struct event_callback_s {
 static void dumpstack(lua_State *L);
 static void dumptable(lua_State *L, int index);
 
-static luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx);
-static luavgl_obj_t *luavgl_obj_touserdatauv(lua_State *L, int idx);
-
 /* metatable */
 int luavgl_obj_getmetatable(lua_State *L, const lv_obj_class_t *clz);
 int luavgl_obj_setmetatable(lua_State *L, int idx, const lv_obj_class_t *clz);
@@ -34,7 +31,6 @@ static void luavgl_obj_event_init(luavgl_obj_t *lobj);
 static void luavgl_obj_remove_event_all(lua_State *L, luavgl_obj_t *obj);
 
 /* util functions */
-static int luavgl_is_callable(lua_State *L, int index);
 static void luavgl_check_callable(lua_State *L, int index);
 static int luavgl_check_continuation(lua_State *L, int index);
 

@@ -118,10 +118,12 @@ static int luavgl_label_cut_text(lua_State *L)
 static int luavgl_label_set_text_static(lua_State *L)
 {
   const char *str = lua_tostring(L, 2);
-  luavgl_obj_t *lobj = luavgl_obj_touserdatauv(L, 1);
+  luavgl_obj_t *lobj = luavgl_to_lobj(L, 1);
   if (lobj->obj == NULL) {
     return luaL_error(L, "obj null.");
   }
+
+  luavgl_obj_getuserdatauv(L, 1);
 
   /* uservalue is on top */
   lua_pushvalue(L, 2);
