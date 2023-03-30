@@ -46,7 +46,8 @@ local function screenCreate(parent)
     else
         scr = lvgl.Object(nil, property)
     end
-    scr:clear_flag(lvgl.FLAG.SCROLLABLE | lvgl.FLAG.CLICKABLE)
+    scr:clear_flag(lvgl.FLAG.SCROLLABLE)
+    scr:clear_flag(lvgl.FLAG.CLICKABLE)
     return scr
 end
 
@@ -110,7 +111,7 @@ local function Frames(parent, src, fps)
     frame.i = 0
 
     frame.timer = lvgl.Timer {
-        period = 1000 // fps,
+        period = 1000 / fps,
         cb = function(t)
             frame.widget:set{
                 src = frame.src[frame.i]
@@ -173,8 +174,6 @@ end
 
 local function Pipes(parent)
     local pipes = {}
-    local x = 480;
-    local y = randomY()
 
     -- add initial pipe
     for i = 1, PIPE_COUNT do
@@ -362,8 +361,8 @@ local function Bird(parent, birdMovedCB)
         {IMAGE_PATH .. "bird1.png", IMAGE_PATH .. "bird2.png", IMAGE_PATH .. "bird3.png"}, 5)
 
     local function birdVarInit()
-        bird.x = 240 - bird.w // 2
-        bird.y = 240 - bird.h // 2
+        bird.x = 240 - bird.w / 2
+        bird.y = 240 - bird.h / 2
         bird.widget:set{
             x = bird.x,
             y = bird.y
@@ -380,13 +379,13 @@ local function Bird(parent, birdMovedCB)
 
     bird.setY = function(self)
         bird.widget:set{
-            y = bird.y // 1
+            y = bird.y
         }
     end
 
     bird.setHead = function(self)
         bird.widget:set{
-            angle = self.head // 1
+            angle = self.head
         }
     end
 
