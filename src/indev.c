@@ -13,6 +13,9 @@ static lv_group_t *luavgl_to_group(lua_State *L, int idx);
 static luavgl_indev_t *luavgl_check_indev(lua_State *L, int idx)
 {
   luavgl_indev_t *v = luaL_checkudata(L, idx, "lv_indev");
+  if (v->indev == NULL) {
+    luaL_error(L, "null indev");
+  }
 
   return v;
 }
@@ -22,6 +25,11 @@ static luavgl_indev_t *luavgl_check_indev(lua_State *L, int idx)
  */
 static int luavgl_indev_get(lua_State *L, lv_indev_t *indev)
 {
+  if (indev == NULL) {
+    lua_pushnil(L);
+    return 1;
+  }
+
   /* check if already exists */
   lua_pushlightuserdata(L, indev);
   lua_rawget(L, LUA_REGISTRYINDEX);
@@ -76,11 +84,6 @@ static int luavgl_indev_get_next(lua_State *L)
   }
 
   indev = lv_indev_get_next(indev);
-  if (indev == NULL) {
-    lua_pushnil(L);
-    return 1;
-  }
-
   return luavgl_indev_get(L, indev);
 }
 
@@ -207,7 +210,7 @@ static void indev_feedback_cb(lv_indev_drv_t *driver, uint8_t code)
   lua_pushlightuserdata(L, driver);
   lua_rawget(L, LUA_REGISTRYINDEX); /* get indev on stack */
 
-  lua_getuservalue(L, -1); /* stack: indev, uservalue-table */
+  lua_getuservalue(L, -1);  /* stack: indev, uservalue-table */
   lua_rawgeti(L, -1, code); /* indev, uservalue, cb */
   if (lua_isnoneornil(L, -1)) {
     lua_settop(L, top);
@@ -274,7 +277,7 @@ static int luavgl_indev_gc(lua_State *L)
    */
   luavgl_indev_t *i = luavgl_check_indev(L, 1);
   lua_getuservalue(L, 1);
-  if(!lua_isnoneornil(L, -1)) {
+  if (!lua_isnoneornil(L, -1)) {
     lua_pushlightuserdata(L, i->indev->driver);
     lua_pushnil(L);
     lua_rawset(L, LUA_REGISTRYINDEX);
