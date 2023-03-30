@@ -11,8 +11,6 @@ local container = lvgl.Object(nil, {
     }
 })
 
-print("created container", container)
-
 local function createBtn(parent, name)
     local root = parent:Object {
         w = lvgl.SIZE_CONTENT,
@@ -36,7 +34,12 @@ local function createBtn(parent, name)
     }
 end
 
-createBtn(container, "keyboard")
-createBtn(container, "animation")
-createBtn(container, "flappyBird/flappyBird")
-createBtn(container, "tests")
+createBtn(container, "font")
+createBtn(container, "uservalue")
+createBtn(container, "roller")
+createBtn(container, "dropdown")
+createBtn(container, "extension")
+createBtn(container, "fs")
+createBtn(container, "indev")
+createBtn(container, "group")
+createBtn(container, "protectedcall")
