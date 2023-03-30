@@ -9,8 +9,9 @@
 #include <SDL2/SDL.h>
 #include <lvgl.h>
 
-#include <lauxlib.h>
 #include <lua.h>
+
+#include <lauxlib.h>
 #include <lualib.h>
 
 #include <luavgl.h>

@@ -1,7 +1,11 @@
 #pragma once
 
-#include <lauxlib.h>
 #include <lua.h>
+#if (LUA_VERSION_NUM < 503)
+#include "compat-5.3.h"
+#endif
+
+#include <lauxlib.h>
 #include <lvgl.h>
 
 #ifdef __cplusplus
