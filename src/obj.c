@@ -777,11 +777,11 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
     parent = ctx->root;
   } else {
     parent = luavgl_to_obj(L, 1);
+    /* remove parent, in order to keep clean stack to call obj.set */
+    lua_remove(L, 1);
   }
 
   debug("create obj on: %p\n", parent);
-  /* remove parent, in order to keep clean stack to call obj.set */
-  lua_remove(L, 1);
 
   lv_obj_t *obj = create(parent);
   luavgl_add_lobj(L, obj)->lua_created = true;
