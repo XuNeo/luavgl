@@ -108,6 +108,10 @@ File `src/lvgl.lua` is used for linting.
   <img src="https://i.ibb.co/NpRWXZ1/luavgl-linting.png" />
 </p>
 
+### Run on RTOS nuttx
+
+Check the ready-to-go examples [luavgl-nuttx-example](https://github.com/XuNeo/luavgl-nuttx-example)
+
 ### PC simulator
 
 **Currently compile luavgl to `so` or `dll` is NOT available.**
