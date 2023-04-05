@@ -58,6 +58,9 @@ local function Image(parent, src)
     }
 
     img.w, img.h = img.widget:get_img_size()
+    if not img.w or not img.h then
+        error("failed to load image: " .. src)
+    end
     return img
 end
 
