@@ -1,6 +1,3 @@
-#include <lauxlib.h>
-#include <lua.h>
-
 #include "luavgl.h"
 #include "private.h"
 

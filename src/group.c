@@ -1,5 +1,3 @@
-#include <assert.h>
-
 #include "luavgl.h"
 #include "private.h"
 

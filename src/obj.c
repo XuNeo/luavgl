@@ -1,10 +1,5 @@
-#include <lauxlib.h>
-#include <lua.h>
-
 #include "luavgl.h"
 #include "private.h"
-#include <lvgl.h>
-#include <stdlib.h>
 
 /* extended feature for object */
 #include "event.c"
