@@ -35,7 +35,7 @@ static const luavgl_value_setter_t img_property_table[] = {
     {"pivot",     SETTER_TYPE_STACK, {.setter_stack = _lv_img_set_pivot}           },
 };
 
-static int luavgl_img_set_property_kv(lua_State *L, void *data)
+LUALIB_API int luavgl_img_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = luavgl_set_property(L, obj, img_property_table);
@@ -50,7 +50,7 @@ static int luavgl_img_set_property_kv(lua_State *L, void *data)
     debug("unkown property for image.\n");
   }
 
-  return -1;
+  return ret;
 }
 
 static int luavgl_img_set(lua_State *L)
@@ -185,7 +185,7 @@ static const luaL_Reg luavgl_img_methods[] = {
     {"set_pivot",    luavgl_img_set_pivot },
     {"get_img_size", luavgl_get_img_size  },
 
-    {NULL,           NULL               },
+    {NULL,           NULL                 },
 };
 
 static void luavgl_img_init(lua_State *L)

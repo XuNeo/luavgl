@@ -24,7 +24,7 @@ static const luavgl_value_setter_t keyboard_property_table[] = {
 };
 /* clang-format on */
 
-static int luavgl_keyboard_set_property_kv(lua_State *L, void *data)
+LUALIB_API int luavgl_keyboard_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = luavgl_set_property(L, obj, keyboard_property_table);
@@ -39,7 +39,7 @@ static int luavgl_keyboard_set_property_kv(lua_State *L, void *data)
     debug("unkown property for keyboard.\n");
   }
 
-  return -1;
+  return ret;
 }
 
 static int luavgl_keyboard_set(lua_State *L)

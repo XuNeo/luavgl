@@ -20,7 +20,7 @@ static const luavgl_value_setter_t checkbox_property_table[] = {
     {"text", SETTER_TYPE_STACK, {.setter_stack = _lv_checkbox_set_txt}},
 };
 
-static int luavgl_checkbox_set_property_kv(lua_State *L, void *data)
+LUALIB_API int luavgl_checkbox_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = luavgl_set_property(L, obj, checkbox_property_table);
@@ -35,7 +35,7 @@ static int luavgl_checkbox_set_property_kv(lua_State *L, void *data)
     debug("unkown property for checkbox.\n");
   }
 
-  return -1;
+  return ret;
 }
 
 static int luavgl_checkbox_set(lua_State *L)

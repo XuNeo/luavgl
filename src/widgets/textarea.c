@@ -60,7 +60,7 @@ static const luavgl_value_setter_t textarea_property_table[] = {
 };
 /* clang-format on */
 
-static int luavgl_textarea_set_property_kv(lua_State *L, void *data)
+LUALIB_API int luavgl_textarea_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = luavgl_set_property(L, obj, textarea_property_table);

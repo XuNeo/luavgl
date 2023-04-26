@@ -35,7 +35,7 @@ static const luavgl_value_setter_t label_property_table[] = {
 #endif
 };
 
-static int label_set_property_cb(lua_State *L, void *data)
+LUALIB_API int luavgl_label_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = luavgl_set_property(L, obj, label_property_table);
@@ -50,7 +50,7 @@ static int label_set_property_cb(lua_State *L, void *data)
     debug("unkown property for label.\n");
   }
 
-  return -1;
+  return ret;
 }
 
 static int luavgl_label_set(lua_State *L)
@@ -62,7 +62,7 @@ static int luavgl_label_set(lua_State *L)
     return 0;
   }
 
-  luavgl_iterate(L, -1, label_set_property_cb, obj);
+  luavgl_iterate(L, -1, luavgl_label_set_property_kv, obj);
 
   return 0;
 }

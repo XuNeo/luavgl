@@ -222,6 +222,31 @@ LUALIB_API void _lv_dummy_set(void *obj, lua_State *L);
 LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data);
 
 /**
+ * @brief Set image property with key,value in stack
+ */
+LUALIB_API int luavgl_img_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_calendar_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_checkbox_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_dropdown_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_keyboard_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_label_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_led_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_list_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_roller_set_property_kv(lua_State *L, void *data);
+
+LUALIB_API int luavgl_textarea_set_property_kv(lua_State *L, void *data);
+
+
+
+/**
  * @brief Protected call
  * @return negative error code or zero.
  */

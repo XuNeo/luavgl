@@ -53,7 +53,7 @@ static const luavgl_value_setter_t calendar_property_table[] = {
     {"showed", SETTER_TYPE_STACK, {.setter_stack = _lv_calendar_set_showed}},
 };
 
-static int luavgl_calendar_set_property_kv(lua_State *L, void *data)
+LUALIB_API int luavgl_calendar_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
   int ret = luavgl_set_property(L, obj, calendar_property_table);
@@ -68,7 +68,7 @@ static int luavgl_calendar_set_property_kv(lua_State *L, void *data)
     debug("unkown property for calendar.\n");
   }
 
-  return -1;
+  return ret;
 }
 
 static int luavgl_calendar_set(lua_State *L)
