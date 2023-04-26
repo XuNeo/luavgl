@@ -32,7 +32,7 @@ static int luavgl_extension_set_property_kv(lua_State *L, void *data)
     printf("unkown property for extension.\n");
   }
 
-  return -1;
+  return ret;
 }
 
 static int luavgl_extension_set(lua_State *L)

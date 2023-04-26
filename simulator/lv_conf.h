@@ -474,6 +474,8 @@
 
 #define LV_USE_TABLE      1
 
+#define LV_USE_POINTER    1
+
 /*==================
  * EXTRA COMPONENTS
  *==================*/

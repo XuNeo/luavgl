@@ -218,6 +218,8 @@ static int pmain(lua_State *L)
   luaL_requiref(L, "lvgl", luaopen_lvgl, 1);
   lua_pop(L, 1);
   luavgl_extension_init(L);
+  void luavgl_pointer_init(lua_State *L);
+  luavgl_pointer_init(L);
 
   lua_pushcfunction(L, msghandler); /* push message handler */
   int base = lua_gettop(L);
