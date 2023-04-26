@@ -26,13 +26,14 @@ static void _lv_img_set_pivot(void *obj, lua_State *L)
 }
 
 static const luavgl_value_setter_t img_property_table[] = {
-    {"src",       SETTER_TYPE_STACK, {.setter_stack = _lv_dummy_set}               },
-    {"offset_x",  0,                 {.setter = (setter_int_t)lv_img_set_offset_x} },
-    {"offset_y",  0,                 {.setter = (setter_int_t)lv_img_set_offset_y} },
-    {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}    },
-    {"zoom",      0,                 {.setter = (setter_int_t)lv_img_set_zoom}     },
-    {"antialias", 0,                 {.setter = (setter_int_t)lv_img_set_antialias}},
-    {"pivot",     SETTER_TYPE_STACK, {.setter_stack = _lv_img_set_pivot}           },
+    {"src",
+     SETTER_TYPE_STACK,              {.setter_pointer = (setter_pointer_t)lv_img_set_src}},
+    {"offset_x",  0,                 {.setter = (setter_int_t)lv_img_set_offset_x}       },
+    {"offset_y",  0,                 {.setter = (setter_int_t)lv_img_set_offset_y}       },
+    {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}          },
+    {"zoom",      0,                 {.setter = (setter_int_t)lv_img_set_zoom}           },
+    {"antialias", 0,                 {.setter = (setter_int_t)lv_img_set_antialias}      },
+    {"pivot",     SETTER_TYPE_STACK, {.setter_stack = _lv_img_set_pivot}                 },
 };
 
 LUALIB_API int luavgl_img_set_property_kv(lua_State *L, void *data)
