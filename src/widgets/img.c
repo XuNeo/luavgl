@@ -27,7 +27,7 @@ static void _lv_img_set_pivot(void *obj, lua_State *L)
 
 static const luavgl_value_setter_t img_property_table[] = {
     {"src",
-     SETTER_TYPE_STACK,              {.setter_pointer = (setter_pointer_t)lv_img_set_src}},
+     SETTER_TYPE_IMGSRC,             {.setter_pointer = (setter_pointer_t)lv_img_set_src}},
     {"offset_x",  0,                 {.setter = (setter_int_t)lv_img_set_offset_x}       },
     {"offset_y",  0,                 {.setter = (setter_int_t)lv_img_set_offset_y}       },
     {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}          },
