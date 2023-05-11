@@ -475,6 +475,7 @@
 #define LV_USE_TABLE      1
 
 #define LV_USE_POINTER    1
+#define LV_USE_ANALOG_TIME    1
 
 /*==================
  * EXTRA COMPONENTS
