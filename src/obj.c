@@ -694,6 +694,7 @@ static const luaL_Reg luavgl_obj_methods[] = {
     {"onevent",                  luavgl_obj_on_event                },
     {"onPressed",                luavgl_obj_on_pressed              },
     {"onClicked",                luavgl_obj_on_clicked              },
+    {"onShortClicked",           luavgl_obj_on_short_clicked        },
     {"anim",                     luavgl_anim_create                 },
     {"Anim",                     luavgl_anim_create                 },
     {"remove_all_anim",          luavgl_obj_remove_anim_all         }, /* remove all */

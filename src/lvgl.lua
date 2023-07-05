@@ -786,6 +786,13 @@ function obj:onClicked(cb)
 end
 
 ---
+--- set object short clicked event callback, same as obj:onevent(lvgl.EVENT.SHORT_CLICKED, cb)
+--- @param cb EventCallback
+--- @return nil
+function obj:onShortClicked(cb)
+end
+
+---
 --- Create anim for object
 --- @param p AnimPara
 --- @return Anim

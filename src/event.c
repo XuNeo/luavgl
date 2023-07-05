@@ -145,6 +145,16 @@ static int luavgl_obj_on_clicked(lua_State *L)
   return luavgl_obj_on_event(L);
 }
 
+/* obj:onShortClicked(function(code, value) end) */
+static int luavgl_obj_on_short_clicked(lua_State *L)
+{
+  /* stack: obj, function cb */
+  lua_pushinteger(L, LV_EVENT_SHORT_CLICKED);
+  lua_insert(L, 2);
+
+  return luavgl_obj_on_event(L);
+}
+
 /* obj:onPressed(function(code, value) end) */
 static int luavgl_obj_on_pressed(lua_State *L)
 {
