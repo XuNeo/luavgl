@@ -442,7 +442,7 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     default:
       break;
     }
-  } else if (p->prop < _LV_STYLE_LAST_BUILT_IN_PROP) {
+  } else if (p->prop <= _LV_STYLE_LAST_BUILT_IN_PROP) {
     cb(p->prop, value, args);
   } else {
     return luaL_error(L, "unknown style");
