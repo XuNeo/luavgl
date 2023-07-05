@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 project(luavgl LANGUAGES C VERSION 0.0.1)
-option(BUILD_SIMULATOR "Build lvgl simulator with luavgl support" OFF)
+option(BUILD_SIMULATOR "Build lvgl simulator with luavgl support" ON)
 option(FIND_LUA_PACKAGE "Find lua package" ON) # may manually set LUA_INCLUDE_DIR
 option(USE_LUAJIT "Use luajit instead of lua" OFF)
 
