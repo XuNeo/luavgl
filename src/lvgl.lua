@@ -241,7 +241,7 @@ lvgl.FLEX_FLOW = {
 }
 
 --- @enum FlexAlign
-lvgl.FLEX_FLOW = {
+lvgl.FLEX_ALIGN = {
     START = 0,
     END = 0,
     CENTER = 0,
@@ -267,6 +267,22 @@ lvgl.ROLLER_MODE = {
     INFINITE = 0,
 }
 
+--- @enum KEY
+lvgl.KEY = {
+    UP = 0,
+    DOWN = 0,
+    RIGHT = 0,
+    LEFT = 0,
+    ESC = 0,
+    DEL = 0,
+    BACKSPACE = 0,
+    ENTER = 0,
+    NEXT = 0,
+    PREV = 0,
+    HOME = 0,
+    END = 0,
+}
+
 lvgl.ANIM_REPEAT_INFINITE = 0
 lvgl.ANIM_PLAYTIME_INFINITE = 0
 lvgl.SIZE_CONTENT = 0
@@ -282,6 +298,8 @@ lvgl.LABEL_POS_LAST = 0
 lvgl.LABEL_TEXT_SELECTION_OFF = 0
 lvgl.TABLE_CELL_NONE = 0
 lvgl.TEXTAREA_CURSOR_LAST = 0
+lvgl.LAYOUT_FLEX = 0
+lvgl.LAYOUT_GRID = 0
 
 --- return a opacity value in lvgl unit(0..255)
 ---@param p integer opacity value in range of 0..100
@@ -293,6 +311,16 @@ end
 ---@param p integer
 ---@return integer
 function lvgl.PCT(p)
+end
+
+--- return lvgl horizontal resolution
+---@return integer
+function lvgl.HOR_RES()
+end
+
+--- return lvgl vertical resolution
+---@return integer
+function lvgl.VER_RES()
 end
 
 ---
@@ -1208,6 +1236,8 @@ end
 --- @field translate_y integer
 --- @field transform_zoom integer
 --- @field transform_angle integer
+--- @field transform_pivot_x integer
+--- @field transform_pivot_y integer
 --- @field pad_all integer
 --- @field pad_top integer
 --- @field pad_bottom integer
