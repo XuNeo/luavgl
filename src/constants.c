@@ -316,13 +316,15 @@ static void luavgl_scr_load_anim_init(lua_State* L)
   lua_pushstring(L, "MOVE_RIGHT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_MOVE_RIGHT); lua_settable(L, -3);
   lua_pushstring(L, "MOVE_TOP"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_MOVE_TOP); lua_settable(L, -3);
   lua_pushstring(L, "MOVE_BOTTOM"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_MOVE_BOTTOM); lua_settable(L, -3);
-  lua_pushstring(L, "FADE_IN"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_FADE_IN); lua_settable(L, -3);
   lua_pushstring(L, "FADE_ON"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_FADE_ON); lua_settable(L, -3);
+#if LV_VERSION_CHECK(8, 3, 0)
+  lua_pushstring(L, "FADE_IN"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_FADE_IN); lua_settable(L, -3);
   lua_pushstring(L, "FADE_OUT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_FADE_OUT); lua_settable(L, -3);
   lua_pushstring(L, "OUT_LEFT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_LEFT); lua_settable(L, -3);
   lua_pushstring(L, "OUT_RIGHT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_RIGHT); lua_settable(L, -3);
   lua_pushstring(L, "OUT_TOP"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_TOP); lua_settable(L, -3);
   lua_pushstring(L, "OUT_BOTTOM"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_BOTTOM); lua_settable(L, -3);
+#endif
 }
 
 static void luavgl_scrollbar_mode_init(lua_State* L)

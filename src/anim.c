@@ -271,7 +271,11 @@ static int luavgl_anim_create(lua_State *L)
   lv_anim_t *cfg = &a->cfg;
   lv_anim_init(cfg);
   cfg->var = a;
+#if LV_VERSION_CHECK(8, 3, 0)
   cfg->deleted_cb = luavgl_anim_delete_cb;
+#else
+  cfg->ready_cb = luavgl_anim_delete_cb;
+#endif
   cfg->exec_cb = luavgl_anim_exec_cb;
 
   /* leave only anim userdata and para table on stack */

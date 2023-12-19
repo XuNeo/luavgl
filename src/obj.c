@@ -435,11 +435,13 @@ static int luavgl_obj_scroll_to_view_recursive(lua_State *L)
 
 static int luavgl_obj_scroll_by_raw(lua_State *L)
 {
+#if LV_VERSION_CHECK(8, 3, 0)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   int x = luavgl_tointeger(L, 2);
   int y = luavgl_tointeger(L, 3);
 
   _lv_obj_scroll_by_raw(obj, x, y);
+#endif
   return 0;
 }
 

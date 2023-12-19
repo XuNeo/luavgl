@@ -28,12 +28,14 @@ static void _lv_textarea_set_placeholder_txt(void *obj, lua_State *L)
 
 static void _lv_textarea_set_password_bullet(void *obj, lua_State *L)
 {
+#if LV_VERSION_CHECK(8, 3, 0)
   if (!lua_isstring(L, -1)) {
     luaL_argerror(L, -1, "expect string");
     return;
   }
 
   lv_textarea_set_password_bullet(obj, lua_tostring(L, -1));
+#endif
 }
 
 static void _lv_textarea_set_accepted_chars(void *obj, lua_State *L)

@@ -110,11 +110,13 @@ static int luavgl_dropdown_get(lua_State *L)
     return 1;
   }
 
+#if LV_VERSION_CHECK(8, 3, 0)
   if (strcmp(key, "option_index") == 0) {
     const char *option = lua_tostring(L, 3);
     lua_pushinteger(L, lv_dropdown_get_option_index(obj, option));
     return 1;
   }
+#endif
 
   if (strcmp(key, "symbol") == 0) {
     lua_pushlightuserdata(L, (void *)lv_dropdown_get_symbol(obj));

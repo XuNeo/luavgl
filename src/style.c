@@ -56,8 +56,10 @@ static const struct style_map_s {
     {"translate_y",        LV_STYLE_TRANSLATE_Y,        STYLE_TYPE_INT                       },
     {"transform_zoom",     LV_STYLE_TRANSFORM_ZOOM,     STYLE_TYPE_INT                       },
     {"transform_angle",    LV_STYLE_TRANSFORM_ANGLE,    STYLE_TYPE_INT                       },
+#if LV_VERSION_CHECK(8, 3, 0)
     {"transform_pivot_x",  LV_STYLE_TRANSFORM_PIVOT_X,  STYLE_TYPE_INT                       },
     {"transform_pivot_y",  LV_STYLE_TRANSFORM_PIVOT_Y,  STYLE_TYPE_INT                       },
+#endif
     {"pad_top",            LV_STYLE_PAD_TOP,            STYLE_TYPE_INT                       },
     {"pad_bottom",         LV_STYLE_PAD_BOTTOM,         STYLE_TYPE_INT                       },
     {"pad_left",           LV_STYLE_PAD_LEFT,           STYLE_TYPE_INT                       },
@@ -126,7 +128,9 @@ static const struct style_map_s {
  /* need to build pointer from table parameter */
     {"bg_grad",            LV_STYLE_BG_GRAD,            STYLE_TYPE_SPECIAL                   }, /* pointer from table */
     {"color_filter_dsc",   LV_STYLE_COLOR_FILTER_DSC,   STYLE_TYPE_SPECIAL                   }, /**/
+#if LV_VERSION_CHECK(8, 3, 0)
     {"anim",               LV_STYLE_ANIM,               STYLE_TYPE_SPECIAL                   }, /* anim para */
+#endif
     {"transition",         LV_STYLE_TRANSITION,         STYLE_TYPE_SPECIAL                   }, /* transition */
 
   /* styles combined */
@@ -166,12 +170,14 @@ static void lv_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
   lv_style_set_prop(s, prop, value);
 }
 
+#if LV_VERSION_CHECK(8, 3, 0)
 static void lv_style_set_inherit_cb(lv_style_prop_t prop,
                                     lv_style_value_t value, void *args)
 {
   lv_style_t *s = args;
   lv_style_set_prop_meta(s, prop, LV_STYLE_PROP_META_INHERIT);
 }
+#endif
 
 static uint8_t to_int(char c)
 {
@@ -374,8 +380,19 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     }
   }
 
+  lv_style_prop_t prop = p->prop;
+
+#if !LV_VERSION_CHECK(8, 3, 0)
+  lv_style_prop_t mask =
+      ~(LV_STYLE_PROP_INHERIT | LV_STYLE_PROP_EXT_DRAW |
+        LV_STYLE_PROP_LAYOUT_REFR | LV_STYLE_PROP_PARENT_LAYOUT_REFR |
+        LV_STYLE_PROP_FILTER);
+#else
+  lv_style_prop_t mask = LV_STYLE_PROP_ANY;
+#endif
+
   if (p->type & STYLE_TYPE_SPECIAL) {
-    switch ((int)p->prop) {
+    switch ((int)prop) {
       /* style combinations */
     case LV_STYLE_SIZE:
       cb(LV_STYLE_WIDTH, value, args);
@@ -410,10 +427,10 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 
     case LV_STYLE_COLOR_FILTER_DSC:
       break;
-
+#if LV_VERSION_CHECK(8, 3, 0)
     case LV_STYLE_ANIM:
       break;
-
+#endif
     case LV_STYLE_TRANSITION:
       break;
 
@@ -442,8 +459,8 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     default:
       break;
     }
-  } else if (p->prop <= _LV_STYLE_LAST_BUILT_IN_PROP) {
-    cb(p->prop, value, args);
+  } else if ((prop & mask) <= _LV_STYLE_LAST_BUILT_IN_PROP) {
+    cb(prop & mask, value, args);
   } else {
     return luaL_error(L, "unknown style");
   }
@@ -473,11 +490,16 @@ static int luavgl_style_set(lua_State *L)
       continue;
     }
 
+#if LV_VERSION_CHECK(8, 3, 0)
     /* special value check */
     bool inherit = luavgl_is_style_inherit(L);
 
     luavgl_set_style_kv(L, inherit ? lv_style_set_inherit_cb : lv_style_set_cb,
                         s);
+#else
+    luavgl_set_style_kv(L, lv_style_set_cb, s);
+#endif
+
     lua_pop(L, 1); /* remove value, keep the key to continue. */
   }
 
@@ -573,6 +595,7 @@ static void obj_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
   lv_obj_set_local_style_prop(info->obj, prop, value, info->selector);
 }
 
+#if LV_VERSION_CHECK(8, 3, 0)
 static void obj_style_inherit_set_cb(lv_style_prop_t prop,
                                      lv_style_value_t value, void *args)
 {
@@ -580,6 +603,7 @@ static void obj_style_inherit_set_cb(lv_style_prop_t prop,
   lv_obj_set_local_style_prop_meta(info->obj, prop, LV_STYLE_PROP_META_INHERIT,
                                    info->selector);
 }
+#endif
 
 static int luavgl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
 {
@@ -588,11 +612,15 @@ static int luavgl_obj_set_style_kv(lua_State *L, lv_obj_t *obj, int selector)
       .selector = selector,
   };
 
+#if LV_VERSION_CHECK(8, 3, 0)
   /* special value check */
   bool inherit = luavgl_is_style_inherit(L);
 
   return luavgl_set_style_kv(
       L, inherit ? obj_style_inherit_set_cb : obj_style_set_cb, &info);
+#else
+  return luavgl_set_style_kv(L, obj_style_set_cb, &info);
+#endif
 }
 
 /**

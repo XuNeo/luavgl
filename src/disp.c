@@ -129,10 +129,11 @@ static int luavgl_disp_load_scr(lua_State *L)
     anim = LV_SCR_LOAD_ANIM_MOVE_TOP;
   } else if (strcmp(str, "move_botto") == 0) {
     anim = LV_SCR_LOAD_ANIM_MOVE_BOTTOM;
-  } else if (strcmp(str, "fade_in") == 0) {
-    anim = LV_SCR_LOAD_ANIM_FADE_IN;
   } else if (strcmp(str, "fade_on") == 0) {
     anim = LV_SCR_LOAD_ANIM_FADE_ON;
+#if LV_VERSION_CHECK(8, 3, 0)
+  } else if (strcmp(str, "fade_in") == 0) {
+    anim = LV_SCR_LOAD_ANIM_FADE_IN;
   } else if (strcmp(str, "fade_out") == 0) {
     anim = LV_SCR_LOAD_ANIM_FADE_OUT;
   } else if (strcmp(str, "out_left") == 0) {
@@ -143,6 +144,7 @@ static int luavgl_disp_load_scr(lua_State *L)
     anim = LV_SCR_LOAD_ANIM_OUT_TOP;
   } else if (strcmp(str, "out_bottom") == 0) {
     anim = LV_SCR_LOAD_ANIM_OUT_BOTTOM;
+#endif
   }
   lua_pop(L, 1);
 
