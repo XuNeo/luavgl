@@ -1295,7 +1295,7 @@ end
 --- @field arc_rounded integer
 --- @field arc_color integer | string
 --- @field arc_opa integer
---- @field arc_img_src integer
+--- @field arc_image_src integer
 --- @field text_color integer | string
 --- @field text_opa integer
 --- @field text_font Font | BuiltinFont

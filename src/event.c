@@ -1,6 +1,7 @@
 #include "luavgl.h"
 #include "private.h"
 
+#if 0
 static void luavgl_obj_event_cb(lv_event_t *e)
 {
   lua_State *L = e->user_data;
@@ -43,15 +44,18 @@ static void luavgl_obj_event_cb(lv_event_t *e)
 event_exit:
   lua_settop(L, top);
 }
+#endif
 
 static void luavgl_obj_remove_event(lua_State *L, lv_obj_t *obj,
                                     struct event_callback_s *event)
 {
+#if 0
   luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
   event->code = -1; /* mark it as unused. */
   event->ref = LUA_NOREF;
   lv_obj_remove_event_dsc(obj, event->dsc);
   event->dsc = NULL;
+#endif
 }
 
 /* obj:onevent(luavgl.EVENT.PRESSED, function(code, value) -- end) */
@@ -126,11 +130,13 @@ static int luavgl_obj_on_event(lua_State *L)
 
   /* setup event callback */
 
+#if 0
   void *dsc = lv_obj_add_event_cb(obj, luavgl_obj_event_cb, code, L);
   struct event_callback_s *event = &events[slot];
   event->code = code;
   event->ref = luavgl_check_continuation(L, 3);
   event->dsc = dsc;
+#endif
 
   return 0;
 }

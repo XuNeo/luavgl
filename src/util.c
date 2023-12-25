@@ -386,8 +386,12 @@ LUALIB_API int luavgl_set_property_array(lua_State *L, void *obj,
       p->setter(obj, v);
     } else if (p->type == SETTER_TYPE_COLOR) {
       /* color */
-      lv_color_t color = luavgl_tocolor(L, -1);
-      p->setter(obj, color.full);
+      union {
+        lv_color_t c;
+        uint32_t v;
+      } color;
+      color.c = luavgl_tocolor(L, -1);
+      p->setter(obj, color.v);
     } else if (p->type == SETTER_TYPE_IMGSRC) {
       /* img src */
       p->setter_pointer(obj, (void *)luavgl_toimgsrc(L, -1));

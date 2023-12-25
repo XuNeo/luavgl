@@ -55,6 +55,7 @@ static int luavgl_indev_get_act(lua_State *L)
   return luavgl_indev_get(L, indev);
 }
 
+#if 0
 static int luavgl_indev_get_obj_act(lua_State *L)
 {
   lv_obj_t *obj = lv_indev_get_obj_act();
@@ -73,6 +74,7 @@ static int luavgl_indev_get_obj_act(lua_State *L)
 
   return 1;
 }
+#endif
 
 static int luavgl_indev_get_next(lua_State *L)
 {
@@ -201,6 +203,7 @@ static int luavgl_indev_wait_release(lua_State *L)
   return 0;
 }
 
+#if 0
 static void indev_feedback_cb(lv_indev_drv_t *driver, uint8_t code)
 {
   lua_State *L = driver->user_data;
@@ -259,6 +262,7 @@ static int luavgl_indev_on_event(lua_State *L)
   lua_settop(L, 1);
   return 1;
 }
+#endif
 
 static int luavgl_indev_tostring(lua_State *L)
 {
@@ -270,6 +274,7 @@ static int luavgl_indev_gc(lua_State *L)
 {
   debug("\n");
 
+#if 0
   /* If set_feedback_cb is used, then the indev only gets gc'ed when lua vm
    * exits.
    */
@@ -281,6 +286,7 @@ static int luavgl_indev_gc(lua_State *L)
     lua_rawset(L, LUA_REGISTRYINDEX);
     i->indev->driver->feedback_cb = NULL;
   }
+#endif
 
   return 0;
 }
@@ -290,7 +296,9 @@ static int luavgl_indev_gc(lua_State *L)
  */
 static const luaL_Reg indev_lib[] = {
     {"get_act",     luavgl_indev_get_act    },
+#if 0
     {"get_obj_act", luavgl_indev_get_obj_act},
+#endif
     {"get_next",    luavgl_indev_get_next   },
 
     {NULL,          NULL                    },
@@ -312,8 +320,9 @@ static const luaL_Reg methods[] = {
     {"get_scroll_obj",   luavgl_indev_get_scroll_obj  },
     {"get_vect",         luavgl_indev_get_vect        },
     {"wait_release",     luavgl_indev_wait_release    },
+#if 0
     {"on_event",         luavgl_indev_on_event        },
-
+#endif
     {NULL,               NULL                         },
 };
 

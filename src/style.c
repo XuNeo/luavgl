@@ -54,8 +54,9 @@ static const struct style_map_s {
     {"transform_height",   LV_STYLE_TRANSFORM_HEIGHT,   STYLE_TYPE_INT                       },
     {"translate_x",        LV_STYLE_TRANSLATE_X,        STYLE_TYPE_INT                       },
     {"translate_y",        LV_STYLE_TRANSLATE_Y,        STYLE_TYPE_INT                       },
-    {"transform_zoom",     LV_STYLE_TRANSFORM_ZOOM,     STYLE_TYPE_INT                       },
-    {"transform_angle",    LV_STYLE_TRANSFORM_ANGLE,    STYLE_TYPE_INT                       },
+    {"transform_scale_x",  LV_STYLE_TRANSFORM_SCALE_X,  STYLE_TYPE_INT                       },
+    {"transform_scale_y",  LV_STYLE_TRANSFORM_SCALE_X,  STYLE_TYPE_INT                       },
+    {"transform_rotation", LV_STYLE_TRANSFORM_ROTATION, STYLE_TYPE_INT                       },
 #if LV_VERSION_CHECK(8, 3, 0)
     {"transform_pivot_x",  LV_STYLE_TRANSFORM_PIVOT_X,  STYLE_TYPE_INT                       },
     {"transform_pivot_y",  LV_STYLE_TRANSFORM_PIVOT_Y,  STYLE_TYPE_INT                       },
@@ -73,12 +74,11 @@ static const struct style_map_s {
     {"bg_grad_dir",        LV_STYLE_BG_GRAD_DIR,        STYLE_TYPE_INT                       },
     {"bg_main_stop",       LV_STYLE_BG_MAIN_STOP,       STYLE_TYPE_INT                       },
     {"bg_grad_stop",       LV_STYLE_BG_GRAD_STOP,       STYLE_TYPE_INT                       },
-    {"bg_dither_mode",     LV_STYLE_BG_DITHER_MODE,     STYLE_TYPE_INT                       },
-    {"bg_img_src",         LV_STYLE_BG_IMG_SRC,         STYLE_TYPE_IMGSRC                    },
-    {"bg_img_opa",         LV_STYLE_BG_IMG_OPA,         STYLE_TYPE_INT                       },
-    {"bg_img_recolor",     LV_STYLE_BG_IMG_RECOLOR,     STYLE_TYPE_COLOR                     },
-    {"bg_img_recolor_opa", LV_STYLE_BG_IMG_RECOLOR_OPA, STYLE_TYPE_INT                       },
-    {"bg_img_tiled",       LV_STYLE_BG_IMG_TILED,       STYLE_TYPE_INT                       },
+    {"bg_image_src",         LV_STYLE_BG_IMAGE_SRC,         STYLE_TYPE_IMGSRC                    },
+    {"bg_image_opa",         LV_STYLE_BG_IMAGE_OPA,         STYLE_TYPE_INT                       },
+    {"bg_image_recolor",     LV_STYLE_BG_IMAGE_RECOLOR,     STYLE_TYPE_COLOR                     },
+    {"bg_image_recolor_opa", LV_STYLE_BG_IMAGE_RECOLOR_OPA, STYLE_TYPE_INT                       },
+    {"bg_image_tiled",       LV_STYLE_BG_IMAGE_TILED,       STYLE_TYPE_INT                       },
     {"border_color",       LV_STYLE_BORDER_COLOR,       STYLE_TYPE_COLOR                     },
     {"border_opa",         LV_STYLE_BORDER_OPA,         STYLE_TYPE_INT                       },
     {"border_width",       LV_STYLE_BORDER_WIDTH,       STYLE_TYPE_INT                       },
@@ -89,14 +89,14 @@ static const struct style_map_s {
     {"outline_opa",        LV_STYLE_OUTLINE_OPA,        STYLE_TYPE_INT                       },
     {"outline_pad",        LV_STYLE_OUTLINE_PAD,        STYLE_TYPE_INT                       },
     {"shadow_width",       LV_STYLE_SHADOW_WIDTH,       STYLE_TYPE_INT                       },
-    {"shadow_ofs_x",       LV_STYLE_SHADOW_OFS_X,       STYLE_TYPE_INT                       },
-    {"shadow_ofs_y",       LV_STYLE_SHADOW_OFS_Y,       STYLE_TYPE_INT                       },
+    {"shadow_offset_x",    LV_STYLE_SHADOW_OFFSET_X,    STYLE_TYPE_INT                       },
+    {"shadow_offset_y",    LV_STYLE_SHADOW_OFFSET_Y,    STYLE_TYPE_INT                       },
     {"shadow_spread",      LV_STYLE_SHADOW_SPREAD,      STYLE_TYPE_INT                       },
     {"shadow_color",       LV_STYLE_SHADOW_COLOR,       STYLE_TYPE_COLOR                     },
     {"shadow_opa",         LV_STYLE_SHADOW_OPA,         STYLE_TYPE_INT                       },
-    {"img_opa",            LV_STYLE_IMG_OPA,            STYLE_TYPE_INT                       },
-    {"img_recolor",        LV_STYLE_IMG_RECOLOR,        STYLE_TYPE_COLOR                     },
-    {"img_recolor_opa",    LV_STYLE_IMG_RECOLOR_OPA,    STYLE_TYPE_INT                       },
+    {"image_opa",          LV_STYLE_IMAGE_OPA,          STYLE_TYPE_INT                       },
+    {"image_recolor",      LV_STYLE_IMAGE_RECOLOR,      STYLE_TYPE_COLOR                     },
+    {"image_recolor_opa",  LV_STYLE_IMAGE_RECOLOR_OPA,  STYLE_TYPE_INT                       },
     {"line_width",         LV_STYLE_LINE_WIDTH,         STYLE_TYPE_INT                       },
     {"line_dash_width",    LV_STYLE_LINE_DASH_WIDTH,    STYLE_TYPE_INT                       },
     {"line_dash_gap",      LV_STYLE_LINE_DASH_GAP,      STYLE_TYPE_INT                       },
@@ -104,7 +104,7 @@ static const struct style_map_s {
     {"line_color",         LV_STYLE_LINE_COLOR,         STYLE_TYPE_INT                       },
     {"line_opa",           LV_STYLE_LINE_OPA,           STYLE_TYPE_INT                       },
     {"arc_width",          LV_STYLE_ARC_WIDTH,          STYLE_TYPE_INT                       },
-    {"arc_img_src",        LV_STYLE_ARC_IMG_SRC,        STYLE_TYPE_IMGSRC                    },
+    {"arc_image_src",      LV_STYLE_ARC_IMAGE_SRC,      STYLE_TYPE_IMGSRC                    },
     {"arc_rounded",        LV_STYLE_ARC_ROUNDED,        STYLE_TYPE_INT                       },
     {"arc_color",          LV_STYLE_ARC_COLOR,          STYLE_TYPE_COLOR                     },
     {"arc_opa",            LV_STYLE_ARC_OPA,            STYLE_TYPE_INT                       },
@@ -120,7 +120,6 @@ static const struct style_map_s {
     {"opa",                LV_STYLE_OPA,                STYLE_TYPE_INT                       },
     {"color_filter_opa",   LV_STYLE_COLOR_FILTER_OPA,   STYLE_TYPE_INT                       },
     {"anim_time",          LV_STYLE_ANIM_TIME,          STYLE_TYPE_INT                       },
-    {"anim_speed",         LV_STYLE_ANIM_SPEED,         STYLE_TYPE_INT                       },
     {"blend_mode",         LV_STYLE_BLEND_MODE,         STYLE_TYPE_INT                       },
     {"layout",             LV_STYLE_LAYOUT,             STYLE_TYPE_INT                       },
     {"base_dir",           LV_STYLE_BASE_DIR,           STYLE_TYPE_INT                       },
@@ -382,11 +381,10 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 
   lv_style_prop_t prop = p->prop;
 
-#if !LV_VERSION_CHECK(8, 3, 0)
-  lv_style_prop_t mask =
-      ~(LV_STYLE_PROP_INHERIT | LV_STYLE_PROP_EXT_DRAW |
-        LV_STYLE_PROP_LAYOUT_REFR | LV_STYLE_PROP_PARENT_LAYOUT_REFR |
-        LV_STYLE_PROP_FILTER);
+#if LV_VERSION_CHECK(9, 0, 0)
+  lv_style_prop_t mask = ~0;
+#elif LV_VERSION_CHECK(8, 3, 0)
+  lv_style_prop_t mask = ~LV_STYLE_PROP_FLAG_ALL;
 #else
   lv_style_prop_t mask = LV_STYLE_PROP_ANY;
 #endif

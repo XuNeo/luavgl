@@ -28,7 +28,7 @@ static void angle_update(lv_obj_t* obj);
 const lv_obj_class_t lv_pointer_class = {
     .constructor_cb = lv_pointer_constructor,
     .instance_size = sizeof(lv_pointer_t),
-    .base_class = &lv_img_class,
+    .base_class = &lv_image_class,
 };
 
 /**********************

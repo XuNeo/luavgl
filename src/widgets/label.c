@@ -19,7 +19,6 @@ static void _lv_label_set_txt(void *obj, lua_State *L)
 static const luavgl_value_setter_t label_property_table[] = {
     {"text",                 SETTER_TYPE_STACK, {.setter_stack = _lv_label_set_txt}                        },
     {"long_mode",            0,                 {.setter = (setter_int_t)lv_label_set_long_mode}           },
-    {"recolor",              0,                 {.setter = (setter_int_t)lv_label_set_recolor}             },
 #if LVGL_VERSION_MAJOR == 9
     {"text_selection_start",
      0,                                         {.setter = (setter_int_t)lv_label_set_text_selection_start}},
@@ -81,13 +80,6 @@ static int luavgl_label_get_long_mode(lua_State *L)
   return 1;
 }
 
-static int luavgl_label_get_recolor(lua_State *L)
-{
-  lv_obj_t *obj = luavgl_to_obj(L, 1);
-  lua_pushinteger(L, lv_label_get_recolor(obj));
-  return 1;
-}
-
 static int luavgl_label_ins_text(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
@@ -139,7 +131,6 @@ static const luaL_Reg luavgl_label_methods[] = {
     {"set_text_static", luavgl_label_set_text_static},
     {"get_text",        luavgl_label_get_text       },
     {"get_long_mode",   luavgl_label_get_long_mode  },
-    {"get_recolor",     luavgl_label_get_recolor    },
     {"ins_text",        luavgl_label_ins_text       },
     {"cut_text",        luavgl_label_cut_text       },
 

@@ -102,8 +102,7 @@ static int luavgl_disp_load_scr(lua_State *L)
   }
 
   /* has parameter table */
-
-  lv_scr_load_anim_t anim = LV_SCR_LOAD_ANIM_NONE;
+  lv_screen_load_anim_t anim = LV_SCR_LOAD_ANIM_NONE;
   uint32_t time = 0;
   uint32_t delay = 0;
   bool auto_del = false;
@@ -160,7 +159,7 @@ static int luavgl_disp_load_scr(lua_State *L)
   auto_del = luavgl_tointeger(L, -1);
   lua_pop(L, 1);
 
-  lv_scr_load_anim(obj, anim, time, delay, auto_del);
+  lv_screen_load_anim(obj, anim, time, delay, auto_del);
   return 0;
 }
 
@@ -204,47 +203,6 @@ static int luavgl_disp_get_layer_sys(lua_State *L)
   return 1;
 }
 
-static int luavgl_disp_set_bg_color(lua_State *L)
-{
-  luavgl_disp_t *d = luavgl_check_disp(L, 1);
-  lv_color_t c = luavgl_tocolor(L, 2);
-
-  lv_disp_set_bg_color(d->disp, c);
-
-  return 0;
-}
-
-static int luavgl_disp_set_bg_image(lua_State *L)
-{
-  luavgl_disp_t *d = luavgl_check_disp(L, 1);
-  const char *img = luavgl_toimgsrc(L, 2);
-
-  lv_disp_set_bg_image(d->disp, img);
-
-  return 0;
-}
-
-static int luavgl_disp_set_bg_opa(lua_State *L)
-{
-  luavgl_disp_t *d = luavgl_check_disp(L, 1);
-  lv_opa_t opa = luavgl_tointeger(L, 2);
-  lv_disp_set_bg_opa(d->disp, opa);
-
-  return 0;
-}
-
-static int luavgl_disp_get_chroma_key_color(lua_State *L)
-{
-#if LVGL_VERSION_MAJOR >= 9
-  luavgl_disp_t *d = luavgl_check_disp(L, 1);
-  lv_color_t c = lv_disp_get_chroma_key_color(d->disp);
-  lua_pushinteger(L, c.full);
-#else
-  lua_pushinteger(L, 0);
-#endif
-  return 1;
-}
-
 static int luavgl_disp_get_next(lua_State *L)
 {
   lv_disp_t *disp = NULL;
@@ -274,20 +232,20 @@ static int luavgl_disp_set_rotation(lua_State *L)
   luavgl_disp_t *d = luavgl_check_disp(L, 1);
   uint32_t r = lua_tointeger(L, 2);
 
-  lv_disp_rot_t rot;
+  lv_display_rotation_t rot;
   if (r == 0)
-    rot = LV_DISP_ROT_NONE;
+    rot = LV_DISPLAY_ROTATION_0;
   else if (r == 90)
-    rot = LV_DISP_ROT_90;
+    rot = LV_DISPLAY_ROTATION_90;
   else if (r == 180)
-    rot = LV_DISP_ROT_180;
+    rot = LV_DISPLAY_ROTATION_180;
   else if (r == 270)
-    rot = LV_DISP_ROT_270;
+    rot = LV_DISPLAY_ROTATION_270;
   else {
     return luaL_argerror(L, 2, "invalid rotation value");
   }
 
-  lv_disp_set_rotation(d->disp, rot);
+  lv_display_set_rotation(d->disp, rot);
   return 0;
 }
 
@@ -310,10 +268,6 @@ static const luaL_Reg disp_lib[] = {
 static const luaL_Reg disp_methods[] = {
     {"get_layer_top",        luavgl_disp_get_layer_top       },
     {"get_layer_sys",        luavgl_disp_get_layer_sys       },
-    {"set_bg_color",         luavgl_disp_set_bg_color        },
-    {"set_bg_image",         luavgl_disp_set_bg_image        },
-    {"set_bg_opa",           luavgl_disp_set_bg_opa          },
-    {"get_chroma_key_color", luavgl_disp_get_chroma_key_color},
     {"get_next",             luavgl_disp_get_next            },
     {"set_rotation",         luavgl_disp_set_rotation        },
     {"get_res",              luavgl_disp_get_res             },

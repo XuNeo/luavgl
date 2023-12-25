@@ -67,7 +67,7 @@ static void luavgl_keyboard_init(lua_State *L)
   static const luaL_Reg btm_methods[] = {
       {NULL, NULL},
   };
-  luavgl_obj_newmetatable(L, &lv_btnmatrix_class, "lv_btnm", btm_methods);
+  luavgl_obj_newmetatable(L, &lv_buttonmatrix_class, "lv_btnm", btm_methods);
   lua_pop(L, 1);
 
   luavgl_obj_newmetatable(L, &lv_keyboard_class, "lv_keyboard",

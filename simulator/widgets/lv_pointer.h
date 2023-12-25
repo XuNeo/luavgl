@@ -22,7 +22,7 @@ extern "C" {
  **********************/
 
 typedef struct {
-    lv_img_t obj;
+    lv_image_t obj;
     int value;
     int value_start;
     int value_range;
