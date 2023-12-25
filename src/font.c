@@ -200,12 +200,6 @@ static const lv_font_t *_luavgl_font_create(lua_State *L, const char *name,
       return &lv_font_unscii_16;
 #endif
   }
-#if LV_FONT_MONTSERRAT_12_SUBPX
-  else if (strcmp(name, "montserrat_subpx") == 0) {
-    if (size == 12)
-      return &lv_font_montserrat_12_subpx;
-  }
-#endif
 #if LV_FONT_DEJAVU_16_PERSIAN_HEBREW
   else if (strcmp(name, "dejavu_persian_hebrew") == 0) {
     if (size == 16)

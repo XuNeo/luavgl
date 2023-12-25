@@ -9,5 +9,5 @@ add_executable(simulator main.c mouse_cursor_icon.c ${WIDGETS})
 target_include_directories(simulator PRIVATE widgets)
 # add_subdirectory(widgets)
 
-target_link_libraries(simulator luavgl lvgl lvgl::demos lvgl::drivers ${SDL2_LIBRARIES} ${LUA_LINK_LIBS})
+target_link_libraries(simulator luavgl lvgl lvgl::demos ${SDL2_LIBRARIES} ${LUA_LINK_LIBS})
 target_include_directories(simulator PRIVATE ${LUA_INCLUDE_DIRS})

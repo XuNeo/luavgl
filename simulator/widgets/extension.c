@@ -57,7 +57,7 @@ static const luaL_Reg luavgl_extension_methods[] = {
 
 void luavgl_extension_init(lua_State *L)
 {
-  luavgl_obj_newmetatable(L, &lv_btn_class, "lv_extension",
+  luavgl_obj_newmetatable(L, &lv_button_class, "lv_extension",
                         luavgl_extension_methods);
   lua_pop(L, 1);
 

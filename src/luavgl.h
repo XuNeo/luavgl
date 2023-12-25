@@ -6,7 +6,7 @@
 #endif
 
 #include <lauxlib.h>
-#include <lvgl.h>
+#include <lvgl/lvgl.h>
 
 #ifdef __cplusplus
 extern "C" {

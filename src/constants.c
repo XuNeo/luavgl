@@ -31,8 +31,6 @@ static void luavgl_event_code_init(lua_State* L)
   lua_pushstring(L, "DRAW_POST_BEGIN"); lua_pushinteger(L, LV_EVENT_DRAW_POST_BEGIN); lua_settable(L, -3);
   lua_pushstring(L, "DRAW_POST"); lua_pushinteger(L, LV_EVENT_DRAW_POST); lua_settable(L, -3);
   lua_pushstring(L, "DRAW_POST_END"); lua_pushinteger(L, LV_EVENT_DRAW_POST_END); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_PART_BEGIN"); lua_pushinteger(L, LV_EVENT_DRAW_PART_BEGIN); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_PART_END"); lua_pushinteger(L, LV_EVENT_DRAW_PART_END); lua_settable(L, -3);
   lua_pushstring(L, "VALUE_CHANGED"); lua_pushinteger(L, LV_EVENT_VALUE_CHANGED); lua_settable(L, -3);
   lua_pushstring(L, "INSERT"); lua_pushinteger(L, LV_EVENT_INSERT); lua_settable(L, -3);
   lua_pushstring(L, "REFRESH"); lua_pushinteger(L, LV_EVENT_REFRESH); lua_settable(L, -3);
@@ -117,7 +115,6 @@ static void luavgl_part_init(lua_State* L)
   lua_pushstring(L, "KNOB"); lua_pushinteger(L, LV_PART_KNOB); lua_settable(L, -3);
   lua_pushstring(L, "SELECTED"); lua_pushinteger(L, LV_PART_SELECTED); lua_settable(L, -3);
   lua_pushstring(L, "ITEMS"); lua_pushinteger(L, LV_PART_ITEMS); lua_settable(L, -3);
-  lua_pushstring(L, "TICKS"); lua_pushinteger(L, LV_PART_TICKS); lua_settable(L, -3);
   lua_pushstring(L, "CURSOR"); lua_pushinteger(L, LV_PART_CURSOR); lua_settable(L, -3);
   lua_pushstring(L, "CUSTOM_FIRST"); lua_pushinteger(L, LV_PART_CUSTOM_FIRST); lua_settable(L, -3);
   lua_pushstring(L, "ANY"); lua_pushinteger(L, LV_PART_ANY); lua_settable(L, -3);
@@ -517,8 +514,8 @@ static void luavgl_constants_init(lua_State *L)
   lua_pushinteger(L, LV_COORD_MIN);
   lua_setfield(L, -2, "COORD_MIN");
 
-  lua_pushinteger(L, LV_IMG_ZOOM_NONE);
-  lua_setfield(L, -2, "IMG_ZOOM_NONE");
+  lua_pushinteger(L, LV_ZOOM_NONE);
+  lua_setfield(L, -2, "LV_ZOOM_NONE");
 
   lua_pushinteger(L, LV_BTNMATRIX_BTN_NONE);
   lua_setfield(L, -2, "BTNMATRIX_BTN_NONE");
