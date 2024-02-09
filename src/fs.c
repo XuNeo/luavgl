@@ -268,7 +268,7 @@ static int luavgl_dir_read(lua_State *L)
 {
   luavgl_dir_t *d = luavgl_to_dir(L, 1);
   char buffer[PATH_MAX];
-  lv_fs_res_t res = lv_fs_dir_read(&d->dir, buffer);
+  lv_fs_res_t res = lv_fs_dir_read(&d->dir, buffer, sizeof(buffer));
   if (res != LV_FS_RES_OK || buffer[0] == '\0') {
     lua_pushnil(L);
   } else {

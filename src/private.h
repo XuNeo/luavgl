@@ -15,8 +15,8 @@
 /* clang-format on */
 
 struct event_callback_s {
+  lua_State *L;
   lv_event_code_t code;
-  struct _lv_event_dsc_t *dsc;
   int ref; /* ref to callback */
 };         /* variable array if n_callback > 1 */
 

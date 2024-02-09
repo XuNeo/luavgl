@@ -30,8 +30,8 @@ static const luavgl_value_setter_t img_property_table[] = {
      SETTER_TYPE_IMGSRC,             {.setter_pointer = (setter_pointer_t)lv_image_set_src}},
     {"offset_x",  0,                 {.setter = (setter_int_t)lv_image_set_offset_x}       },
     {"offset_y",  0,                 {.setter = (setter_int_t)lv_image_set_offset_y}       },
-    {"angle",     0,                 {.setter = (setter_int_t)lv_image_set_angle}          },
-    {"zoom",      0,                 {.setter = (setter_int_t)lv_image_set_zoom}           },
+    {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}          },
+    {"zoom",      0,                 {.setter = (setter_int_t)lv_img_set_zoom}           },
     {"antialias", 0,                 {.setter = (setter_int_t)lv_image_set_antialias}      },
     {"pivot",     SETTER_TYPE_STACK, {.setter_stack = lv_image_set_pivot_}                 },
 };

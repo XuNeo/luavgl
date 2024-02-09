@@ -274,7 +274,7 @@ static int luavgl_anim_create(lua_State *L)
 #if LV_VERSION_CHECK(8, 3, 0)
   cfg->deleted_cb = luavgl_anim_delete_cb;
 #else
-  cfg->ready_cb = luavgl_anim_delete_cb;
+  cfg->completed_cb = luavgl_anim_delete_cb;
 #endif
   cfg->exec_cb = luavgl_anim_exec_cb;
 
