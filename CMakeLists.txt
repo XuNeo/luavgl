@@ -3,7 +3,15 @@ project(luavgl LANGUAGES C VERSION 0.0.1)
 option(BUILD_SIMULATOR "Build lvgl simulator with luavgl support" ON)
 option(FIND_LUA_PACKAGE "Find lua package" ON) # may manually set LUA_INCLUDE_DIR
 option(USE_LUAJIT "Use luajit instead of lua" OFF)
+option(LV_USE_LIBPNG "Use libpng to decode PNG" OFF)
+option(LV_USE_LIBJPEG_TURBO "Use libjpeg turbo to decode JPEG" OFF)
+option(LV_USE_FFMPEG "Use libffmpeg to display video using lv_ffmpeg" OFF)
+option(LV_USE_FREETYPE "Use freetype lib" OFF)
 
+add_compile_definitions($<$<BOOL:${LV_USE_DRAW_SDL}>:LV_USE_DRAW_SDL=1>)
+add_compile_definitions($<$<BOOL:${LV_USE_LIBPNG}>:LV_USE_LIBPNG=1>)
+add_compile_definitions($<$<BOOL:${LV_USE_LIBJPEG_TURBO}>:LV_USE_LIBJPEG_TURBO=1>)
+add_compile_definitions($<$<BOOL:${LV_USE_FFMPEG}>:LV_USE_FFMPEG=1>)
 
 if (BUILD_SIMULATOR)
     add_compile_options(-g -O0)
@@ -44,4 +52,30 @@ if (BUILD_SIMULATOR)
     add_subdirectory(simulator)
     target_include_directories(luavgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps) # need lvgl/lvgl.h
     target_include_directories(simulator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps) # need lvgl/lvgl.h
+
+    if(LV_USE_LIBPNG)
+        find_package(PNG REQUIRED)
+        target_include_directories(lvgl PUBLIC ${PNG_INCLUDE_DIR})
+        target_link_libraries(luavgl ${PNG_LIBRARY})
+    endif(LV_USE_LIBPNG)
+
+    if(LV_USE_LIBJPEG_TURBO)
+        # Need to install libjpeg-turbo8-dev
+        # `sudo apt install libjpeg-turbo8-dev`
+        # `brew install libjpeg-turbo`
+        find_package(JPEG REQUIRED)
+        target_include_directories(lvgl PUBLIC ${JPEG_INCLUDE_DIRS})
+        target_link_libraries(luavgl ${JPEG_LIBRARIES})
+    endif(LV_USE_LIBJPEG_TURBO)
+
+    if(LV_USE_FFMPEG)
+        target_link_libraries(luavgl avformat avcodec avutil swscale)
+    endif(LV_USE_FFMPEG)
+
+    if(LV_USE_FREETYPE)
+        find_package(Freetype REQUIRED)
+        target_link_libraries(luavgl ${FREETYPE_LIBRARIES})
+        target_include_directories(lvgl PUBLIC ${FREETYPE_INCLUDE_DIRS})
+    endif(LV_USE_FREETYPE)
+
 endif(BUILD_SIMULATOR)
