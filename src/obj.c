@@ -840,8 +840,10 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj)
   lua_setmetatable(L, -2);
 
   memset(lobj, 0, sizeof(*lobj));
-  luavgl_obj_event_init(lobj);
   lobj->obj = obj;
+
+  /* Init event array to store events added from lua. */
+  lv_array_init(&lobj->events, 0, sizeof(struct event_callback_s *));
   lv_obj_add_event_cb(obj, obj_delete_cb, LV_EVENT_DELETE, L);
 
   /* registry[obj] = lobj */

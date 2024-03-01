@@ -283,7 +283,11 @@ int main(int argc, char **argv)
   /*Initialize the HAL (display, input devices, tick) for LVGL*/
   hal_init(480, 480);
 
-  args.root = lv_scr_act();
+  args.root = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(args.root, LV_PCT(100), LV_PCT(100));
+  lv_obj_set_style_outline_width(args.root, 2, 0);
+  lv_obj_set_style_bg_color(args.root, lv_color_hex(0xff00ff), 0);
+  lv_obj_set_style_bg_opa(args.root, LV_OPA_50, 0);
 
   lua_ctx = lua_load_script(LUAVGL_EXAMPLE_DIR "/examples.lua", &args);
 

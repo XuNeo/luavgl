@@ -1,35 +1,29 @@
 #include "luavgl.h"
 #include "private.h"
 
-#if 0
 static void luavgl_obj_event_cb(lv_event_t *e)
 {
-  lua_State *L = e->user_data;
-  if (L == NULL) {
-    debug("Null user data, should be L.\n");
-  }
+  struct event_callback_s *event = e->user_data;
+  if (event == NULL)
+    return;
 
+  lua_State *L = event->L;
   int top = lua_gettop(L);
   lv_obj_t *obj = e->current_target;
 
   lua_pushlightuserdata(L, obj);
   lua_rawget(L, LUA_REGISTRYINDEX);
   luavgl_obj_t *lobj = luavgl_to_lobj(L, -1);
-  if (lobj == NULL || lobj->obj == NULL)
-    goto event_exit;
-
-  int ref = LUA_NOREF;
-  for (int i = 0; i < lobj->n_events; i++) {
-    if (lobj->events[i].code == LV_EVENT_ALL ||
-        lobj->events[i].code == e->code) {
-      ref = lobj->events[i].ref;
-      break;
-    }
+  if (lobj == NULL || lobj->obj == NULL) {
+    lua_settop(L, top);
+    return;
   }
 
+  int ref = event->ref;
   if (ref == LUA_NOREF) {
     /* nobody cares this event, something went wrong but can be ignored. */
-    goto event_exit;
+    lua_settop(L, top);
+    return;
   }
 
   lua_rawgeti(L, LUA_REGISTRYINDEX, ref);
@@ -40,30 +34,13 @@ static void luavgl_obj_event_cb(lv_event_t *e)
 
   /* args: obj, code */
   luavgl_pcall_int(L, 2, 0);
-
-event_exit:
-  lua_settop(L, top);
-}
-#endif
-
-static void luavgl_obj_remove_event(lua_State *L, lv_obj_t *obj,
-                                    struct event_callback_s *event)
-{
-#if 0
-  luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
-  event->code = -1; /* mark it as unused. */
-  event->ref = LUA_NOREF;
-  lv_obj_remove_event_dsc(obj, event->dsc);
-  event->dsc = NULL;
-#endif
 }
 
 /* obj:onevent(luavgl.EVENT.PRESSED, function(code, value) -- end) */
 static int luavgl_obj_on_event(lua_State *L)
 {
-  bool remove_all; /* if third parameter is noneornil, remove all events. */
-
   luavgl_obj_t *lobj = luavgl_to_lobj(L, 1);
+
   lv_obj_t *obj = lobj->obj;
   if (obj == NULL) {
     luaL_argerror(L, 1, "expect obj userdata.\n");
@@ -76,67 +53,68 @@ static int luavgl_obj_on_event(lua_State *L)
     return 0;
   }
 
-  remove_all = lua_isnoneornil(L, 3);
+  int size = lv_array_size(&lobj->events);
+  struct event_callback_s *event = NULL;
+  struct event_callback_s **events = lv_array_front(&lobj->events);
 
-  /* check if event code already added, find a slot to store this callback */
-  int slot = 0;
-  if (lobj && lobj->events) {
-    for (; slot < lobj->n_events; slot++) {
-      struct event_callback_s *event = &lobj->events[slot];
-      if (event->code == code) { /* same event can only be added once. */
-        luavgl_obj_remove_event(L, obj, event);
-        if (remove_all)
-          continue; /* continue to remove all events associated. */
-        else
-          break; /* use this slot for our new event callback */
-      }
+  /* if third parameter is none or nil, remove this events */
+  if (lua_isnoneornil(L, 3)) {
+    for (int i = 0; i < size; i++) {
+      event = events[i];
+      if (event->code == code) {
+        events[i] = NULL; /* Remove it from array */
+        lv_result_t res = lv_obj_remove_event_dsc(lobj->obj, event->dsc);
+        luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
+        event->dsc = NULL;
+        event->L = NULL;
+        event->ref = LUA_NOREF;
+        event->code = _LV_EVENT_LAST;
+        if (res != LV_RESULT_OK) {
+          return luaL_error(L, "Failed to remove event dsc: %d\n", res);
+        }
 
-      if (event->code == -1) {
-        /* this callback has been removed, thus, we can use this slot */
-        break;
+        return 0;
       }
+    }
+
+    return luaL_error(L, "No such event to remove: %d", code);
+  }
+
+  /* Check if the event code already exists, only one callback per code. */
+  for (int i = 0; i < size; i++) {
+    if (events[i]->code == code) {
+      luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
+      event = events[i];
+      break;
+    }
+
+    if (events[i]->code == _LV_EVENT_LAST) {
+      /* code marked as _LV_EVENT_LAST means this event has been removed, we can
+       * reuse it. */
+      event = events[i];
+      break;
     }
   }
 
-  if (remove_all) /* no need to add, just return */
-    return 0;
-
-  struct event_callback_s *events = lobj->events;
-
-  /* create obj->lobj->events, if NULL, realloc if existing and find no slot
-   */
-  if (events == NULL) {
-    events = calloc(sizeof(struct event_callback_s), 1);
-    if (events == NULL) {
+  if (event == NULL) {
+    /* Create a new one if not exist */
+    event = lv_malloc_zeroed(sizeof(*event));
+    if (event == NULL) {
       return luaL_error(L, "No memory.");
     }
 
-    lobj->events = events;
-    lobj->n_events = 1;
-  } else {
-    /* realloc? */
-    if (slot && slot == lobj->n_events) {
-      struct event_callback_s *_events;
-      _events = realloc(lobj->events, (lobj->n_events + 1) * sizeof(*_events));
-      if (_events == NULL) {
-        return luaL_error(L, "No memory.");
-      }
-      events = _events;
-      lobj->n_events++; /* now we have +1 event */
-      lobj->events = events;
-    }
-    /* else: we have found a slot to reuse, use it. */
+    lv_array_push_back(&lobj->events, &event);
+    debug("obj: %p, push back event: %d\n", obj, code);
   }
 
-  /* setup event callback */
-
-#if 0
-  void *dsc = lv_obj_add_event_cb(obj, luavgl_obj_event_cb, code, L);
-  struct event_callback_s *event = &events[slot];
   event->code = code;
+  event->L = L;
   event->ref = luavgl_check_continuation(L, 3);
-  event->dsc = dsc;
-#endif
+  event->dsc = lv_obj_add_event_cb(obj, luavgl_obj_event_cb, code, event);
+  if (event->dsc == NULL) {
+    lv_free(event);
+    return luaL_error(L, "Failed to add event callback.");
+  }
 
   return 0;
 }
@@ -170,28 +148,39 @@ static int luavgl_obj_on_pressed(lua_State *L)
   return luavgl_obj_on_event(L);
 }
 
-static void luavgl_obj_event_init(luavgl_obj_t *lobj) { lobj->n_events = 0; }
-
 /**
  * Remove all events added, and free memory of events
  */
 static void luavgl_obj_remove_event_all(lua_State *L, luavgl_obj_t *lobj)
 {
-  if (lobj == NULL || lobj->events == NULL) {
+  if (lobj == NULL) {
     return;
   }
 
-  struct event_callback_s *events = lobj->events;
-
-  int i = 0;
-  for (; i < lobj->n_events; i++) {
-    struct event_callback_s *event = &lobj->events[i];
-    if (event->code != -1) {
-      luavgl_obj_remove_event(L, lobj->obj, event);
+  int size = lv_array_size(&lobj->events);
+  struct event_callback_s *event;
+  struct event_callback_s **events = lv_array_front(&lobj->events);
+  for (int i = 0; i < size; i++) {
+    event = events[i];
+    if (event == NULL) {
+      continue;
     }
+
+    events[i] = NULL;
+
+    if (event->dsc == NULL) {
+      continue;
+    }
+
+    lv_result_t res = lv_obj_remove_event_dsc(lobj->obj, event->dsc);
+    if (res != LV_RESULT_OK) {
+      debug("Failed to remove event dsc: %d\n", res);
+      /* Ignore this error, remove from it anyway */
+    }
+
+    luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
+    lv_free(event);
   }
 
-  free(events);
-  lobj->n_events = 0;
-  lobj->events = NULL;
+  lv_array_deinit(&lobj->events);
 }
