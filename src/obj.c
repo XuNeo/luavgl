@@ -8,6 +8,7 @@
 
 static int luavgl_anim_create(lua_State *L);
 static int luavgl_obj_delete(lua_State *L);
+static int luavgl_obj_clean(lua_State *L);
 
 static void _lv_obj_set_align(void *obj, lua_State *L)
 {
@@ -60,7 +61,33 @@ static void obj_delete_cb(lv_event_t *e)
   if (lobj->lua_created)
     goto pop_exit;
 
-  luavgl_obj_delete(L);
+  /* Clean its children firstly */
+  luavgl_obj_clean(L);
+
+  /* Remove events added from lua, but keep them unremoved */
+  int size = lv_array_size(&lobj->events);
+  struct event_callback_s *event;
+  struct event_callback_s **events = lv_array_front(&lobj->events);
+  for (int i = 0; i < size; i++) {
+    event = events[i];
+    if (event == NULL || event->dsc == NULL) {
+      continue;
+    }
+
+    luaL_unref(L, LUA_REGISTRYINDEX, event->ref);
+    lv_free(event);
+  }
+
+  lv_array_deinit(&lobj->events);
+
+  /* remove userdata from registry. */
+  lua_checkstack(L, 2);
+  lua_pushlightuserdata(L, lobj->obj);
+  lua_pushnil(L);
+  lua_rawset(L, LUA_REGISTRYINDEX);
+
+  debug("delete obj: %p\n", lobj->obj);
+  lobj->obj = NULL;
   return;
 
 pop_exit:
