@@ -34,6 +34,7 @@ local function createBtn(parent, name)
     }
 end
 
+createBtn(container, "gesture")
 createBtn(container, "font")
 createBtn(container, "uservalue")
 createBtn(container, "roller")
