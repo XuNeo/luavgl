@@ -48,7 +48,10 @@ static int luavgl_disp_get_default(lua_State *L)
 
 static int luavgl_disp_get_scr_act(lua_State *L)
 {
-  lv_disp_t *disp = luavgl_to_disp(L, 1);
+  lv_disp_t *disp = NULL;
+  if (!lua_isnoneornil(L, 1))
+    disp = luavgl_to_disp(L, 1);
+
   lv_obj_t *obj = lv_disp_get_scr_act(disp);
   if (obj == NULL) {
     lua_pushnil(L);
@@ -317,6 +320,9 @@ static const luaL_Reg disp_methods[] = {
     {"get_next",             luavgl_disp_get_next            },
     {"set_rotation",         luavgl_disp_set_rotation        },
     {"get_res",              luavgl_disp_get_res             },
+
+    {"get_scr_act",          luavgl_disp_get_scr_act         },
+    {"get_scr_prev",         luavgl_disp_get_scr_prev        },
 
     {NULL,                   NULL                            },
 };
