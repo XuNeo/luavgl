@@ -5,6 +5,8 @@
 
 #define _ARRAY_LEN(a) (sizeof(a) / sizeof(a[0]))
 
+#define NAMED_WEIGHT_MAX_CHARS 16
+
 /**
  * Follow css style, specify the name by name family, name size,
  * name weight. Font weight can be numeric value or 'bold'. Alls strings
@@ -257,8 +259,12 @@ static int luavgl_font_create(lua_State *L)
         /* not likely to happen */
         return luaL_argerror(L, 3, "too long");
       }
-      char s[len + 1];
-      strcpy(s, luastr);
+      char s[NAMED_WEIGHT_MAX_CHARS];
+      if (len + 1 > NAMED_WEIGHT_MAX_CHARS) {
+        return luaL_argerror(L, 3, "too long");
+      }
+
+      lv_strcpy(s, luastr);
       weight = luavgl_get_named_weight(to_lower(s));
     }
   } else {
