@@ -50,8 +50,7 @@ if (BUILD_SIMULATOR)
 
     add_subdirectory(deps/lvgl)
     add_subdirectory(simulator)
-    target_include_directories(luavgl PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps) # need lvgl/lvgl.h
-    target_include_directories(simulator PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/deps) # need lvgl/lvgl.h
+    target_link_libraries(luavgl lvgl)
 
     if(LV_USE_LIBPNG)
         find_package(PNG REQUIRED)

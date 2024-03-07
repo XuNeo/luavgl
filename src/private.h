@@ -2,7 +2,7 @@
 
 #include <lauxlib.h>
 #include <lua.h>
-#include <lvgl/lvgl.h>
+#include <lvgl.h>
 
 #include <stdbool.h>
 #include <stdint.h>
