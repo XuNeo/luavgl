@@ -1,5 +1,9 @@
 /build
 /.vscode
+
+/.xmake
+/.cache
+
 # Prerequisites
 *.d
 

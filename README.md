@@ -3,7 +3,9 @@ lua + lvgl = luavgl
 
 **luavgl is currently under development.**
 
-A flappy bird game is ready for showoff. See simulator instructions below which is tested on ubuntu and mac but not windows.
+A flappy bird game is ready for showoff. 
+
+The simulator is built with cmake and has been tested on ubuntu and mac, but not on windows. If you need to build under windows please xmake, which has also been tested under ubuntu.
 
 <p align="center">
   <img src="https://i.ibb.co/nbgYvZW/flappybird.gif" />
@@ -130,6 +132,7 @@ git submodule update --init
 
 #### Dependencies
 
+### cmake
 To run simulator on PC, make sure `lua` header is available, you may need to install below packages.
 
 ```
@@ -138,13 +141,24 @@ sudo apt install libsdl2-dev lua5.3 liblua5.3-dev
 
 Both lua5.3 and lua5.4 are supported. Versions below 5.2 has not been verified but should work through `deps/lua-compat-5.3`.
 
+### xmake
+Compiling with xmake does not require you to install libsdl2 and lua yourself. xmake calls the package manager xrepo, which downloads libsdl2 and lua from github and applies them to the simulator's project.
+
 #### Build and run
+
+##### cmake
 
 ```bash
 cmake -Bbuild -DBUILD_SIMULATOR=ON
 cd build
 make
 make run # run simulator
+```
+
+##### xmake
+```powershell
+xmake b simulator
+xmake r # run simulator
 ```
 ## Custom Widget
 
