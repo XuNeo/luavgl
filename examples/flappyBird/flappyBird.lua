@@ -596,7 +596,7 @@ local function entry()
             }
         }
 
-        gameoverImg:Anim{
+        local gameoverImgAnim = gameoverImg:Anim{
             run = true,
             start_value = 0,
             end_value = 3600,
@@ -666,6 +666,8 @@ local function entry()
             gameStart()
             playBtn:delete()
             playBtn = nil
+            gameoverImgAnim:delete()
+            gameoverImgAnim = nil
             gameoverImg:delete()
             gameoverImg = nil
             scoreImg:delete()
