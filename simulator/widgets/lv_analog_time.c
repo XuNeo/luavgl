@@ -193,6 +193,48 @@ static lv_obj_t* create_hand(lv_obj_t* obj, const char* img)
     return hand;
 }
 
+
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN32_) || defined(WIN64) || defined(_WIN64) || defined(_WIN64_)
+#define PLATFORM_WINDOWS 1 //Windows平台
+#include <Windows.h>
+int clock_gettime(int notuse, struct timespec *tv) {
+    static int initialized = 0;
+    static LARGE_INTEGER freq, startCount;
+    static struct timespec tv_start;
+    LARGE_INTEGER curCount;
+    time_t sec_part;
+    long nsec_part;
+
+    if (!initialized) {
+        QueryPerformanceFrequency(&freq);
+        QueryPerformanceCounter(&startCount);
+        timespec_get(&tv_start, TIME_UTC);
+        initialized = 1;
+    }
+
+    QueryPerformanceCounter(&curCount);
+
+    curCount.QuadPart -= startCount.QuadPart;
+    sec_part = curCount.QuadPart / freq.QuadPart;
+    nsec_part = (long)((curCount.QuadPart - (sec_part * freq.QuadPart))
+            * 1000000000UL / freq.QuadPart);
+
+    tv->tv_sec = tv_start.tv_sec + sec_part;
+    tv->tv_nsec = tv_start.tv_nsec + nsec_part;
+    if(tv->tv_nsec >= 1000000000UL) {
+        tv->tv_sec += 1;
+        tv->tv_nsec -= 1000000000UL;
+    }
+    return 0;
+}
+#define CLOCK_REALTIME 0
+#elif defined(__linux__)
+
+#define PLATFORM_LINUX	 1 //Linux平台
+
+#endif
+
+
 static void update_time(lv_obj_t* obj)
 {
     int value;

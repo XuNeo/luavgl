@@ -1,8 +1,6 @@
-#include <unistd.h>
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <lvgl.h>
 
 #include <lua.h>
@@ -12,6 +10,28 @@
 
 #include <luavgl.h>
 #include "widgets/widgets.h"
+
+#include <string.h>
+
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN32_) || defined(WIN64) || defined(_WIN64) || defined(_WIN64_)
+  #include <direct.h>
+  #define PLATFORM_WINDOWS 1 //Windows平台
+  #include <Windows.h>
+  static void usleep(unsigned long usec)
+  {
+    HANDLE timer;
+    LARGE_INTEGER interval;
+    interval.QuadPart = (10 * usec);
+
+    timer = CreateWaitableTimer(NULL, TRUE, NULL);
+    SetWaitableTimer(timer, &interval, 0, NULL, NULL, 0);
+    WaitForSingleObject(timer, INFINITE);
+    CloseHandle(timer);
+  }
+#elif defined(__linux__)
+  #define PLATFORM_LINUX	 1 //Linux平台
+  #include <unistd.h>
+#endif
 
 typedef struct {
   lua_State *L;
