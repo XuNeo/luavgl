@@ -47,10 +47,10 @@ static int luavgl_fs_open(lua_State *L)
   f->closed = false;
 
   lv_fs_mode_t lmode = 0;
-  if (strchr(mode, 'r'))
+  if (luavgl_strchr(mode, 'r'))
     lmode |= LV_FS_MODE_RD;
 
-  if (strchr(mode, 'w'))
+  if (luavgl_strchr(mode, 'w'))
     lmode |= LV_FS_MODE_WR;
 
   lv_fs_res_t res = lv_fs_open(&f->file, path, lmode);

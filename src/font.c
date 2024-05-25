@@ -161,7 +161,7 @@ static int luavgl_get_named_weight(const char *name)
   }
 
   for (int i = 0; i < _ARRAY_LEN(g_named_weight); i++) {
-    if (strcmp(name, g_named_weight[i].name) == 0) {
+    if (lv_strcmp(name, g_named_weight[i].name) == 0) {
       return g_named_weight[i].value;
     }
   }
@@ -180,7 +180,7 @@ static const lv_font_t *_luavgl_font_create(lua_State *L, const char *name,
                                             int size, int weight)
 {
   /* check builtin font firstly. */
-  if (strcmp(name, "montserrat") == 0) {
+  if (lv_strcmp(name, "montserrat") == 0) {
     if (FONT_WEIGHT_NORMAL != weight)
       return NULL;
 
@@ -189,7 +189,7 @@ static const lv_font_t *_luavgl_font_create(lua_State *L, const char *name,
         return g_builtin_montserrat[i].font;
       }
     }
-  } else if (strcmp(name, "unscii") == 0) {
+  } else if (lv_strcmp(name, "unscii") == 0) {
     if (FONT_WEIGHT_NORMAL != weight)
       return NULL;
 #if LV_FONT_UNSCII_8
@@ -203,14 +203,14 @@ static const lv_font_t *_luavgl_font_create(lua_State *L, const char *name,
 #endif
   }
 #if LV_FONT_DEJAVU_16_PERSIAN_HEBREW
-  else if (strcmp(name, "dejavu_persian_hebrew") == 0) {
+  else if (lv_strcmp(name, "dejavu_persian_hebrew") == 0) {
     if (size == 16)
       return &lv_font_dejavu_16_persian_hebrew;
   }
 #endif
 
 #if LV_FONT_SIMSUN_16_CJK
-  else if (strcmp(name, "dejavu_persian_hebrew") == 0) {
+  else if (lv_strcmp(name, "dejavu_persian_hebrew") == 0) {
     if (size == 16)
       return &lv_font_simsun_16_cjk;
   }
@@ -222,6 +222,17 @@ static const lv_font_t *_luavgl_font_create(lua_State *L, const char *name,
     return ctx->make_font(name, size, weight);
   }
 
+  return NULL;
+}
+
+static char *luavgl_strchr(const char *s, char c)
+{
+  while (*s) {
+    if (c == *s) {
+      return (char *)s;
+    }
+    s++;
+  }
   return NULL;
 }
 
@@ -254,7 +265,7 @@ static int luavgl_font_create(lua_State *L)
       weight = lua_tointeger(L, 3);
     } else {
       char *luastr = (char *)lua_tostring(L, 3);
-      int len = strlen(luastr);
+      int len = lv_strlen(luastr);
       if (len > 128) {
         /* not likely to happen */
         return luaL_argerror(L, 3, "too long");
@@ -271,7 +282,7 @@ static int luavgl_font_create(lua_State *L)
     weight = FONT_WEIGHT_NORMAL;
   }
 
-  str = strdup(lua_tostring(L, 1));
+  str = lv_strdup(lua_tostring(L, 1));
   if (str == NULL) {
     return luaL_error(L, "no memory");
   }
@@ -283,11 +294,11 @@ static int luavgl_font_create(lua_State *L)
       continue;
     }
 
-    char *end = strchr(name, ',');
+    char *end = luavgl_strchr(name, ',');
     if (end != NULL) {
       *end = '\0';
     } else {
-      end = name + strlen(name);
+      end = name + lv_strlen(name);
     }
 
     char *trim = end - 1;

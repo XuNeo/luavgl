@@ -72,7 +72,7 @@ static int luavgl_dropdown_get(lua_State *L)
   }
 
   const char *key = lua_tostring(L, 2);
-  if (strcmp(key, "list") == 0) {
+  if (lv_strcmp(key, "list") == 0) {
     lv_obj_t *list = lv_dropdown_get_list(obj);
     lua_pushlightuserdata(L, list);
     lua_rawget(L, LUA_REGISTRYINDEX);
@@ -83,27 +83,27 @@ static int luavgl_dropdown_get(lua_State *L)
     return 1;
   }
 
-  if (strcmp(key, "text") == 0) {
+  if (lv_strcmp(key, "text") == 0) {
     lua_pushstring(L, lv_dropdown_get_text(obj));
     return 1;
   }
 
-  if (strcmp(key, "options") == 0) {
+  if (lv_strcmp(key, "options") == 0) {
     lua_pushstring(L, lv_dropdown_get_options(obj));
     return 1;
   }
 
-  if (strcmp(key, "selected") == 0) {
+  if (lv_strcmp(key, "selected") == 0) {
     lua_pushinteger(L, lv_dropdown_get_selected(obj));
     return 1;
   }
 
-  if (strcmp(key, "option_cnt") == 0) {
+  if (lv_strcmp(key, "option_cnt") == 0) {
     lua_pushinteger(L, lv_dropdown_get_option_cnt(obj));
     return 1;
   }
 
-  if (strcmp(key, "selected_str") == 0) {
+  if (lv_strcmp(key, "selected_str") == 0) {
     char buf[64];
     lv_dropdown_get_selected_str(obj, buf, sizeof(buf));
     lua_pushstring(L, buf);
@@ -111,19 +111,19 @@ static int luavgl_dropdown_get(lua_State *L)
   }
 
 #if LV_VERSION_CHECK(8, 3, 0)
-  if (strcmp(key, "option_index") == 0) {
+  if (lv_strcmp(key, "option_index") == 0) {
     const char *option = lua_tostring(L, 3);
     lua_pushinteger(L, lv_dropdown_get_option_index(obj, option));
     return 1;
   }
 #endif
 
-  if (strcmp(key, "symbol") == 0) {
+  if (lv_strcmp(key, "symbol") == 0) {
     lua_pushlightuserdata(L, (void *)lv_dropdown_get_symbol(obj));
     return 1;
   }
 
-  if (strcmp(key, "dir") == 0) {
+  if (lv_strcmp(key, "dir") == 0) {
     lua_pushinteger(L, lv_dropdown_get_dir(obj));
     return 1;
   }

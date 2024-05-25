@@ -198,25 +198,45 @@ static lv_flex_align_t luavgl_to_flex_align(lua_State *L, int idx)
     return LV_FLEX_ALIGN_START;
 
   const char *str = lua_tostring(L, idx);
-  if (strcmp("flex-start", str) == 0)
+  if (lv_strcmp("flex-start", str) == 0)
     return LV_FLEX_ALIGN_START;
 
-  if (strcmp("flex-end", str) == 0)
+  if (lv_strcmp("flex-end", str) == 0)
     return LV_FLEX_ALIGN_END;
 
-  if (strcmp("center", str) == 0)
+  if (lv_strcmp("center", str) == 0)
     return LV_FLEX_ALIGN_CENTER;
 
-  if (strcmp("space-evenly", str) == 0)
+  if (lv_strcmp("space-evenly", str) == 0)
     return LV_FLEX_ALIGN_SPACE_EVENLY;
 
-  if (strcmp("space-around", str) == 0)
+  if (lv_strcmp("space-around", str) == 0)
     return LV_FLEX_ALIGN_SPACE_AROUND;
 
-  if (strcmp("space-between", str) == 0)
+  if (lv_strcmp("space-between", str) == 0)
     return LV_FLEX_ALIGN_SPACE_BETWEEN;
 
   return LV_FLEX_ALIGN_START;
+}
+
+static char *luavgl_strstr(const char *haystack, const char *needle) {
+    while (*haystack != '\0') {
+        const char *h = haystack;
+        const char *n = needle;
+
+        while (*n != '\0' && *h == *n) {
+            h++;
+            n++;
+        }
+
+        if (*n == '\0') {
+            return (char *)haystack;
+        }
+
+        haystack++;
+    }
+
+    return NULL;
 }
 
 static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
@@ -239,14 +259,14 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
   if (lua_type(L, -1) == LUA_TSTRING) {
     str = lua_tostring(L, -1);
     /* starts with  */
-    if (strncmp("row", str, 3) == 0) {
+    if (lv_strcmp("row", str) == 0) {
       flow = LV_FLEX_FLOW_ROW;
-    } else if (strncmp("column", str, 3) == 0) {
+    } else if (lv_strcmp("column", str) == 0) {
       flow = LV_FLEX_FLOW_COLUMN;
     }
 
     /* if reverse presents */
-    if (strstr(str, "-reverse")) {
+    if (luavgl_strstr(str, "-reverse")) {
       flow |= _LV_FLEX_REVERSE;
     }
   }
@@ -259,9 +279,9 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
   lua_getfield(L, -1, "flex_wrap");
   if (lua_type(L, -1) == LUA_TSTRING) {
     str = lua_tostring(L, -1);
-    if (strcmp("wrap", str) == 0) {
+    if (lv_strcmp("wrap", str) == 0) {
       flow |= _LV_FLEX_WRAP;
-    } else if (strcmp("wrap-reverse", str) == 0) {
+    } else if (lv_strcmp("wrap-reverse", str) == 0) {
       flow |= _LV_FLEX_WRAP | _LV_FLEX_REVERSE;
     }
     /* else: normal */
@@ -321,7 +341,7 @@ static inline bool luavgl_is_style_inherit(lua_State *L)
 {
   const char *str;
   return (lua_type(L, -1) == LUA_TSTRING) && (str = lua_tostring(L, -1)) &&
-         (strcmp(str, "inherit") == 0);
+         (lv_strcmp(str, "inherit") == 0);
 }
 
 /**
@@ -343,7 +363,7 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
   lv_style_value_t value = {0};
   const struct style_map_s *p = NULL;
   for (int i = 0; i < STYLE_MAP_LEN; i++) {
-    if (strcmp(key, g_style_map[i].name) == 0) {
+    if (lv_strcmp(key, g_style_map[i].name) == 0) {
       p = &g_style_map[i];
       break;
     }
@@ -548,7 +568,7 @@ static int luavgl_style_remove_prop(lua_State *L)
 
   for (int i = 0; i < STYLE_MAP_LEN; i++) {
     const struct style_map_s *p = &g_style_map[i];
-    if (strcmp(name, p->name) == 0) {
+    if (lv_strcmp(name, p->name) == 0) {
       lv_style_remove_prop(&s->style, p->prop);
       return 0;
     }

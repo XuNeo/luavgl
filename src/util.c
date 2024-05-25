@@ -296,7 +296,7 @@ LUALIB_API lv_color_t luavgl_tocolor(lua_State *L, int idx)
       return color;
     }
 
-    int len = strlen(s);
+    int len = lv_strlen(s);
     if (len == 4 && s[0] == '#') {
       /* #RGB */
       int r = to_int(s[1]);
@@ -370,7 +370,7 @@ LUALIB_API int luavgl_set_property_array(lua_State *L, void *obj,
 
   for (int i = 0; i < len; i++) {
     const luavgl_value_setter_t *p = &table[i];
-    if (strcmp(key, p->key))
+    if (lv_strcmp(key, p->key))
       continue;
 
     if (p->type == SETTER_TYPE_INT) {

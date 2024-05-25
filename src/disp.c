@@ -113,38 +113,38 @@ static int luavgl_disp_load_scr(lua_State *L)
   const char *str;
   lua_getfield(L, 2, "anim");
   str = lua_tostring(L, -1);
-  if (str == NULL || strcmp(str, "none") == 0) {
+  if (str == NULL || lv_strcmp(str, "none") == 0) {
     ; /* use default */
-  } else if (strcmp(str, "over_left") == 0) {
+  } else if (lv_strcmp(str, "over_left") == 0) {
     anim = LV_SCR_LOAD_ANIM_OVER_LEFT;
-  } else if (strcmp(str, "over_right") == 0) {
+  } else if (lv_strcmp(str, "over_right") == 0) {
     anim = LV_SCR_LOAD_ANIM_OVER_RIGHT;
-  } else if (strcmp(str, "over_top") == 0) {
+  } else if (lv_strcmp(str, "over_top") == 0) {
     anim = LV_SCR_LOAD_ANIM_OVER_TOP;
-  } else if (strcmp(str, "over_botto") == 0) {
+  } else if (lv_strcmp(str, "over_botto") == 0) {
     anim = LV_SCR_LOAD_ANIM_OVER_BOTTOM;
-  } else if (strcmp(str, "move_left") == 0) {
+  } else if (lv_strcmp(str, "move_left") == 0) {
     anim = LV_SCR_LOAD_ANIM_MOVE_LEFT;
-  } else if (strcmp(str, "move_right") == 0) {
+  } else if (lv_strcmp(str, "move_right") == 0) {
     anim = LV_SCR_LOAD_ANIM_MOVE_RIGHT;
-  } else if (strcmp(str, "move_top") == 0) {
+  } else if (lv_strcmp(str, "move_top") == 0) {
     anim = LV_SCR_LOAD_ANIM_MOVE_TOP;
-  } else if (strcmp(str, "move_botto") == 0) {
+  } else if (lv_strcmp(str, "move_botto") == 0) {
     anim = LV_SCR_LOAD_ANIM_MOVE_BOTTOM;
-  } else if (strcmp(str, "fade_on") == 0) {
+  } else if (lv_strcmp(str, "fade_on") == 0) {
     anim = LV_SCR_LOAD_ANIM_FADE_ON;
 #if LV_VERSION_CHECK(8, 3, 0)
-  } else if (strcmp(str, "fade_in") == 0) {
+  } else if (lv_strcmp(str, "fade_in") == 0) {
     anim = LV_SCR_LOAD_ANIM_FADE_IN;
-  } else if (strcmp(str, "fade_out") == 0) {
+  } else if (lv_strcmp(str, "fade_out") == 0) {
     anim = LV_SCR_LOAD_ANIM_FADE_OUT;
-  } else if (strcmp(str, "out_left") == 0) {
+  } else if (lv_strcmp(str, "out_left") == 0) {
     anim = LV_SCR_LOAD_ANIM_OUT_LEFT;
-  } else if (strcmp(str, "out_right") == 0) {
+  } else if (lv_strcmp(str, "out_right") == 0) {
     anim = LV_SCR_LOAD_ANIM_OUT_RIGHT;
-  } else if (strcmp(str, "out_top") == 0) {
+  } else if (lv_strcmp(str, "out_top") == 0) {
     anim = LV_SCR_LOAD_ANIM_OUT_TOP;
-  } else if (strcmp(str, "out_bottom") == 0) {
+  } else if (lv_strcmp(str, "out_bottom") == 0) {
     anim = LV_SCR_LOAD_ANIM_OUT_BOTTOM;
 #endif
   }
