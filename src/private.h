@@ -8,12 +8,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-/* clang-format off */
-#define debug(format, ...)
-// fprintf(stderr, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
-// syslog(LOG_DEBUG, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
-/* clang-format on */
-
 static void dumpstack(lua_State *L);
 static void dumptable(lua_State *L, int index);
 

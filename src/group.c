@@ -87,7 +87,7 @@ static int luavgl_group_delete(lua_State *L)
   g->group = NULL;
 #endif
 
-  debug("delete group:%p\n", g);
+  LV_LOG_INFO("delete group:%p", g);
   return 0;
 }
 
@@ -281,7 +281,7 @@ static int luavgl_group_gc(lua_State *L)
   g->group = NULL;
 #endif
 
-  debug("gc group: %p\n", g);
+  LV_LOG_INFO("gc group: %p", g);
   return 0;
 }
 

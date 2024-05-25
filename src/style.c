@@ -223,8 +223,8 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
                                      void *args)
 {
   if (!lua_istable(L, -1)) {
-    debug("para should be table.");
-    return luaL_argerror(L, -1, "should be table.");
+    LV_LOG_ERROR("para should be table");
+    return luaL_argerror(L, -1, "should be table");
   }
 
   const char *str;
@@ -335,7 +335,7 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 {
   const char *key = lua_tostring(L, -2);
   if (key == NULL) {
-    debug("Null key, ignored.\n");
+    LV_LOG_WARN("Null key, ignored");
     return -1;
   }
 
@@ -474,7 +474,7 @@ static int luavgl_style_set(lua_State *L)
   luavgl_style_t *s = luavgl_check_style(L, 1);
 
   if (!lua_istable(L, 2)) {
-    luaL_argerror(L, 2, "expect a table on 2nd para.");
+    luaL_argerror(L, 2, "expect a table on 2nd para");
     return 0;
   }
 
@@ -483,7 +483,7 @@ static int luavgl_style_set(lua_State *L)
     /* -1: value, -2: key */
     if (!lua_isstring(L, -2)) {
       /* we expect string as key, ignore it if not */
-      debug("ignore non-string key in table.\n");
+      LV_LOG_WARN("ignore non-string key in table");
       lua_pop(L, 1);
       continue;
     }
@@ -517,7 +517,7 @@ static int luavgl_style_create(lua_State *L)
 {
   luavgl_style_t *s = malloc(sizeof(luavgl_style_t));
   if (s == NULL) {
-    return luaL_error(L, "No memory.");
+    return luaL_error(L, "No memory");
   }
 
   lv_style_init(&s->style);
@@ -573,7 +573,7 @@ static int luavgl_style_gc(lua_State *L)
   luavgl_style_t *s = luavgl_check_style(L, 1);
   lv_style_reset(&s->style);
   free(s);
-  debug("gc style:%p\n", s);
+  LV_LOG_INFO("gc style:%p", s);
   return 0;
 }
 
@@ -628,12 +628,12 @@ static int luavgl_obj_set_style(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   if (obj == NULL) {
-    luaL_argerror(L, 1, "obj could already been deleted.");
+    luaL_argerror(L, 1, "obj could already been deleted");
     return 0;
   }
 
   if (!lua_istable(L, 2)) {
-    luaL_argerror(L, 2, "expect a table on 2nd para.");
+    luaL_argerror(L, 2, "expect a table on 2nd para");
     return 0;
   }
 
@@ -648,7 +648,7 @@ static int luavgl_obj_set_style(lua_State *L)
     /* -1: value, -2: key */
     if (!lua_isstring(L, -2)) {
       /* we expect string as key, ignore it if not */
-      debug("ignore non-string key in table.\n");
+      LV_LOG_WARN("ignore non-string key in table");
       lua_pop(L, 1);
       continue;
     }

@@ -74,7 +74,7 @@ LUALIB_API void luavgl_set_font_extension(lua_State *L, make_font_cb make,
 
 static int root_gc(lua_State *L)
 {
-  debug("enter.\n");
+  LV_LOG_INFO("enter");
   luavgl_ctx_t *ctx = luavgl_context(L);
   lv_obj_del(ctx->root);
   return 0;
@@ -82,7 +82,7 @@ static int root_gc(lua_State *L)
 
 static int root_clean(lua_State *L)
 {
-  debug("enter.\n");
+  LV_LOG_INFO("enter");
   luavgl_ctx_t *ctx = luavgl_context(L);
   lv_obj_clean(ctx->root);
   return 0;
@@ -102,7 +102,7 @@ LUALIB_API int luaopen_lvgl(lua_State *L)
 
   lv_obj_t *root = ctx->root;
   if (root == NULL) {
-    debug("create root obj for lua.\n");
+    LV_LOG_INFO("create root obj for lua");
     root = lv_obj_create(lv_scr_act());
     ctx->root = root;
   }

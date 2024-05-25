@@ -64,7 +64,7 @@ static int timer_set_para_cb(lua_State *L, void *data)
   int ret = luavgl_set_property(L, data, timer_property_table);
 
   if (ret != 0) {
-    debug("failed\n");
+    LV_LOG_ERROR("failed");
   }
 
   return ret;
@@ -88,7 +88,7 @@ static int luavgl_timer_create(lua_State *L)
 {
   luavgl_timer_t *data = malloc(sizeof(luavgl_timer_t));
   if (data == NULL) {
-    return luaL_error(L, "No memory.");
+    return luaL_error(L, "No memory");
   }
   data->ref = LUA_NOREF;
   data->L = L;
@@ -119,7 +119,7 @@ static int luavgl_timer_set(lua_State *L)
 {
   lv_timer_t *t = luavgl_check_timer(L, 1);
   if (t == NULL) {
-    return luaL_argerror(L, 1, "timer is null.");
+    return luaL_argerror(L, 1, "timer is null");
   }
 
   luavgl_timer_setup(L, 2, t);
@@ -130,7 +130,7 @@ static int luavgl_timer_ready(lua_State *L)
 {
   lv_timer_t *t = luavgl_check_timer(L, 1);
   if (t == NULL) {
-    return luaL_argerror(L, 1, "timer is null.");
+    return luaL_argerror(L, 1, "timer is null");
   }
 
   lv_timer_ready(t);
@@ -141,7 +141,7 @@ static int luavgl_timer_resume(lua_State *L)
 {
   lv_timer_t *t = luavgl_check_timer(L, 1);
   if (t == NULL) {
-    return luaL_argerror(L, 1, "timer is null.");
+    return luaL_argerror(L, 1, "timer is null");
   }
 
   lv_timer_resume(t);
@@ -152,7 +152,7 @@ static int luavgl_timer_pause(lua_State *L)
 {
   lv_timer_t *t = luavgl_check_timer(L, 1);
   if (t == NULL) {
-    return luaL_argerror(L, 1, "timer is null.");
+    return luaL_argerror(L, 1, "timer is null");
   }
 
   lv_timer_pause(t);
@@ -165,7 +165,7 @@ static int luavgl_timer_delete(lua_State *L)
 {
   lv_timer_t *t = luavgl_check_timer(L, 1);
   if (t == NULL) {
-    return luaL_argerror(L, 1, "timer is null.");
+    return luaL_argerror(L, 1, "timer is null");
   }
 
   luavgl_timer_t *data = t->user_data;
@@ -181,7 +181,7 @@ static int luavgl_timer_delete(lua_State *L)
   /* we can only release memory in gc, since we need t->use_data */
   lv_timer_pause(t);
 
-  debug("delete timer:%p\n", t);
+  LV_LOG_INFO("delete timer:%p", t);
   return 0;
 }
 
@@ -194,7 +194,7 @@ static int luavgl_timer_gc(lua_State *L)
   free(t->user_data);
   lv_timer_del(t);
 
-  debug("gc timer:%p\n", t);
+  LV_LOG_INFO("gc timer:%p", t);
   return 0;
 }
 

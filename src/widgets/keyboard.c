@@ -36,7 +36,7 @@ LUALIB_API int luavgl_keyboard_set_property_kv(lua_State *L, void *data)
   /* a base obj property? */
   ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
-    debug("unkown property for keyboard.\n");
+    LV_LOG_ERROR("unkown property for keyboard");
   }
 
   return ret;

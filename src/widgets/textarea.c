@@ -74,7 +74,7 @@ LUALIB_API int luavgl_textarea_set_property_kv(lua_State *L, void *data)
   /* a base obj property? */
   ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
-    debug("unkown property for textarea: %s\n", lua_tostring(L, -2));
+    LV_LOG_ERROR("unkown property for textarea: %s", lua_tostring(L, -2));
   }
 
   return -1;
