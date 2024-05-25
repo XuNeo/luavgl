@@ -46,7 +46,7 @@ LUALIB_API int luavgl_label_set_property_kv(lua_State *L, void *data)
   /* a base obj property? */
   ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
-    debug("unkown property for label.\n");
+    LV_LOG_ERROR("unkown property for label");
   }
 
   return ret;

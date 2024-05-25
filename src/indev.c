@@ -252,8 +252,8 @@ static int luavgl_indev_on_event(lua_State *L)
     lua_setuservalue(L, 1);
   }
 
-  debug("add feedback_cb code %d, for indev->driver: %p\n", code,
-        i->indev->driver);
+  LV_LOG_INFO("add feedback_cb code %d, for indev->driver: %p\n", code,
+               i->indev->driver);
   lua_pushvalue(L, 3);
   lua_rawseti(L, -2, code);
 
@@ -272,7 +272,7 @@ static int luavgl_indev_tostring(lua_State *L)
 
 static int luavgl_indev_gc(lua_State *L)
 {
-  debug("\n");
+  LV_LOG_INFO("enter");
 
 #if 0
   /* If set_feedback_cb is used, then the indev only gets gc'ed when lua vm

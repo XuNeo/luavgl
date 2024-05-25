@@ -18,8 +18,8 @@ static void _lv_obj_set_align(void *obj, lua_State *L)
   }
 
   if (!lua_istable(L, -1)) {
-    luaL_argerror(L, -1, "should be table.");
-    debug("para should be table.");
+    luaL_argerror(L, -1, "should be table");
+    LV_LOG_ERROR("para should be table");
     return;
   }
 
@@ -86,7 +86,7 @@ static void obj_delete_cb(lv_event_t *e)
   lua_pushnil(L);
   lua_rawset(L, LUA_REGISTRYINDEX);
 
-  debug("delete obj: %p\n", lobj->obj);
+  LV_LOG_INFO("delete obj: %p", lobj->obj);
   lobj->obj = NULL;
   return;
 
@@ -169,7 +169,7 @@ static int luavgl_obj_delete(lua_State *L)
   lua_pushnil(L);
   lua_rawset(L, LUA_REGISTRYINDEX);
 
-  debug("delete obj: %p\n", lobj->obj);
+  LV_LOG_INFO("delete obj: %p", lobj->obj);
   lobj->obj = NULL;
 
   lua_pop(L, 1); /* remove the userdata para */
@@ -203,7 +203,7 @@ static int luavgl_obj_set(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
 
   if (!lua_istable(L, -1)) {
-    luaL_error(L, "expect a table on 2nd para.");
+    luaL_error(L, "expect a table on 2nd para");
     return 0;
   }
 
@@ -219,8 +219,8 @@ static int luavgl_obj_align_to(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
 
   if (!lua_istable(L, 2)) {
-    debug("para should be table.");
-    return luaL_argerror(L, 2, "should be table.");
+    LV_LOG_ERROR("para should be table");
+    return luaL_argerror(L, 2, "should be table");
   }
 
   lua_getfield(L, 2, "type");
@@ -231,7 +231,7 @@ static int luavgl_obj_align_to(lua_State *L)
   lv_obj_t *base = luavgl_to_lobj(L, -1)->obj;
   lua_pop(L, 1);
   if (base == NULL) {
-    debug("base is not lua obj");
+    LV_LOG_ERROR("base is not lua obj");
     return luaL_argerror(L, -1, "base is not lua obj");
   }
 
@@ -661,7 +661,7 @@ static int luavgl_obj_gc(lua_State *L)
     return 0;
   }
 
-  debug("\n");
+  LV_LOG_INFO("enter");
 
   luavgl_obj_t *lobj = lua_touserdata(L, 1);
   if (lobj == NULL || lobj->obj == NULL) {
@@ -669,7 +669,7 @@ static int luavgl_obj_gc(lua_State *L)
     return 0;
   }
 
-  debug("GC for obj: %p\n", lobj->obj);
+  LV_LOG_INFO("GC for obj: %p", lobj->obj);
   luavgl_obj_delete(L);
 
   return 0;
@@ -806,7 +806,7 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
     lua_remove(L, 1);
   }
 
-  debug("create obj on: %p\n", parent);
+  LV_LOG_INFO("create obj on: %p", parent);
 
   lv_obj_t *obj = create(parent);
   luavgl_add_lobj(L, obj)->lua_created = true;
@@ -831,7 +831,7 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
     lua_rawget(L, LUA_REGISTRYINDEX);
   }
 
-  debug("create obj: %p\n", obj);
+  LV_LOG_INFO("create obj: %p", obj);
   return 1;
 }
 
@@ -859,7 +859,7 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj)
 
   if (luavgl_obj_getmetatable(L, obj->class_p) == LUA_TNIL) {
     lua_pop(L, 1);
-    debug("cannot find metatable for class: %p\n", obj->class_p);
+    LV_LOG_ERROR("cannot find metatable for class: %p", obj->class_p);
     /* use base obj metatable instead */
     luavgl_obj_getmetatable(L, &lv_obj_class);
   }

@@ -100,11 +100,11 @@ static int luavgl_obj_on_event(lua_State *L)
     /* Create a new one if not exist */
     event = lv_malloc_zeroed(sizeof(*event));
     if (event == NULL) {
-      return luaL_error(L, "No memory.");
+      return luaL_error(L, "No memory");
     }
 
     lv_array_push_back(&lobj->events, &event);
-    debug("obj: %p, push back event: %d\n", obj, code);
+    LV_LOG_INFO("obj: %p, push back event: %d", obj, code);
   }
 
   event->code = code;
@@ -113,7 +113,7 @@ static int luavgl_obj_on_event(lua_State *L)
   event->dsc = lv_obj_add_event_cb(obj, luavgl_obj_event_cb, code, event);
   if (event->dsc == NULL) {
     lv_free(event);
-    return luaL_error(L, "Failed to add event callback.");
+    return luaL_error(L, "Failed to add event callback");
   }
 
   return 0;
@@ -174,7 +174,7 @@ static void luavgl_obj_remove_event_all(lua_State *L, luavgl_obj_t *lobj)
 
     lv_result_t res = lv_obj_remove_event_dsc(lobj->obj, event->dsc);
     if (res != LV_RESULT_OK) {
-      debug("Failed to remove event dsc: %d\n", res);
+      LV_LOG_WARN("Failed to remove event dsc: %d", res);
       /* Ignore this error, remove from it anyway */
     }
 

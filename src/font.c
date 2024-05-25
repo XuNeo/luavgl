@@ -273,7 +273,7 @@ static int luavgl_font_create(lua_State *L)
 
   str = strdup(lua_tostring(L, 1));
   if (str == NULL) {
-    return luaL_error(L, "no memory.");
+    return luaL_error(L, "no memory");
   }
 
   name = to_lower(str);
@@ -309,5 +309,5 @@ static int luavgl_font_create(lua_State *L)
     return 1;
   }
 
-  return luaL_error(L, "cannot create font.");
+  return luaL_error(L, "cannot create font");
 }

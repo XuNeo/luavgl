@@ -10,7 +10,7 @@ static void lv_image_set_pivot_(void *obj, lua_State *L)
 {
   if (!lua_istable(L, -1)) {
     luaL_argerror(L, -1, "should be table.");
-    debug("para should be table.");
+    LV_LOG_ERROR("para should be table.");
     return;
   }
 
@@ -48,7 +48,7 @@ LUALIB_API int luavgl_img_set_property_kv(lua_State *L, void *data)
   /* a base obj property? */
   ret = luavgl_obj_set_property_kv(L, obj);
   if (ret != 0) {
-    debug("unkown property for image.\n");
+    LV_LOG_ERROR("unkown property for image");
   }
 
   return ret;
@@ -69,7 +69,7 @@ static int luavgl_img_set(lua_State *L)
     const char *src = NULL;
     if (lua_isuserdata(L, -1)) {
       src = lua_touserdata(L, -1);
-      debug("set img src to user data: %p\n", src);
+      LV_LOG_INFO("set img src to user data: %p", src);
     } else {
       src = lua_tostring(L, -1);
     }

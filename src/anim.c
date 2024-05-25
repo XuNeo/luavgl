@@ -27,7 +27,7 @@ static luavgl_anim_t *luavgl_check_anim(lua_State *L, int index)
   luavgl_anim_t *a = luaL_checkudata(L, index, "lv_anim");
 
   if (a->deleted) {
-    luaL_argerror(L, index, "anim already deleted.");
+    luaL_argerror(L, index, "anim already deleted");
     return NULL;
   }
 
@@ -40,8 +40,8 @@ static void luavgl_anim_exec_cb(void *var, int32_t value)
   lua_State *L = a->L;
 
   if (a->exec_cb == LUA_NOREF || a->obj_ref == LUA_NOREF) {
-    debug("anim error, callback or obj not found.\n");
-    luaL_error(L, "anim founds no callback or obj.");
+    LV_LOG_ERROR("anim error, callback or obj not found");
+    luaL_error(L, "anim founds no callback or obj");
     return;
   }
 
@@ -135,7 +135,7 @@ static int anim_set_para_cb(lua_State *L, void *data)
   int ret = luavgl_set_property(L, data, anim_property_table);
 
   if (ret != 0) {
-    debug("failed\n");
+    LV_LOG_ERROR("failed");
   }
 
   return ret;
@@ -146,7 +146,7 @@ static int luavgl_anim_stop(lua_State *L)
   luavgl_anim_t *a = luavgl_check_anim(L, 1);
 
   if (a->aa == NULL || a->self_ref == LUA_NOREF) {
-    debug("already stopped");
+    LV_LOG_INFO("already stopped");
     return 0;
   }
 
@@ -179,13 +179,13 @@ static int luavgl_anim_start(lua_State *L)
   luavgl_anim_t *a = luavgl_check_anim(L, 1);
 
   if (a->aa) {
-    debug("we have an anim ongoing, stop it.");
+    LV_LOG_INFO("we have an anim ongoing, stop it");
     luavgl_anim_stop(L);
   }
 
   lv_anim_t *new_a = lv_anim_start(&a->cfg);
   a->aa = new_a;
-  debug("anim %p, aa: %p\n", a, a->aa);
+  LV_LOG_INFO("anim %p, aa: %p", a, a->aa);
 
   if (a->self_ref == LUA_NOREF) {
     /* it's started, thus cannot be gc'ed */
@@ -248,11 +248,11 @@ static int luavgl_anim_set(lua_State *L)
 static int luavgl_anim_create(lua_State *L)
 {
   if (lua_isnoneornil(L, 1)) {
-    return luaL_argerror(L, 1, "anim var must not be nil or none.");
+    return luaL_argerror(L, 1, "anim var must not be nil or none");
   }
 
   if (!lua_istable(L, 2)) {
-    return luaL_argerror(L, 2, "expect anim para table.");
+    return luaL_argerror(L, 2, "expect anim para table");
   }
 
   luavgl_anim_t *a = lua_newuserdata(L, sizeof(luavgl_anim_t));
@@ -285,13 +285,13 @@ static int luavgl_anim_create(lua_State *L)
   luavgl_anim_set(L);
   lua_pop(L, 1); /* anim */
 
-  debug("create anim: %p, aa: %p\n", a, a->aa);
+  LV_LOG_INFO("create anim: %p, aa: %p", a, a->aa);
   return 1;
 }
 
 static int luavgl_anim_gc(lua_State *L)
 {
-  debug("\n");
+  LV_LOG_INFO("enter");
   luavgl_anim_t *a = luaL_checkudata(L, 1, "lv_anim");
   if (a->deleted)
     return 0;
