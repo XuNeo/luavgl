@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build on ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - uses: ammaraskar/gcc-problem-matcher@master
+
+    - name: Install prerequisites
+      run: |
+          sudo apt update
+          sudo apt install gcc cmake ninja-build libpng-dev libfreetype6-dev libsdl2-dev lua5.3 liblua5.3-dev -y
+    - name: Build
+      run: |
+          cmake -Bbuild -GNinja -DCMAKE_BUILD_TYPE=Debug -DLV_USE_LIBPNG=ON -DLV_USE_FREETYPE=ON .
+          ninja -Cbuild
