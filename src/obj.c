@@ -194,8 +194,8 @@ static int luavgl_obj_clean(lua_State *L)
     luavgl_obj_delete(L);
   }
 
-  lua_pop(L, 1); /* remove the userdata para */
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_set(lua_State *L)
@@ -204,11 +204,14 @@ static int luavgl_obj_set(lua_State *L)
 
   if (!lua_istable(L, -1)) {
     luaL_error(L, "expect a table on 2nd para");
-    return 0;
+    lua_settop(L, 1);
+    return 1;
   }
 
   luavgl_setup_obj(L, obj);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 /**
@@ -244,7 +247,9 @@ static int luavgl_obj_align_to(lua_State *L)
   lua_pop(L, 1);
 
   lv_obj_align_to(obj, base, align, x_ofs, y_ofs);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_set_parent(lua_State *L)
@@ -252,7 +257,8 @@ static int luavgl_obj_set_parent(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_obj_t *parent = luavgl_to_obj(L, 2);
   lv_obj_set_parent(obj, parent);
-  return 0;
+  lua_pop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_get_screen(lua_State *L)
@@ -372,7 +378,8 @@ static int luavgl_obj_scroll_to(lua_State *L)
   }
   lua_pop(L, 1);
 
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_is_visible(lua_State *L)
@@ -389,7 +396,8 @@ static int luavgl_obj_add_flag(lua_State *L)
   lv_obj_flag_t flag = lua_tointeger(L, 2);
   lv_obj_add_flag(obj, flag);
 
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_clear_flag(lua_State *L)
@@ -398,7 +406,8 @@ static int luavgl_obj_clear_flag(lua_State *L)
   lv_obj_flag_t flag = lua_tointeger(L, 2);
   lv_obj_clear_flag(obj, flag);
 
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_add_state(lua_State *L)
@@ -406,7 +415,9 @@ static int luavgl_obj_add_state(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_state_t state = lua_tointeger(L, 2);
   lv_obj_add_state(obj, state);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_clear_state(lua_State *L)
@@ -414,7 +425,9 @@ static int luavgl_obj_clear_state(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_state_t state = lua_tointeger(L, 2);
   lv_obj_clear_state(obj, state);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 /**
@@ -428,7 +441,9 @@ static int luavgl_obj_scroll_by(lua_State *L)
   int anim_en = luavgl_tointeger(L, 4);
 
   lv_obj_scroll_by(obj, x, y, anim_en);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_scroll_by_bounded(lua_State *L)
@@ -439,7 +454,8 @@ static int luavgl_obj_scroll_by_bounded(lua_State *L)
   int anim_en = luavgl_tointeger(L, 4);
 
   lv_obj_scroll_by_bounded(obj, dx, dy, anim_en);
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_scroll_to_view(lua_State *L)
@@ -448,7 +464,8 @@ static int luavgl_obj_scroll_to_view(lua_State *L)
   int anim_en = luavgl_tointeger(L, 2);
 
   lv_obj_scroll_to_view(obj, anim_en);
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_scroll_to_view_recursive(lua_State *L)
@@ -457,7 +474,9 @@ static int luavgl_obj_scroll_to_view_recursive(lua_State *L)
   int anim_en = luavgl_tointeger(L, 2);
 
   lv_obj_scroll_to_view_recursive(obj, anim_en);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_scroll_by_raw(lua_State *L)
@@ -469,7 +488,9 @@ static int luavgl_obj_scroll_by_raw(lua_State *L)
 
   _lv_obj_scroll_by_raw(obj, x, y);
 #endif
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_is_scrolling(lua_State *L)
@@ -483,7 +504,9 @@ static int luavgl_obj_scrollbar_invalidate(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_obj_scrollbar_invalidate(obj);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_readjust_scroll(lua_State *L)
@@ -491,7 +514,9 @@ static int luavgl_obj_readjust_scroll(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   int anim_en = luavgl_tointeger(L, 2);
   lv_obj_readjust_scroll(obj, anim_en);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_is_editable(lua_State *L)
@@ -519,21 +544,26 @@ static int luavgl_obj_mark_layout_as_dirty(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_obj_mark_layout_as_dirty(obj);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_center(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_obj_center(obj);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_invalidate(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_obj_invalidate(obj);
-  return 0;
+
+  return 1;
 }
 
 static int luavgl_obj_set_flex_flow(lua_State *L)
@@ -542,7 +572,9 @@ static int luavgl_obj_set_flex_flow(lua_State *L)
   lv_flex_flow_t flow = luavgl_tointeger(L, 2);
 
   lv_obj_set_flex_flow(obj, flow);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_set_flex_align(lua_State *L)
@@ -553,7 +585,9 @@ static int luavgl_obj_set_flex_align(lua_State *L)
   lv_flex_align_t t = luavgl_tointeger(L, 4);
 
   lv_obj_set_flex_align(obj, m, c, t);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_set_flex_grow(lua_State *L)
@@ -562,7 +596,9 @@ static int luavgl_obj_set_flex_grow(lua_State *L)
   uint8_t grow = luavgl_tointeger(L, 2);
 
   lv_obj_set_flex_grow(obj, grow);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 static int luavgl_obj_indev_search(lua_State *L)
