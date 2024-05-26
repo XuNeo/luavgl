@@ -90,22 +90,21 @@ static void dumpstack(lua_State *L)
 {
   int top = lua_gettop(L);
   for (int i = 1; i <= top; i++) {
-    LV_LOG_USER("%d\t%s\t", i, luaL_typename(L, i));
     switch (lua_type(L, i)) {
     case LUA_TNUMBER:
-      LV_LOG_USER("number: %g", lua_tonumber(L, i));
+      LV_LOG_USER("%s: %g", luaL_typename(L, i), lua_tonumber(L, i));
       break;
     case LUA_TSTRING:
-      LV_LOG_USER("string: %s", lua_tostring(L, i));
+      LV_LOG_USER("%s: %s", luaL_typename(L, i), lua_tostring(L, i));
       break;
     case LUA_TBOOLEAN:
-      LV_LOG_USER("boolean: %s", (lua_toboolean(L, i) ? "true" : "false"));
+      LV_LOG_USER("%s: %s", luaL_typename(L, i), (lua_toboolean(L, i) ? "true" : "false"));
       break;
     case LUA_TNIL:
-      LV_LOG_USER("nil: %s", "nil");
+      LV_LOG_USER("%s: %s", luaL_typename(L, i), "nil");
       break;
     default:
-      LV_LOG_USER("pointer: %p", lua_topointer(L, i));
+      LV_LOG_USER("%s: %p", luaL_typename(L, i), lua_topointer(L, i));
       break;
     }
   }
@@ -343,6 +342,7 @@ LUALIB_API void luavgl_iterate(lua_State *L, int index,
                                int (*cb)(lua_State *, void *), void *cb_para)
 {
   int i = index < 0 ? index - 1 : index;
+
   lua_pushnil(L); /* nil as initial key to iterate through table */
   while (lua_next(L, i)) {
     /* -1: value, -2: key */
