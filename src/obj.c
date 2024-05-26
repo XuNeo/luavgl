@@ -819,6 +819,14 @@ static const luavgl_value_setter_t obj_property_table[] = {
 LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data)
 {
   lv_obj_t *obj = data;
+
+  /* Check for integer key with userdata as value */
+  if (lua_type(L, -2) == LUA_TNUMBER && lua_type(L, -1) == LUA_TUSERDATA) {
+    lv_obj_t *child = luavgl_to_obj(L, -1);
+    lv_obj_set_parent(child, obj);
+    return 0;
+  }
+
   int ret = luavgl_set_property(L, obj, obj_property_table);
 
   if (ret == 0)
