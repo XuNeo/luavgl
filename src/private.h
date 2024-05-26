@@ -6,7 +6,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 static void dumpstack(lua_State *L);
 static void dumptable(lua_State *L, int index);

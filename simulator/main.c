@@ -12,6 +12,7 @@
 #include "widgets/widgets.h"
 
 #include <string.h>
+#include <unistd.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN32_) || defined(WIN64) || defined(_WIN64) || defined(_WIN64_)
   #include <direct.h>

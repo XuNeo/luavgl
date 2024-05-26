@@ -94,19 +94,19 @@ static void _lv_anim_set_path(void *obj, lua_State *L)
   }
 
   a->path_cb = lv_anim_path_linear;
-  if (path == NULL || strcmp(path, "linear") == 0) {
+  if (path == NULL || lv_strcmp(path, "linear") == 0) {
     ; /* use default linear path */
-  } else if (strcmp(path, "ease_in") == 0) {
+  } else if (lv_strcmp(path, "ease_in") == 0) {
     a->path_cb = lv_anim_path_ease_in;
-  } else if (strcmp(path, "ease_out") == 0) {
+  } else if (lv_strcmp(path, "ease_out") == 0) {
     a->path_cb = lv_anim_path_ease_out;
-  } else if (strcmp(path, "ease_in_out") == 0) {
+  } else if (lv_strcmp(path, "ease_in_out") == 0) {
     a->path_cb = lv_anim_path_ease_in_out;
-  } else if (strcmp(path, "overshoot") == 0) {
+  } else if (lv_strcmp(path, "overshoot") == 0) {
     a->path_cb = lv_anim_path_overshoot;
-  } else if (strcmp(path, "bounce") == 0) {
+  } else if (lv_strcmp(path, "bounce") == 0) {
     a->path_cb = lv_anim_path_bounce;
-  } else if (strcmp(path, "step") == 0) {
+  } else if (lv_strcmp(path, "step") == 0) {
     a->path_cb = lv_anim_path_step;
   }
 }
