@@ -303,23 +303,23 @@ lvgl.LAYOUT_GRID = 0
 
 --- return a opacity value in lvgl unit(0..255)
 ---@param p integer opacity value in range of 0..100
----@return integer
+--- @return integer
 function lvgl.OPA(p)
 end
 
 --- return a layout in percent
 ---@param p integer
----@return integer
+--- @return integer
 function lvgl.PCT(p)
 end
 
 --- return lvgl horizontal resolution
----@return integer
+--- @return integer
 function lvgl.HOR_RES()
 end
 
 --- return lvgl vertical resolution
----@return integer
+--- @return integer
 function lvgl.VER_RES()
 end
 
@@ -538,6 +538,7 @@ end
 ---
 --- Set object property
 --- @param p StyleProp
+--- @return Object
 ---
 function obj:set(p)
 end
@@ -553,6 +554,7 @@ end
 ---
 --- Set object property
 --- @param p AlignToPara
+--- @return Object
 ---
 function obj:align_to(p)
 end
@@ -565,7 +567,7 @@ end
 
 ---
 --- Delete all children of this object
---- @return nil
+--- @return Object
 function obj:clean()
 end
 
@@ -622,7 +624,7 @@ end
 --- @field anim boolean
 ---
 --- @param p ScrollToPara
---- @return ObjState
+--- @return Object
 function obj:scroll_to(p)
 end
 
@@ -641,28 +643,28 @@ end
 ---
 --- add flag to object
 --- @param p ObjFlag
---- @return nil
+--- @return Object
 function obj:add_flag(p)
 end
 
 ---
 --- clear object flag
 --- @param p ObjFlag
---- @return nil
+--- @return Object
 function obj:clear_flag(p)
 end
 
 ---
 --- add state to object
 --- @param p ObjState
---- @return nil
+--- @return Object
 function obj:add_state(p)
 end
 
 ---
 --- clear object state
 --- @param p ObjState
---- @return nil
+--- @return Object
 function obj:clear_state(p)
 end
 
@@ -670,7 +672,7 @@ end
 --- add style to object
 --- @param s Style
 --- @param selector? integer
---- @return nil
+--- @return Object
 function obj:add_style(s, selector)
 end
 
@@ -692,6 +694,7 @@ end
 ---@param x integer
 ---@param y integer
 ---@param anim_en? boolean
+--- @return Object
 function obj:scroll_by(x, y, anim_en)
 end
 
@@ -699,11 +702,13 @@ end
 ---@param x integer
 ---@param y integer
 ---@param anim_en boolean
+--- @return Object
 function obj:scroll_by_bounded(x, y, anim_en)
 end
 
 --- Scroll to an object until it becomes visible on its parent
 ---@param anim_en? boolean
+--- @return Object
 function obj:scroll_to_view(anim_en)
 end
 
@@ -711,6 +716,7 @@ end
 --- Do the same on the parent's parent, and so on.
 --- Therefore the object will be scrolled into view even it has nested scrollable parents
 ---@param anim_en? boolean
+--- @return Object
 function obj:scroll_to_view_recursive(anim_en)
 end
 
@@ -718,45 +724,48 @@ end
 ---@param x integer
 ---@param y integer
 ---@param anim_en boolean
+--- @return Object
 function obj:scroll_by_raw(x, y, anim_en)
 end
 
 ---Invalidate the area of the scrollbars
+--- @return Object
 function obj:scrollbar_invalidate()
 end
 
 ---Checked if the content is scrolled "in" and adjusts it to a normal position.
 ---@param anim_en boolean
+--- @return Object
 function obj:readjust_scroll(anim_en)
 end
 
 ---If object is editable
----@return boolean
+--- @return boolean
 function obj:is_editable()
 end
 
 --- class group def
----@return boolean
+--- @return boolean
 function obj:is_group_def()
 end
 
 --- Test whether the and object is positioned by a layout or not
----@return boolean
+--- @return boolean
 function obj:is_layout_positioned()
 end
 
 --- Mark the object for layout update.
----@return nil
+--- @return Object
 function obj:mark_layout_as_dirty()
 end
 
 --- Align an object to the center on its parent. same as obj:set{align={type = lvgl.ALIGN.CENTER}}
----@return nil
+--- @return Object
 function obj:center()
 end
 
 --- Align an object to the center on its parent. same as obj:set{align={type = lvgl.ALIGN.CENTER}}
----@return nil
+--- @return nil
 function obj:invalidate()
 end
 
