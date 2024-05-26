@@ -619,7 +619,7 @@
 #endif
 
 /*API for open, read, etc*/
-#define LV_USE_FS_POSIX 0
+#define LV_USE_FS_POSIX 1
 #if LV_USE_FS_POSIX
     #define LV_FS_POSIX_LETTER '/'     /*Set an upper cased letter on which the drive will accessible (e.g. 'A')*/
     #define LV_FS_POSIX_PATH "/"         /*Set the working directory. File/directory paths will be appended to it.*/
