@@ -1,3 +1,4 @@
+#include "lua.h"
 #include "luavgl.h"
 #include "private.h"
 
@@ -5,6 +6,8 @@
 #include "event.c"
 #include "style.c"
 #include "widgets/widgets.c"
+#include <src/core/lv_obj_property.h>
+#include <src/misc/lv_types.h>
 
 static int luavgl_anim_create(lua_State *L);
 static int luavgl_obj_delete(lua_State *L);
@@ -805,6 +808,28 @@ static const luavgl_value_setter_t obj_property_table[] = {
     {"scroll_snap_y",  0,                 {.setter = (setter_int_t)lv_obj_set_scroll_snap_y} },
 };
 
+static lv_property_t luavgl_toproptery(lua_State *L, lv_prop_id_t id)
+{
+  lv_property_t prop;
+  prop.id = id;
+  prop.num = 0;
+
+  int type = LV_PROPERTY_ID_TYPE(id);
+  switch (type) {
+  case LV_PROPERTY_ID_TYPE_INT:
+int value = luavgl_tointeger(L, -1);
+    prop.num = value;
+    break;
+  case LV_PROPERTY_ID_TYPE_PRECISE:
+    break;
+  case LV_PROPERTY_ID_TYPE_PTR:
+  default:
+    break;
+  }
+
+  return prop;
+}
+
 /**
  * Set object property.
  * Differ from set object style, this one is usually used to set widget
@@ -825,6 +850,22 @@ LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data)
     lv_obj_t *child = luavgl_to_obj(L, -1);
     lv_obj_set_parent(child, obj);
     return 0;
+  }
+
+  const char *key = lua_tostring(L, -2);
+  if (key == NULL) {
+    LV_LOG_ERROR("Null key, ignored");
+    return 0;
+  }
+
+  lv_prop_id_t id = lv_obj_get_property_id(obj, key);
+  if (id != LV_PROPERTY_ID_INVALID) {
+    /* Get the property value */
+    lv_property_t prop;
+    prop.id = id;
+
+
+    lv_obj_set_property(obj, &prop);
   }
 
   int ret = luavgl_set_property(L, obj, obj_property_table);
