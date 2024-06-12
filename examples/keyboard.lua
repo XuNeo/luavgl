@@ -1,10 +1,10 @@
-local root = lvgl.Object(nil, {
+local root = lvgl.Object {
     w = lvgl.HOR_RES(),
     h = lvgl.VER_RES(),
     pad_all = 0,
     bg_color = "#333",
     bg_opa = lvgl.OPA(50),
-})
+}
 root:add_flag(lvgl.FLAG.CLICKABLE)
 
 local ta = root:Textarea {

@@ -44,7 +44,7 @@ local function screenCreate(parent)
             pad_all = 0
         }
     else
-        scr = lvgl.Object(nil, property)
+        scr = lvgl.Object(property)
     end
     scr:clear_flag(lvgl.FLAG.SCROLLABLE)
     scr:clear_flag(lvgl.FLAG.CLICKABLE)

@@ -1,6 +1,6 @@
 local lvgl = require("lvgl")
 
-local root = lvgl.Object(nil, {
+local root = lvgl.Object {
     flex = {
         flex_direction = "row",
         flex_wrap = "wrap",
@@ -11,7 +11,7 @@ local root = lvgl.Object(nil, {
     w = 300,
     h = 75,
     align = lvgl.ALIGN.CENTER
-})
+}
 
 for i = 1, 10 do
     local item = root:Object {

@@ -1,11 +1,11 @@
-local root = lvgl.Object(nil, {
+local root = lvgl.Object {
     w = 0,
     h = 0,
     pad_all = 0,
     align = lvgl.ALIGN.CENTER,
     border_width = 1,
     border_color = "#F00",
-})
+}
 
 local pointer = root:Pointer {
     src = SCRIPT_PATH .. "/assets/second.png",

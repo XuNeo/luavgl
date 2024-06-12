@@ -20,19 +20,19 @@ local function fs_example()
     print("header len:", #header, ": ", header)
     print("remaining: ", remaining)
 
-    lvgl.Label(nil, {
+    lvgl.Label {
         x = 0,
         y = 0,
         text_font = lvgl.Font("montserrat", 20, "normal"),
         text = header .. remaining,
         align = lvgl.ALIGN.TOP_LEFT
-    })
+    }
 
-    local list = lvgl.List(nil, {
+    local list = lvgl.List {
         align = lvgl.ALIGN.TOP_RIGHT,
         pad_all = 10,
         text_font = lvgl.BUILTIN_FONT.MONTSERRAT_12
-    })
+    }
     list:add_text("Directory list:")
 
     -- local dir <close>, msg, code = lvgl.fs.open_dir(SCRIPT_PATH .. "/")

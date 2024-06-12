@@ -1,5 +1,5 @@
 -- a dropdown on top left
-local dd = lvgl.Dropdown(nil, {
+local dd = lvgl.Dropdown {
     -- note there are two "Orange"
     options = "Apple\nBanana\nOrange\nCherry\nGrape\nRaspberry\nMelon\nOrange\nLemon\nNuts",
     symbol = "\xEF\x81\x94",
@@ -11,7 +11,7 @@ local dd = lvgl.Dropdown(nil, {
         x_ofs = 20,
         y_ofs = 20,
     }
-})
+}
 local list = dd:get("list")
 print("get dropdown list: ", list)
 list:set { text_font = lvgl.BUILTIN_FONT.MONTSERRAT_20 }
@@ -31,7 +31,7 @@ dd:onevent(lvgl.EVENT.VALUE_CHANGED,
 )
 
 -- another dropdown on top left
-local dd = lvgl.Dropdown(nil, {
+local dd = lvgl.Dropdown {
     options = "Apple\nBanana\nOrange\nCherry\nGrape\nRaspberry\nMelon\nOrange\nLemon\nNuts",
     symbol = "\xEF\x81\xB7",
     dir = lvgl.DIR.BOTTOM,
@@ -43,7 +43,7 @@ local dd = lvgl.Dropdown(nil, {
         x_ofs = 0,
         y_ofs = -20,
     }
-})
+}
 
 
 dd:get("list"):set { text_font = lvgl.Font("montserrat", 24) }
