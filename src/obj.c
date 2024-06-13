@@ -718,7 +718,7 @@ static const luaL_Reg luavgl_obj_methods[] = {
     {"delete",                   luavgl_obj_delete                  },
     {"clean",                    luavgl_obj_clean                   },
 
- /* misc. functions */
+    /* misc. functions */
     {"parent",                   luavgl_obj_set_get_parent          },
     {"set_parent",               luavgl_obj_set_parent              },
     {"get_parent",               luavgl_obj_get_parent              },
@@ -842,7 +842,8 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
   luavgl_ctx_t *ctx = luavgl_context(L);
   lv_obj_t *parent;
 
-  if (lua_isnoneornil(L, 1)) {
+  int type = lua_type(L, 1);
+  if (type == LUA_TTABLE || type == LUA_TNONE || type == LUA_TNIL) {
     parent = ctx->root;
   } else {
     parent = luavgl_to_obj(L, 1);

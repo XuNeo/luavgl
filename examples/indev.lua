@@ -9,12 +9,12 @@ local function indev_example()
     local obj_act = lvgl.indev.get_obj_act()
     print("obj_act: ", obj_act)
 
-    local root = lvgl.Object(nil, {
+    local root = lvgl.Object {
             w = lvgl.PCT(30),
             h = lvgl.PCT(30),
             align = lvgl.ALIGN.CENTER,
             bg_color = "#aaa",
-        })
+        }
 
     root:Object({
         w = 1000,

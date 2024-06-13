@@ -19,7 +19,7 @@ local function group_example()
             border_color = "#a00",
         })
 
-    local root = lvgl.Object(nil, {
+    local root = lvgl.Object {
             w = lvgl.PCT(100),
             h = lvgl.PCT(100),
             align = lvgl.ALIGN.CENTER,
@@ -28,7 +28,7 @@ local function group_example()
                 flex_direction = "row",
                 flex_wrap = "wrap"
             }
-        })
+        }
 
     root:add_style(style, lvgl.STATE.FOCUSED)
 

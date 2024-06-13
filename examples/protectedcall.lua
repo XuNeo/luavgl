@@ -21,10 +21,10 @@ local function testCrash6()
     testCrash5()
 end
 
-lvgl.Label(nil, {
+lvgl.Label {
     text = "crash in 1 second.",
     align = lvgl.ALIGN.CENTER
-})
+}
 
 lvgl.Timer {
     period = 1000,

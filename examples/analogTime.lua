@@ -1,4 +1,4 @@
-local analogTime = lvgl.AnalogTime(nil, {
+local analogTime = lvgl.AnalogTime {
     border_width = 0,
     x = lvgl.HOR_RES() // 2,
     y = lvgl.VER_RES() // 2,
@@ -8,6 +8,6 @@ local analogTime = lvgl.AnalogTime(nil, {
         second = SCRIPT_PATH .. "/assets/hand-second.png",
     },
     period = 33,
-})
+}
 
 print("analogTime: ", analogTime)

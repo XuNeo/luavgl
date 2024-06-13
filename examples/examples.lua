@@ -1,4 +1,4 @@
-local container = lvgl.Object(nil, {
+local container = lvgl.Object {
     w = lvgl.HOR_RES(),
     h = lvgl.VER_RES(),
     bg_color = "#888",
@@ -9,7 +9,7 @@ local container = lvgl.Object(nil, {
         flex_direction = "row",
         flex_wrap = "wrap"
     }
-})
+}
 
 print("created container", container)
 
