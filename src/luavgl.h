@@ -189,6 +189,21 @@ LUALIB_API lv_color_t luavgl_tocolor(lua_State *L, int idx);
 LUALIB_API const char *luavgl_toimgsrc(lua_State *L, int idx);
 
 /**
+ * @brief Convert value to lvgl point
+ */
+LUALIB_API lv_point_t luavgl_topoint(lua_State *L, int idx);
+
+/**
+ * @brief Convert value to lvgl property.
+ */
+LUALIB_API lv_property_t luavgl_toproperty(lua_State *L, int idx,
+                                           lv_prop_id_t id);
+/**
+ * @brief Push property value to stack
+ */
+LUALIB_API int luavgl_pushproperty(lua_State *L, const lv_property_t *prop);
+
+/**
  * @brief Helper function to iterate through table
  *
  * @param L
