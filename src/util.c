@@ -62,7 +62,8 @@ static void dumpvalue(lua_State *L, int i, bool cr)
     LV_LOG_USER("string: %s%c", lua_tostring(L, i), ending);
     break;
   case LUA_TBOOLEAN:
-    LV_LOG_USER("boolean: %s%c", (lua_toboolean(L, i) ? "true" : "false"), ending);
+    LV_LOG_USER("boolean: %s%c", (lua_toboolean(L, i) ? "true" : "false"),
+                ending);
     break;
   case LUA_TNIL:
     LV_LOG_USER("nil: %s%c", "nil", ending);
@@ -99,7 +100,8 @@ static void dumpstack(lua_State *L)
       LV_LOG_USER("%s: %s", luaL_typename(L, i), lua_tostring(L, i));
       break;
     case LUA_TBOOLEAN:
-      LV_LOG_USER("%s: %s", luaL_typename(L, i), (lua_toboolean(L, i) ? "true" : "false"));
+      LV_LOG_USER("%s: %s", luaL_typename(L, i),
+                  (lua_toboolean(L, i) ? "true" : "false"));
       break;
     case LUA_TNIL:
       LV_LOG_USER("%s: %s", luaL_typename(L, i), "nil");
@@ -118,8 +120,8 @@ static void dumpstack(lua_State *L)
  */
 LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
                                           const lv_obj_class_t *clz,
-                                          const char *name, const rotable_Reg *l,
-                                          int n)
+                                          const char *name,
+                                          const rotable_Reg *l, int n)
 {
   if (luavgl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
     return 0; /* leave previous value on top, but return 0 */
@@ -344,6 +346,110 @@ LUALIB_API const char *luavgl_toimgsrc(lua_State *L, int idx)
   return src;
 }
 
+LUALIB_API lv_point_t luavgl_topoint(lua_State *L, int idx)
+{
+  lv_point_t point = {0};
+  if (lua_istable(L, idx)) {
+    lua_rawgeti(L, idx, 1);
+    point.x = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    lua_rawgeti(L, idx, 2);
+    point.y = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+  } else {
+    luaL_error(L, "point should be table");
+  }
+
+  return point;
+}
+
+LUALIB_API lv_property_t luavgl_toproperty(lua_State *L, int idx,
+                                           lv_prop_id_t id)
+{
+  lv_property_t prop;
+  prop.id = id;
+  prop.num = 0;
+
+  int type = LV_PROPERTY_ID_TYPE(id);
+  switch (type) {
+  case LV_PROPERTY_TYPE_INT:
+    prop.num = luavgl_tointeger(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_PRECISE:
+    prop.precise = lua_tonumber(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_COLOR:
+    prop.color = luavgl_tocolor(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_IMGSRC:
+    prop.ptr = luavgl_toimgsrc(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_POINT:
+    prop.point = luavgl_topoint(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_OBJ:
+    prop.ptr = luavgl_to_obj(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_TEXT:
+    prop.ptr = lua_tostring(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_FONT:
+    prop.ptr = lua_touserdata(L, idx);
+    return prop;
+  case LV_PROPERTY_TYPE_POINTER:
+    break;
+  default:
+    break;
+  }
+
+  prop.id = LV_PROPERTY_ID_INVALID;
+  return prop;
+}
+
+LUALIB_API int luavgl_pushproperty(lua_State *L, const lv_property_t *prop)
+{
+  lv_prop_id_t id = prop->id;
+
+  int type = LV_PROPERTY_ID_TYPE(id);
+  switch (type) {
+  case LV_PROPERTY_TYPE_INT:
+    lua_pushinteger(L, prop->num);
+    return 1;
+  case LV_PROPERTY_TYPE_PRECISE:
+    lua_pushnumber(L, prop->precise);
+    return 1;
+  case LV_PROPERTY_TYPE_COLOR:
+    lua_pushinteger(L, lv_color_to_int(prop->color));
+    return 1;
+  case LV_PROPERTY_TYPE_POINT:
+    /* table of {x, y} */
+    lua_createtable(L, 0, 2);
+    lua_pushinteger(L, prop->point.x);
+    lua_rawseti(L, -2, 1);
+    lua_pushinteger(L, prop->point.y);
+    lua_rawseti(L, -2, 2);
+    return 1;
+  case LV_PROPERTY_TYPE_OBJ:
+    lua_pushlightuserdata(L, (void *)prop->ptr);
+    lua_rawget(L, LUA_REGISTRYINDEX);
+    if (lua_isnoneornil(L, -1)) {
+      luavgl_add_lobj(L, (void *)prop->ptr)->lua_created = false;
+    }
+    return 1;
+  case LV_PROPERTY_TYPE_TEXT:
+    lua_pushstring(L, prop->ptr);
+    return 1;
+  case LV_PROPERTY_TYPE_IMGSRC:
+  case LV_PROPERTY_TYPE_FONT:
+  case LV_PROPERTY_TYPE_POINTER:
+    lua_pushlightuserdata(L, (void *)prop->ptr);
+    return 1;
+  default:
+    return luaL_error(L, "unsupported property type: %d", type);
+  }
+}
+
 LUALIB_API void luavgl_iterate(lua_State *L, int index,
                                int (*cb)(lua_State *, void *), void *cb_para)
 {
@@ -395,6 +501,7 @@ LUALIB_API int luavgl_set_property_array(lua_State *L, void *obj,
         lv_color_t c;
         uint32_t v;
       } color;
+
       color.c = luavgl_tocolor(L, -1);
       p->setter(obj, color.v);
     } else if (p->type == SETTER_TYPE_IMGSRC) {
