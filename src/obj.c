@@ -11,42 +11,25 @@ static int luavgl_anim_create(lua_State *L);
 static int luavgl_obj_delete(lua_State *L);
 static int luavgl_obj_clean(lua_State *L);
 
-static void _lv_obj_set_align(void *obj, lua_State *L)
-{
-  if (lua_isinteger(L, -1)) {
-    lv_obj_align(obj, lua_tointeger(L, -1), 0, 0);
-    return;
-  }
-
-  if (!lua_istable(L, -1)) {
-    luaL_argerror(L, -1, "should be table");
-    LV_LOG_ERROR("para should be table");
-    return;
-  }
-
-  lua_getfield(L, -1, "type");
-  lv_align_t align = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lua_getfield(L, -1, "x_ofs");
-  lv_coord_t x_ofs = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lua_getfield(L, -1, "y_ofs");
-  lv_coord_t y_ofs = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lv_obj_align(obj, align, x_ofs, y_ofs);
-}
+struct setprop_para {
+  lv_obj_t *obj;
+  const luavgl_table_t *table;
+};
 
 /**
  * @brief Set obj properties based on property table on stack top
  *
  * Internally used.
  */
-static inline void luavgl_setup_obj(lua_State *L, lv_obj_t *obj)
+static inline void luavgl_setup_obj(lua_State *L, lv_obj_t *obj,
+                                    const luavgl_table_t *properties)
 {
-  luavgl_iterate(L, -1, luavgl_obj_set_property_kv, obj);
+  struct setprop_para para = {
+      .obj = obj,
+      .table = properties,
+  };
+
+  luavgl_iterate(L, -1, luavgl_obj_set_property_kv, &para);
 }
 
 static void obj_delete_cb(lv_event_t *e)
@@ -209,7 +192,16 @@ static int luavgl_obj_set(lua_State *L)
     return 1;
   }
 
-  luavgl_setup_obj(L, obj);
+  const luavgl_table_t *properties;
+
+  int t = lua_getfield(L, 1, "__property");
+  if (t != LUA_TLIGHTUSERDATA) {
+    return luaL_argerror(L, 1, "has no __property");
+  }
+
+  properties = lua_touserdata(L, -1);
+  lua_pop(L, 1); /* Get rid of the property userdata from stack */
+  luavgl_setup_obj(L, obj, properties);
 
   lua_settop(L, 1);
   return 1;
@@ -712,61 +704,251 @@ static int luavgl_obj_gc(lua_State *L)
   return 0;
 }
 
+/**
+ * Set object property. The property is distinguished by name, the same name
+ * such as width is both a widget property and style. We treat widget property
+ * has higher priority than style. For some special property, even lvgl has
+ * corresponding property API, the value is not easy for lua to deal with,
+ * these properties are also handled by lua callback directly.
+ *
+ * On stack, -2: property name, -1: propery value
+ */
+static int obj_set_property_stack(lua_State *L, lv_obj_t *obj,
+                                  const luavgl_table_t *table)
+{
+  const char *key = lua_tostring(L, -2);
+
+  if (table && table->array) {
+    const luavgl_property_ops_t *ops = table->array;
+
+    /* 1. Try the luavgl property table for this specific class. */
+    for (int i = 0; i < table->len; i++) {
+      if (lv_strcmp(ops[i].name, key) == 0) {
+        return ops[i].ops(L, obj, true);
+      }
+    }
+  }
+
+  /* 2. Try lvgl property */
+  lv_prop_id_t id = lv_obj_property_get_id(obj, key);
+  if (id != LV_PROPERTY_ID_INVALID) {
+    lv_property_t prop = luavgl_toproperty(L, -1, id);
+    if (prop.id != LV_PROPERTY_ID_INVALID) {
+      if (lv_obj_set_property(obj, &prop) == LV_RESULT_OK) {
+        return 0;
+      }
+    }
+  }
+
+  /* 3. Try luavgl obj style */
+  if (luavgl_obj_set_style_kv(L, obj, LV_STATE_DEFAULT) == 0) {
+    return 0;
+  }
+
+  LV_LOG_ERROR("property not found: %s", key);
+  return luaL_error(L, "property not found: %s", key);
+}
+
+static int obj_get_property_stack(lua_State *L, lv_obj_t *obj,
+                                  const luavgl_table_t *table)
+{
+  const char *key = lua_tostring(L, -1);
+
+  if (table && table->array) {
+    const luavgl_property_ops_t *ops = table->array;
+
+    /* 1. Try the luavgl property table for this specific class. */
+    for (int i = 0; i < table->len; i++) {
+      if (lv_strcmp(ops[i].name, key) == 0) {
+        return ops[i].ops(L, obj, false);
+      }
+    }
+  }
+
+  /* 2. Try lvgl property */
+  lv_prop_id_t id = lv_obj_property_get_id(obj, key);
+  lv_property_t prop = {};
+  if (id != LV_PROPERTY_ID_INVALID) {
+    prop = lv_obj_get_property(obj, id);
+    if (prop.id != LV_PROPERTY_ID_INVALID) {
+      return luavgl_pushproperty(L, &prop);
+    }
+  }
+
+  /* 3. Try luavgl obj style */
+
+  LV_LOG_ERROR("property not found: %s", key);
+  return luaL_error(L, "property not found: %s", key);
+}
+
+/**
+ * Check if the property is supported by luavgl, if not then try base class.
+ * If luavgl doesn't support the property, then check lvgl property.
+ *
+ * In this way, luavgl property method can override lvgl property method.
+ *
+ * On stack, 1: obj, 2: property name, 3: propery value
+ */
+LUALIB_API int luavgl_obj_set_property(lua_State *L)
+{
+  int t;
+  const luavgl_table_t *table;
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
+
+  t = lua_getfield(L, 1, "__property");
+  if (t != LUA_TLIGHTUSERDATA) {
+    return luaL_argerror(L, 1, "has no __property");
+  }
+
+  table = lua_touserdata(L, -1);
+  lua_pop(L, 1); /* Get rid of the property userdata from stack */
+
+  return obj_set_property_stack(L, obj, table);
+}
+
+LUALIB_API int luavgl_obj_get_property(lua_State *L)
+{
+  int t;
+  const luavgl_table_t *table;
+  lv_obj_t *obj = luavgl_to_obj(L, 1);
+
+  t = lua_getfield(L, 1, "__property");
+  if (t != LUA_TLIGHTUSERDATA) {
+    return luaL_argerror(L, 1, "has no __property");
+  }
+
+  table = lua_touserdata(L, -1);
+  lua_pop(L, 1); /* Get rid of the property userdata from stack */
+
+  return obj_get_property_stack(L, obj, table);
+}
+
+static int obj_property_align(lua_State *L, lv_obj_t *obj, bool set)
+{
+  if (set) {
+    if (lua_isinteger(L, -1)) {
+      lv_obj_align(obj, lua_tointeger(L, -1), 0, 0);
+      return 0;
+    }
+
+    if (!lua_istable(L, -1)) {
+      LV_LOG_ERROR("para should be table");
+      luaL_argerror(L, -1, "should be table");
+      return 0;
+    }
+
+    lua_getfield(L, -1, "type");
+    lv_align_t align = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, -1, "x_ofs");
+    lv_coord_t x_ofs = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    lua_getfield(L, -1, "y_ofs");
+    lv_coord_t y_ofs = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+
+    lv_obj_align(obj, align, x_ofs, y_ofs);
+
+    return 0;
+  } else {
+    /* get property */
+    lua_pushinteger(L, lv_obj_get_x(obj));
+    return 1;
+  }
+}
+
+static int obj_property_w(lua_State *L, lv_obj_t *obj, bool set)
+{
+  if (set) {
+    lv_obj_set_width(obj, lua_tointeger(L, -1));
+  } else {
+    /* get property */
+    lua_pushinteger(L, lv_obj_get_width(obj));
+  }
+  return 1;
+}
+
+static int obj_property_h(lua_State *L, lv_obj_t *obj, bool set)
+{
+  if (set) {
+    lv_obj_set_height(obj, lua_tointeger(L, -1));
+  } else {
+    /* get property */
+    lua_pushinteger(L, lv_obj_get_height(obj));
+  }
+  return 1;
+}
+
+static const luavgl_property_ops_t obj_property_ops[] = {
+    {.name = "align", .ops = obj_property_align},
+    {.name = "h",     .ops = obj_property_h    },
+    {.name = "w",     .ops = obj_property_w    },
+};
+
+static const luavgl_table_t property_table = {
+    .len = sizeof(obj_property_ops) / sizeof(obj_property_ops[0]),
+    .array = obj_property_ops,
+};
+
 static const rotable_Reg luavgl_obj_methods[] = {
-    {"set",                      LUA_TFUNCTION, {luavgl_obj_set}                     },
-    {"set_style",                LUA_TFUNCTION, {luavgl_obj_set_style}               },
-    {"align_to",                 LUA_TFUNCTION, {luavgl_obj_align_to}                },
-    {"delete",                   LUA_TFUNCTION, {luavgl_obj_delete}                  },
-    {"clean",                    LUA_TFUNCTION, {luavgl_obj_clean}                   },
+    {"set",                      LUA_TFUNCTION,      {luavgl_obj_set}                     },
+    {"get",                      LUA_TFUNCTION,      {luavgl_obj_get_property}            },
 
+    {"testprop",                 LUA_TFUNCTION,      {luavgl_obj_set_property}            },
+    {"set_style",                LUA_TFUNCTION,      {luavgl_obj_set_style}               },
+    {"align_to",                 LUA_TFUNCTION,      {luavgl_obj_align_to}                },
+    {"delete",                   LUA_TFUNCTION,      {luavgl_obj_delete}                  },
+    {"clean",                    LUA_TFUNCTION,      {luavgl_obj_clean}                   },
     /* misc. functions */
-    {"parent",                   LUA_TFUNCTION, {luavgl_obj_set_get_parent}          },
-    {"set_parent",               LUA_TFUNCTION, {luavgl_obj_set_parent}              },
-    {"get_parent",               LUA_TFUNCTION, {luavgl_obj_get_parent}              },
-    {"get_child",                LUA_TFUNCTION, {luavgl_obj_get_child}               },
-    {"get_child_cnt",            LUA_TFUNCTION, {luavgl_obj_get_child_cnt}           },
-    {"get_screen",               LUA_TFUNCTION, {luavgl_obj_get_screen}              },
-    {"get_state",                LUA_TFUNCTION, {luavgl_obj_get_state}               },
-    {"scroll_to",                LUA_TFUNCTION, {luavgl_obj_scroll_to}               },
-    {"is_scrolling",             LUA_TFUNCTION, {luavgl_obj_is_scrolling}            },
-    {"is_visible",               LUA_TFUNCTION, {luavgl_obj_is_visible}              },
-    {"add_flag",                 LUA_TFUNCTION, {luavgl_obj_add_flag}                },
-    {"clear_flag",               LUA_TFUNCTION, {luavgl_obj_clear_flag}              },
-    {"add_state",                LUA_TFUNCTION, {luavgl_obj_add_state}               },
-    {"clear_state",              LUA_TFUNCTION, {luavgl_obj_clear_state}             },
-    {"add_style",                LUA_TFUNCTION, {luavgl_obj_add_style}               },
-    {"remove_style",             LUA_TFUNCTION, {luavgl_obj_remove_style}            },
-    {"remove_style_all",         LUA_TFUNCTION, {luavgl_obj_remove_style_all}        },
-    {"scroll_by",                LUA_TFUNCTION, {luavgl_obj_scroll_by}               },
-    {"scroll_by_bounded",        LUA_TFUNCTION, {luavgl_obj_scroll_by_bounded}       },
-    {"scroll_to_view",           LUA_TFUNCTION, {luavgl_obj_scroll_to_view}          },
+    {"parent",                   LUA_TFUNCTION,      {luavgl_obj_set_get_parent}          },
+    {"set_parent",               LUA_TFUNCTION,      {luavgl_obj_set_parent}              },
+    {"get_parent",               LUA_TFUNCTION,      {luavgl_obj_get_parent}              },
+    {"get_child",                LUA_TFUNCTION,      {luavgl_obj_get_child}               },
+    {"get_child_cnt",            LUA_TFUNCTION,      {luavgl_obj_get_child_cnt}           },
+    {"get_screen",               LUA_TFUNCTION,      {luavgl_obj_get_screen}              },
+    {"get_state",                LUA_TFUNCTION,      {luavgl_obj_get_state}               },
+    {"scroll_to",                LUA_TFUNCTION,      {luavgl_obj_scroll_to}               },
+    {"is_scrolling",             LUA_TFUNCTION,      {luavgl_obj_is_scrolling}            },
+    {"is_visible",               LUA_TFUNCTION,      {luavgl_obj_is_visible}              },
+    {"add_flag",                 LUA_TFUNCTION,      {luavgl_obj_add_flag}                },
+    {"clear_flag",               LUA_TFUNCTION,      {luavgl_obj_clear_flag}              },
+    {"add_state",                LUA_TFUNCTION,      {luavgl_obj_add_state}               },
+    {"clear_state",              LUA_TFUNCTION,      {luavgl_obj_clear_state}             },
+    {"add_style",                LUA_TFUNCTION,      {luavgl_obj_add_style}               },
+    {"remove_style",             LUA_TFUNCTION,      {luavgl_obj_remove_style}            },
+    {"remove_style_all",         LUA_TFUNCTION,      {luavgl_obj_remove_style_all}        },
+    {"scroll_by",                LUA_TFUNCTION,      {luavgl_obj_scroll_by}               },
+    {"scroll_by_bounded",        LUA_TFUNCTION,      {luavgl_obj_scroll_by_bounded}       },
+    {"scroll_to_view",           LUA_TFUNCTION,      {luavgl_obj_scroll_to_view}          },
     {"scroll_to_view_recursive",
-     LUA_TFUNCTION,                             {luavgl_obj_scroll_to_view_recursive}},
-    {"scroll_by_raw",            LUA_TFUNCTION, {luavgl_obj_scroll_by_raw}           },
-    {"scrollbar_invalidate",     LUA_TFUNCTION, {luavgl_obj_scrollbar_invalidate}    },
-    {"readjust_scroll",          LUA_TFUNCTION, {luavgl_obj_readjust_scroll}         },
-    {"is_editable",              LUA_TFUNCTION, {luavgl_obj_is_editable}             },
-    {"is_group_def",             LUA_TFUNCTION, {luavgl_obj_is_group_def}            },
-    {"is_layout_positioned",     LUA_TFUNCTION, {luavgl_obj_is_layout_positioned}    },
-    {"mark_layout_as_dirty",     LUA_TFUNCTION, {luavgl_obj_mark_layout_as_dirty}    },
-    {"center",                   LUA_TFUNCTION, {luavgl_obj_center}                  },
-    {"invalidate",               LUA_TFUNCTION, {luavgl_obj_invalidate}              },
-    {"set_flex_flow",            LUA_TFUNCTION, {luavgl_obj_set_flex_flow}           },
-    {"set_flex_align",           LUA_TFUNCTION, {luavgl_obj_set_flex_align}          },
-    {"set_flex_grow",            LUA_TFUNCTION, {luavgl_obj_set_flex_grow}           },
-    {"indev_search",             LUA_TFUNCTION, {luavgl_obj_indev_search}            },
-    {"get_coords",               LUA_TFUNCTION, {luavgl_obj_get_coords}              },
-    {"get_pos",                  LUA_TFUNCTION, {luavgl_obj_get_pos}                 },
+     LUA_TFUNCTION,                                  {luavgl_obj_scroll_to_view_recursive}},
+    {"scroll_by_raw",            LUA_TFUNCTION,      {luavgl_obj_scroll_by_raw}           },
+    {"scrollbar_invalidate",     LUA_TFUNCTION,      {luavgl_obj_scrollbar_invalidate}    },
+    {"readjust_scroll",          LUA_TFUNCTION,      {luavgl_obj_readjust_scroll}         },
+    {"is_editable",              LUA_TFUNCTION,      {luavgl_obj_is_editable}             },
+    {"is_group_def",             LUA_TFUNCTION,      {luavgl_obj_is_group_def}            },
+    {"is_layout_positioned",     LUA_TFUNCTION,      {luavgl_obj_is_layout_positioned}    },
+    {"mark_layout_as_dirty",     LUA_TFUNCTION,      {luavgl_obj_mark_layout_as_dirty}    },
+    {"center",                   LUA_TFUNCTION,      {luavgl_obj_center}                  },
+    {"invalidate",               LUA_TFUNCTION,      {luavgl_obj_invalidate}              },
+    {"set_flex_flow",            LUA_TFUNCTION,      {luavgl_obj_set_flex_flow}           },
+    {"set_flex_align",           LUA_TFUNCTION,      {luavgl_obj_set_flex_align}          },
+    {"set_flex_grow",            LUA_TFUNCTION,      {luavgl_obj_set_flex_grow}           },
+    {"indev_search",             LUA_TFUNCTION,      {luavgl_obj_indev_search}            },
+    {"get_coords",               LUA_TFUNCTION,      {luavgl_obj_get_coords}              },
+    {"get_pos",                  LUA_TFUNCTION,      {luavgl_obj_get_pos}                 },
 
-    {"onevent",                  LUA_TFUNCTION, {luavgl_obj_on_event}                },
-    {"onPressed",                LUA_TFUNCTION, {luavgl_obj_on_pressed}              },
-    {"onClicked",                LUA_TFUNCTION, {luavgl_obj_on_clicked}              },
-    {"onShortClicked",           LUA_TFUNCTION, {luavgl_obj_on_short_clicked}        },
-    {"anim",                     LUA_TFUNCTION, {luavgl_anim_create}                 },
-    {"Anim",                     LUA_TFUNCTION, {luavgl_anim_create}                 },
-    {"remove_all_anim",
-     LUA_TFUNCTION,                             {luavgl_obj_remove_anim_all}         }, /* remove all */
-    {0,                          0,             {0}                                  },
+    {"onevent",                  LUA_TFUNCTION,      {luavgl_obj_on_event}                },
+    {"onPressed",                LUA_TFUNCTION,      {luavgl_obj_on_pressed}              },
+    {"onClicked",                LUA_TFUNCTION,      {luavgl_obj_on_clicked}              },
+    {"onShortClicked",           LUA_TFUNCTION,      {luavgl_obj_on_short_clicked}        },
+    {"anim",                     LUA_TFUNCTION,      {luavgl_anim_create}                 },
+    {"Anim",                     LUA_TFUNCTION,      {luavgl_anim_create}                 },
+    {"remove_all_anim",          LUA_TFUNCTION,      {luavgl_obj_remove_anim_all}         },
+    {"__property",               LUA_TLIGHTUSERDATA, {.ptr = &property_table}             },
+    {0,                          0,                  {0}                                  },
 };
 
 static void luavgl_obj_init(lua_State *L)
@@ -784,19 +966,6 @@ static void luavgl_obj_init(lua_State *L)
   lua_pop(L, 1); /* remove obj metatable */
 }
 
-static const luavgl_value_setter_t obj_property_table[] = {
-    {"x",              0,                 {.setter = (setter_int_t)lv_obj_set_x}             },
-    {"y",              0,                 {.setter = (setter_int_t)lv_obj_set_y}             },
-    {"w",              0,                 {.setter = (setter_int_t)lv_obj_set_width}         },
-    {"h",              0,                 {.setter = (setter_int_t)lv_obj_set_height}        },
-    {"align",          SETTER_TYPE_STACK, {.setter_stack = _lv_obj_set_align}                },
-
-    {"scrollbar_mode", 0,                 {.setter = (setter_int_t)lv_obj_set_scrollbar_mode}},
-    {"scroll_dir",     0,                 {.setter = (setter_int_t)lv_obj_set_scroll_dir}    },
-    {"scroll_snap_x",  0,                 {.setter = (setter_int_t)lv_obj_set_scroll_snap_x} },
-    {"scroll_snap_y",  0,                 {.setter = (setter_int_t)lv_obj_set_scroll_snap_y} },
-};
-
 /**
  * Set object property.
  * Differ from set object style, this one is usually used to set widget
@@ -810,7 +979,8 @@ static const luavgl_value_setter_t obj_property_table[] = {
  */
 LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data)
 {
-  lv_obj_t *obj = data;
+  struct setprop_para *para = data;
+  lv_obj_t *obj = para->obj;
 
   /* Check for integer key with userdata as value */
   if (lua_type(L, -2) == LUA_TNUMBER && lua_type(L, -1) == LUA_TUSERDATA) {
@@ -819,13 +989,7 @@ LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data)
     return 0;
   }
 
-  int ret = luavgl_set_property(L, obj, obj_property_table);
-
-  if (ret == 0)
-    return 0;
-
-  /* fallback to set obj local style, with default state. */
-  return luavgl_obj_set_style_kv(L, obj, 0);
+  return obj_set_property_stack(L, obj, para->table);
 }
 
 LUALIB_API int luavgl_obj_create_helper(lua_State *L,
@@ -853,6 +1017,14 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
     return 1;
   }
 
+  int t = lua_getfield(L, -1, "__property"); /* obj on stack top */
+  if (t != LUA_TLIGHTUSERDATA) {
+    return luaL_error(L, "obj %p has no property table\n", obj);
+  }
+
+  const luavgl_table_t *properties = lua_touserdata(L, -1);
+  lua_pop(L, 1); /* Get rid of the property userdata from stack */
+
   lua_insert(L, -2); /* obj, prop */
 
   /* now call obj.set to setup property */
@@ -860,7 +1032,7 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
   if (!luavgl_is_callable(L, -1)) {
     /* set method not found, call basic obj set method. */
     lua_pop(L, 2); /* remove prop table, and set method */
-    luavgl_setup_obj(L, obj);
+    luavgl_setup_obj(L, obj, properties);
   } else {
     lua_insert(L, -3); /* set, obj, prop */
     lua_call(L, 2, 0); /* now stack is clean */
@@ -896,7 +1068,7 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj)
 
   if (luavgl_obj_getmetatable(L, obj->class_p) == LUA_TNIL) {
     lua_pop(L, 1);
-    LV_LOG_ERROR("cannot find metatable for class: %p", obj->class_p);
+    LV_LOG_WARN("cannot find metatable for class: %p, %s", obj->class_p, obj->class_p->name);
     /* use base obj metatable instead */
     luavgl_obj_getmetatable(L, &lv_obj_class);
   }
