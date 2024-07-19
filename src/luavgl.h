@@ -64,6 +64,17 @@ typedef struct luavgl_obj_s {
   lv_array_t events;
 } luavgl_obj_t;
 
+typedef struct luavgl_property_ops_s {
+  const char *name; /* property name */
+  /* property setter, key: -2, value -1*/
+  int (*ops)(lua_State *L, lv_obj_t *obj, bool set);
+} luavgl_property_ops_t;
+
+typedef struct luavgl_table_s {
+  uint32_t len;
+  const void *array;
+} luavgl_table_t;
+
 #define luavgl_obj_newmetatable(L, clz, name, l)                               \
   luavgl_obj_createmetatable(L, clz, name, l, sizeof(l) / sizeof((l)[0]) - 1);
 
@@ -231,6 +242,13 @@ LUALIB_API void luavgl_iterate(lua_State *L, int index,
 LUALIB_API int luavgl_set_property_array(lua_State *L, void *obj,
                                          const luavgl_value_setter_t table[],
                                          uint32_t len);
+
+/**
+ * @brief Set object property with key,value in stack
+ * @param L
+ * @param idx object index
+ */
+LUALIB_API int luavgl_obj_set_property(lua_State *L);
 
 /**
  * @brief Dummy property set function
