@@ -41,113 +41,113 @@ static const struct style_map_s {
   lv_style_prop_t prop;
   style_type_t type;
 } g_style_map[] = {
-    {"width",              LV_STYLE_WIDTH,              STYLE_TYPE_INT                       },
-    {"min_width",          LV_STYLE_MIN_WIDTH,          STYLE_TYPE_INT                       },
-    {"max_width",          LV_STYLE_MAX_WIDTH,          STYLE_TYPE_INT                       },
-    {"height",             LV_STYLE_HEIGHT,             STYLE_TYPE_INT                       },
-    {"min_height",         LV_STYLE_MIN_HEIGHT,         STYLE_TYPE_INT                       },
-    {"max_height",         LV_STYLE_MAX_HEIGHT,         STYLE_TYPE_INT                       },
-    {"x",                  LV_STYLE_X,                  STYLE_TYPE_INT                       },
-    {"y",                  LV_STYLE_Y,                  STYLE_TYPE_INT                       },
-    {"align",              LV_STYLE_ALIGN,              STYLE_TYPE_INT                       },
-    {"transform_width",    LV_STYLE_TRANSFORM_WIDTH,    STYLE_TYPE_INT                       },
-    {"transform_height",   LV_STYLE_TRANSFORM_HEIGHT,   STYLE_TYPE_INT                       },
-    {"translate_x",        LV_STYLE_TRANSLATE_X,        STYLE_TYPE_INT                       },
-    {"translate_y",        LV_STYLE_TRANSLATE_Y,        STYLE_TYPE_INT                       },
-    {"transform_scale_x",  LV_STYLE_TRANSFORM_SCALE_X,  STYLE_TYPE_INT                       },
-    {"transform_scale_y",  LV_STYLE_TRANSFORM_SCALE_X,  STYLE_TYPE_INT                       },
-    {"transform_rotation", LV_STYLE_TRANSFORM_ROTATION, STYLE_TYPE_INT                       },
+    {"width",                LV_STYLE_WIDTH,                STYLE_TYPE_INT                       },
+    {"min_width",            LV_STYLE_MIN_WIDTH,            STYLE_TYPE_INT                       },
+    {"max_width",            LV_STYLE_MAX_WIDTH,            STYLE_TYPE_INT                       },
+    {"height",               LV_STYLE_HEIGHT,               STYLE_TYPE_INT                       },
+    {"min_height",           LV_STYLE_MIN_HEIGHT,           STYLE_TYPE_INT                       },
+    {"max_height",           LV_STYLE_MAX_HEIGHT,           STYLE_TYPE_INT                       },
+    {"x",                    LV_STYLE_X,                    STYLE_TYPE_INT                       },
+    {"y",                    LV_STYLE_Y,                    STYLE_TYPE_INT                       },
+    {"align",                LV_STYLE_ALIGN,                STYLE_TYPE_INT                       },
+    {"transform_width",      LV_STYLE_TRANSFORM_WIDTH,      STYLE_TYPE_INT                       },
+    {"transform_height",     LV_STYLE_TRANSFORM_HEIGHT,     STYLE_TYPE_INT                       },
+    {"translate_x",          LV_STYLE_TRANSLATE_X,          STYLE_TYPE_INT                       },
+    {"translate_y",          LV_STYLE_TRANSLATE_Y,          STYLE_TYPE_INT                       },
+    {"transform_scale_x",    LV_STYLE_TRANSFORM_SCALE_X,    STYLE_TYPE_INT                       },
+    {"transform_scale_y",    LV_STYLE_TRANSFORM_SCALE_X,    STYLE_TYPE_INT                       },
+    {"transform_rotation",   LV_STYLE_TRANSFORM_ROTATION,   STYLE_TYPE_INT                       },
 #if LV_VERSION_CHECK(8, 3, 0)
-    {"transform_pivot_x",  LV_STYLE_TRANSFORM_PIVOT_X,  STYLE_TYPE_INT                       },
-    {"transform_pivot_y",  LV_STYLE_TRANSFORM_PIVOT_Y,  STYLE_TYPE_INT                       },
+    {"transform_pivot_x",    LV_STYLE_TRANSFORM_PIVOT_X,    STYLE_TYPE_INT                       },
+    {"transform_pivot_y",    LV_STYLE_TRANSFORM_PIVOT_Y,    STYLE_TYPE_INT                       },
 #endif
-    {"pad_top",            LV_STYLE_PAD_TOP,            STYLE_TYPE_INT                       },
-    {"pad_bottom",         LV_STYLE_PAD_BOTTOM,         STYLE_TYPE_INT                       },
-    {"pad_left",           LV_STYLE_PAD_LEFT,           STYLE_TYPE_INT                       },
-    {"pad_right",          LV_STYLE_PAD_RIGHT,          STYLE_TYPE_INT                       },
-    {"pad_row",            LV_STYLE_PAD_ROW,            STYLE_TYPE_INT                       },
-    {"pad_column",         LV_STYLE_PAD_COLUMN,         STYLE_TYPE_INT                       },
-    {"pad_gap",            LV_STYLE_PAD_GAP,            STYLE_TYPE_INT                       },
-    {"bg_color",           LV_STYLE_BG_COLOR,           STYLE_TYPE_COLOR                     },
-    {"bg_opa",             LV_STYLE_BG_OPA,             STYLE_TYPE_INT                       },
-    {"bg_grad_color",      LV_STYLE_BG_GRAD_COLOR,      STYLE_TYPE_COLOR                     },
-    {"bg_grad_dir",        LV_STYLE_BG_GRAD_DIR,        STYLE_TYPE_INT                       },
-    {"bg_main_stop",       LV_STYLE_BG_MAIN_STOP,       STYLE_TYPE_INT                       },
-    {"bg_grad_stop",       LV_STYLE_BG_GRAD_STOP,       STYLE_TYPE_INT                       },
+    {"pad_top",              LV_STYLE_PAD_TOP,              STYLE_TYPE_INT                       },
+    {"pad_bottom",           LV_STYLE_PAD_BOTTOM,           STYLE_TYPE_INT                       },
+    {"pad_left",             LV_STYLE_PAD_LEFT,             STYLE_TYPE_INT                       },
+    {"pad_right",            LV_STYLE_PAD_RIGHT,            STYLE_TYPE_INT                       },
+    {"pad_row",              LV_STYLE_PAD_ROW,              STYLE_TYPE_INT                       },
+    {"pad_column",           LV_STYLE_PAD_COLUMN,           STYLE_TYPE_INT                       },
+    {"pad_gap",              LV_STYLE_PAD_GAP,              STYLE_TYPE_INT                       },
+    {"bg_color",             LV_STYLE_BG_COLOR,             STYLE_TYPE_COLOR                     },
+    {"bg_opa",               LV_STYLE_BG_OPA,               STYLE_TYPE_INT                       },
+    {"bg_grad_color",        LV_STYLE_BG_GRAD_COLOR,        STYLE_TYPE_COLOR                     },
+    {"bg_grad_dir",          LV_STYLE_BG_GRAD_DIR,          STYLE_TYPE_INT                       },
+    {"bg_main_stop",         LV_STYLE_BG_MAIN_STOP,         STYLE_TYPE_INT                       },
+    {"bg_grad_stop",         LV_STYLE_BG_GRAD_STOP,         STYLE_TYPE_INT                       },
     {"bg_image_src",         LV_STYLE_BG_IMAGE_SRC,         STYLE_TYPE_IMGSRC                    },
     {"bg_image_opa",         LV_STYLE_BG_IMAGE_OPA,         STYLE_TYPE_INT                       },
     {"bg_image_recolor",     LV_STYLE_BG_IMAGE_RECOLOR,     STYLE_TYPE_COLOR                     },
     {"bg_image_recolor_opa", LV_STYLE_BG_IMAGE_RECOLOR_OPA, STYLE_TYPE_INT                       },
     {"bg_image_tiled",       LV_STYLE_BG_IMAGE_TILED,       STYLE_TYPE_INT                       },
-    {"border_color",       LV_STYLE_BORDER_COLOR,       STYLE_TYPE_COLOR                     },
-    {"border_opa",         LV_STYLE_BORDER_OPA,         STYLE_TYPE_INT                       },
-    {"border_width",       LV_STYLE_BORDER_WIDTH,       STYLE_TYPE_INT                       },
-    {"border_side",        LV_STYLE_BORDER_SIDE,        STYLE_TYPE_INT                       },
-    {"border_post",        LV_STYLE_BORDER_POST,        STYLE_TYPE_INT                       },
-    {"outline_width",      LV_STYLE_OUTLINE_WIDTH,      STYLE_TYPE_INT                       },
-    {"outline_color",      LV_STYLE_OUTLINE_COLOR,      STYLE_TYPE_COLOR                     },
-    {"outline_opa",        LV_STYLE_OUTLINE_OPA,        STYLE_TYPE_INT                       },
-    {"outline_pad",        LV_STYLE_OUTLINE_PAD,        STYLE_TYPE_INT                       },
-    {"shadow_width",       LV_STYLE_SHADOW_WIDTH,       STYLE_TYPE_INT                       },
-    {"shadow_offset_x",    LV_STYLE_SHADOW_OFFSET_X,    STYLE_TYPE_INT                       },
-    {"shadow_offset_y",    LV_STYLE_SHADOW_OFFSET_Y,    STYLE_TYPE_INT                       },
-    {"shadow_spread",      LV_STYLE_SHADOW_SPREAD,      STYLE_TYPE_INT                       },
-    {"shadow_color",       LV_STYLE_SHADOW_COLOR,       STYLE_TYPE_COLOR                     },
-    {"shadow_opa",         LV_STYLE_SHADOW_OPA,         STYLE_TYPE_INT                       },
-    {"image_opa",          LV_STYLE_IMAGE_OPA,          STYLE_TYPE_INT                       },
-    {"image_recolor",      LV_STYLE_IMAGE_RECOLOR,      STYLE_TYPE_COLOR                     },
-    {"image_recolor_opa",  LV_STYLE_IMAGE_RECOLOR_OPA,  STYLE_TYPE_INT                       },
-    {"line_width",         LV_STYLE_LINE_WIDTH,         STYLE_TYPE_INT                       },
-    {"line_dash_width",    LV_STYLE_LINE_DASH_WIDTH,    STYLE_TYPE_INT                       },
-    {"line_dash_gap",      LV_STYLE_LINE_DASH_GAP,      STYLE_TYPE_INT                       },
-    {"line_rounded",       LV_STYLE_LINE_ROUNDED,       STYLE_TYPE_INT                       },
-    {"line_color",         LV_STYLE_LINE_COLOR,         STYLE_TYPE_INT                       },
-    {"line_opa",           LV_STYLE_LINE_OPA,           STYLE_TYPE_INT                       },
-    {"arc_width",          LV_STYLE_ARC_WIDTH,          STYLE_TYPE_INT                       },
-    {"arc_image_src",      LV_STYLE_ARC_IMAGE_SRC,      STYLE_TYPE_IMGSRC                    },
-    {"arc_rounded",        LV_STYLE_ARC_ROUNDED,        STYLE_TYPE_INT                       },
-    {"arc_color",          LV_STYLE_ARC_COLOR,          STYLE_TYPE_COLOR                     },
-    {"arc_opa",            LV_STYLE_ARC_OPA,            STYLE_TYPE_INT                       },
-    {"text_color",         LV_STYLE_TEXT_COLOR,         STYLE_TYPE_COLOR                     },
-    {"text_opa",           LV_STYLE_TEXT_OPA,           STYLE_TYPE_INT                       },
-    {"text_font",          LV_STYLE_TEXT_FONT,          STYLE_TYPE_POINTER                   }, /* light-userdata */
-    {"text_letter_space",  LV_STYLE_TEXT_LETTER_SPACE,  STYLE_TYPE_INT                       },
-    {"text_line_space",    LV_STYLE_TEXT_LINE_SPACE,    STYLE_TYPE_INT                       },
-    {"text_decor",         LV_STYLE_TEXT_DECOR,         STYLE_TYPE_INT                       },
-    {"text_align",         LV_STYLE_TEXT_ALIGN,         STYLE_TYPE_INT                       },
-    {"radius",             LV_STYLE_RADIUS,             STYLE_TYPE_INT                       },
-    {"clip_corner",        LV_STYLE_CLIP_CORNER,        STYLE_TYPE_INT                       },
-    {"opa",                LV_STYLE_OPA,                STYLE_TYPE_INT                       },
-    {"color_filter_opa",   LV_STYLE_COLOR_FILTER_OPA,   STYLE_TYPE_INT                       },
-    {"anim_time",          LV_STYLE_ANIM_TIME,          STYLE_TYPE_INT                       },
-    {"blend_mode",         LV_STYLE_BLEND_MODE,         STYLE_TYPE_INT                       },
-    {"layout",             LV_STYLE_LAYOUT,             STYLE_TYPE_INT                       },
-    {"base_dir",           LV_STYLE_BASE_DIR,           STYLE_TYPE_INT                       },
+    {"border_color",         LV_STYLE_BORDER_COLOR,         STYLE_TYPE_COLOR                     },
+    {"border_opa",           LV_STYLE_BORDER_OPA,           STYLE_TYPE_INT                       },
+    {"border_width",         LV_STYLE_BORDER_WIDTH,         STYLE_TYPE_INT                       },
+    {"border_side",          LV_STYLE_BORDER_SIDE,          STYLE_TYPE_INT                       },
+    {"border_post",          LV_STYLE_BORDER_POST,          STYLE_TYPE_INT                       },
+    {"outline_width",        LV_STYLE_OUTLINE_WIDTH,        STYLE_TYPE_INT                       },
+    {"outline_color",        LV_STYLE_OUTLINE_COLOR,        STYLE_TYPE_COLOR                     },
+    {"outline_opa",          LV_STYLE_OUTLINE_OPA,          STYLE_TYPE_INT                       },
+    {"outline_pad",          LV_STYLE_OUTLINE_PAD,          STYLE_TYPE_INT                       },
+    {"shadow_width",         LV_STYLE_SHADOW_WIDTH,         STYLE_TYPE_INT                       },
+    {"shadow_offset_x",      LV_STYLE_SHADOW_OFFSET_X,      STYLE_TYPE_INT                       },
+    {"shadow_offset_y",      LV_STYLE_SHADOW_OFFSET_Y,      STYLE_TYPE_INT                       },
+    {"shadow_spread",        LV_STYLE_SHADOW_SPREAD,        STYLE_TYPE_INT                       },
+    {"shadow_color",         LV_STYLE_SHADOW_COLOR,         STYLE_TYPE_COLOR                     },
+    {"shadow_opa",           LV_STYLE_SHADOW_OPA,           STYLE_TYPE_INT                       },
+    {"image_opa",            LV_STYLE_IMAGE_OPA,            STYLE_TYPE_INT                       },
+    {"image_recolor",        LV_STYLE_IMAGE_RECOLOR,        STYLE_TYPE_COLOR                     },
+    {"image_recolor_opa",    LV_STYLE_IMAGE_RECOLOR_OPA,    STYLE_TYPE_INT                       },
+    {"line_width",           LV_STYLE_LINE_WIDTH,           STYLE_TYPE_INT                       },
+    {"line_dash_width",      LV_STYLE_LINE_DASH_WIDTH,      STYLE_TYPE_INT                       },
+    {"line_dash_gap",        LV_STYLE_LINE_DASH_GAP,        STYLE_TYPE_INT                       },
+    {"line_rounded",         LV_STYLE_LINE_ROUNDED,         STYLE_TYPE_INT                       },
+    {"line_color",           LV_STYLE_LINE_COLOR,           STYLE_TYPE_INT                       },
+    {"line_opa",             LV_STYLE_LINE_OPA,             STYLE_TYPE_INT                       },
+    {"arc_width",            LV_STYLE_ARC_WIDTH,            STYLE_TYPE_INT                       },
+    {"arc_image_src",        LV_STYLE_ARC_IMAGE_SRC,        STYLE_TYPE_IMGSRC                    },
+    {"arc_rounded",          LV_STYLE_ARC_ROUNDED,          STYLE_TYPE_INT                       },
+    {"arc_color",            LV_STYLE_ARC_COLOR,            STYLE_TYPE_COLOR                     },
+    {"arc_opa",              LV_STYLE_ARC_OPA,              STYLE_TYPE_INT                       },
+    {"text_color",           LV_STYLE_TEXT_COLOR,           STYLE_TYPE_COLOR                     },
+    {"text_opa",             LV_STYLE_TEXT_OPA,             STYLE_TYPE_INT                       },
+    {"text_font",            LV_STYLE_TEXT_FONT,            STYLE_TYPE_POINTER                   }, /* light-userdata */
+    {"text_letter_space",    LV_STYLE_TEXT_LETTER_SPACE,    STYLE_TYPE_INT                       },
+    {"text_line_space",      LV_STYLE_TEXT_LINE_SPACE,      STYLE_TYPE_INT                       },
+    {"text_decor",           LV_STYLE_TEXT_DECOR,           STYLE_TYPE_INT                       },
+    {"text_align",           LV_STYLE_TEXT_ALIGN,           STYLE_TYPE_INT                       },
+    {"radius",               LV_STYLE_RADIUS,               STYLE_TYPE_INT                       },
+    {"clip_corner",          LV_STYLE_CLIP_CORNER,          STYLE_TYPE_INT                       },
+    {"opa",                  LV_STYLE_OPA,                  STYLE_TYPE_INT                       },
+    {"color_filter_opa",     LV_STYLE_COLOR_FILTER_OPA,     STYLE_TYPE_INT                       },
+    {"anim_time",            LV_STYLE_ANIM_TIME,            STYLE_TYPE_INT                       },
+    {"blend_mode",           LV_STYLE_BLEND_MODE,           STYLE_TYPE_INT                       },
+    {"layout",               LV_STYLE_LAYOUT,               STYLE_TYPE_INT                       },
+    {"base_dir",             LV_STYLE_BASE_DIR,             STYLE_TYPE_INT                       },
 
- /* need to build pointer from table parameter */
-    {"bg_grad",            LV_STYLE_BG_GRAD,            STYLE_TYPE_SPECIAL                   }, /* pointer from table */
-    {"color_filter_dsc",   LV_STYLE_COLOR_FILTER_DSC,   STYLE_TYPE_SPECIAL                   }, /**/
+    /* need to build pointer from table parameter */
+    {"bg_grad",              LV_STYLE_BG_GRAD,              STYLE_TYPE_SPECIAL                   }, /* pointer from table */
+    {"color_filter_dsc",     LV_STYLE_COLOR_FILTER_DSC,     STYLE_TYPE_SPECIAL                   }, /**/
 #if LV_VERSION_CHECK(8, 3, 0)
-    {"anim",               LV_STYLE_ANIM,               STYLE_TYPE_SPECIAL                   }, /* anim para */
+    {"anim",                 LV_STYLE_ANIM,                 STYLE_TYPE_SPECIAL                   }, /* anim para */
 #endif
-    {"transition",         LV_STYLE_TRANSITION,         STYLE_TYPE_SPECIAL                   }, /* transition */
+    {"transition",           LV_STYLE_TRANSITION,           STYLE_TYPE_SPECIAL                   }, /* transition */
 
-  /* styles combined */
-    {"size",               LV_STYLE_SIZE,               STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
-    {"pad_all",            LV_STYLE_PAD_ALL,            STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
-    {"pad_ver",            LV_STYLE_PAD_VER,            STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
-    {"pad_hor",            LV_STYLE_PAD_HOR,            STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
+    /* styles combined */
+    {"size",                 LV_STYLE_SIZE,                 STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
+    {"pad_all",              LV_STYLE_PAD_ALL,              STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
+    {"pad_ver",              LV_STYLE_PAD_VER,              STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
+    {"pad_hor",              LV_STYLE_PAD_HOR,              STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
 
- /* styles for layout */
-    {"flex",               _LV_STYLE_FLEX,              STYLE_TYPE_SPECIAL | STYLE_TYPE_TABLE},
-    {"flex_flow",          _LV_STYLE_FLEX_FLOW,         STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
-    {"flex_main_place",    _LV_STYLE_FLEX_MAIN_PLACE,
-     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT                                                     },
-    {"flex_cross_place",   _LV_STYLE_FLEX_CROSS_PLACE,
-     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT                                                     },
-    {"flex_track_place",   _LV_STYLE_FLEX_TRACK_PLACE,
-     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT                                                     },
-    {"flex_grow",          _LV_STYLE_FLEX_GROW,         STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
+    /* styles for layout */
+    {"flex",                 _LV_STYLE_FLEX,                STYLE_TYPE_SPECIAL | STYLE_TYPE_TABLE},
+    {"flex_flow",            _LV_STYLE_FLEX_FLOW,           STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
+    {"flex_main_place",      _LV_STYLE_FLEX_MAIN_PLACE,
+     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT                                                         },
+    {"flex_cross_place",     _LV_STYLE_FLEX_CROSS_PLACE,
+     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT                                                         },
+    {"flex_track_place",     _LV_STYLE_FLEX_TRACK_PLACE,
+     STYLE_TYPE_SPECIAL | STYLE_TYPE_INT                                                         },
+    {"flex_grow",            _LV_STYLE_FLEX_GROW,           STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
 };
 
 #define STYLE_MAP_LEN (sizeof(g_style_map) / sizeof(g_style_map[0]))
@@ -219,24 +219,25 @@ static lv_flex_align_t luavgl_to_flex_align(lua_State *L, int idx)
   return LV_FLEX_ALIGN_START;
 }
 
-static char *luavgl_strstr(const char *haystack, const char *needle) {
-    while (*haystack != '\0') {
-        const char *h = haystack;
-        const char *n = needle;
+static char *luavgl_strstr(const char *haystack, const char *needle)
+{
+  while (*haystack != '\0') {
+    const char *h = haystack;
+    const char *n = needle;
 
-        while (*n != '\0' && *h == *n) {
-            h++;
-            n++;
-        }
-
-        if (*n == '\0') {
-            return (char *)haystack;
-        }
-
-        haystack++;
+    while (*n != '\0' && *h == *n) {
+      h++;
+      n++;
     }
 
-    return NULL;
+    if (*n == '\0') {
+      return (char *)haystack;
+    }
+
+    haystack++;
+  }
+
+  return NULL;
 }
 
 static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
