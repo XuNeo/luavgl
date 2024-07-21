@@ -18,10 +18,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stddef.h>
-#include <string.h>
-#include <stdlib.h>
 #include <lua.h>
+#include <lvgl.h>
 #include "rotable.h"
 
 
@@ -52,7 +50,7 @@ static char const unique_address[ 1 ] = { 0 };
 
 
 static int reg_compare(void const* a, void const* b) {
-  return strcmp( (char const*)a, ((rotable_Reg const*)b)->name );
+  return lv_strcmp( (char const*)a, ((rotable_Reg const*)b)->name );
 }
 
 
@@ -89,9 +87,9 @@ static rotable_Reg const* find_key( rotable_Reg const* p, int n,
                                     char const* s ) {
   if( s ) {
     if( n >= ROTABLE_BINSEARCH_MIN ) { /* binary search */
-      return (rotable_Reg const*)bsearch( s, p, n, sizeof( *p ), reg_compare );
+      return (rotable_Reg const*)lv_utils_bsearch( s, p, n, sizeof( *p ), reg_compare );
     } else { /* use linear scan */
-      for( ; p->func; ++p ) {
+      for( ; p->name; ++p ) {
         if( 0 == reg_compare( s, p ) )
           return p;
       }
@@ -100,6 +98,25 @@ static rotable_Reg const* find_key( rotable_Reg const* p, int n,
   return 0;
 }
 
+static void rotable_pushvalue( lua_State* L, rotable_Reg const* p ) {
+  switch( p->type ) {
+    case LUA_TFUNCTION:
+      lua_pushcfunction( L, p->func );
+      break;
+    case LUA_TSTRING:
+      lua_pushstring( L, p->str );
+      break;
+    case LUA_TLIGHTUSERDATA:
+      lua_pushlightuserdata( L, (void*)p->ptr );
+      break;
+    case LUA_TNUMBER:
+      lua_pushnumber( L, p->number );
+      break;
+    default:
+      lua_pushinteger( L, p->integer );
+      break;
+  }
+}
 
 static int rotable_func_index( lua_State* L ) {
   char const* s = lua_tostring( L, 2 );
@@ -107,7 +124,7 @@ static int rotable_func_index( lua_State* L ) {
   int n = lua_tointeger( L, lua_upvalueindex( 2 ) );
   p = find_key( p, n, s );
   if( p )
-    lua_pushcfunction( L, p->func );
+    rotable_pushvalue( L, p );
   else
     lua_pushnil( L );
   return 1;
@@ -126,7 +143,7 @@ static int rotable_udata_index( lua_State* L ) {
 #endif
   p = find_key( p, t->n, s );
   if( p )
-    lua_pushcfunction( L, p->func );
+    rotable_pushvalue( L, p );
   else
     lua_pushnil( L );
   return 1;
@@ -152,13 +169,13 @@ static int rotable_iter( lua_State* L ) {
 #endif
   if( s ) {
     if( t->n >= ROTABLE_BINSEARCH_MIN ) { /* binary search */
-      q = (rotable_Reg const*)bsearch( s, p, t->n, sizeof( *p ), reg_compare );
+      q = (rotable_Reg const*)lv_utils_bsearch( s, p, t->n, sizeof( *p ), reg_compare );
       if( q )
         ++q;
       else
         q = p + t->n;
     } else { /* use linear scan */
-      for( q = p; q->func; ++q ) {
+      for( q = p; q->name; ++q ) {
         if( 0 == reg_compare( s, q ) ) {
           ++q;
           break;
@@ -167,12 +184,10 @@ static int rotable_iter( lua_State* L ) {
     }
   } else
     q = p;
-  if( q->func ) {
-    lua_pushstring( L, q->name );
-    lua_pushcfunction( L, q->func );
-    return 2;
-  }
-  return 0;
+
+  lua_pushstring( L, q->name );
+  rotable_pushvalue( L, q );
+  return 2;
 }
 
 
@@ -214,10 +229,10 @@ ROTABLE_EXPORT void rotable_newlib( lua_State* L, void const* v ) {
   lua_setuservalue( L, -2 );
 #endif
   t->n = 0;
-  if( reg->func ) {
+  if( reg->name ) {
     int i = 1;
-    for( ; reg[ i ].func; ++i ) {
-      if( strcmp( reg[ i-1 ].name, reg[ i ].name ) >= 0 )
+    for( ; reg[ i ].name; ++i ) {
+      if( lv_strcmp( reg[ i-1 ].name, reg[ i ].name ) >= 0 )
         return;
     }
     t->n = i;
@@ -230,7 +245,7 @@ ROTABLE_EXPORT void rotable_newidx( lua_State* L, void const* v ) {
   int i = 0;
   lua_pushlightuserdata( L, (void*)v);
   for( ; reg[ i ].func; ++i ) {
-    if( strcmp( reg[ i-1 ].name, reg[ i ].name ) >= 0 ) {
+    if( lv_strcmp( reg[ i-1 ].name, reg[ i ].name ) >= 0 ) {
       i = 0;
       break;
     }

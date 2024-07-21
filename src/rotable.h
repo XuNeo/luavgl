@@ -16,6 +16,10 @@
  * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Modified:
+ * - Extend the table to any kind of data type.
+ * - Replace stdlib with lvgl's version
  */
 
 #ifndef ROTABLE_H_
@@ -28,7 +32,14 @@
  * available in your build! */
 typedef struct rotable_Reg {
   char const* name;
-  lua_CFunction func;
+  int type;
+  union {
+    lua_CFunction func;     /* type: LUA_TFUNCTION */
+    const char *str;        /* type: LUA_TSTRING */
+    const void *ptr;        /* type: LUA_TLIGHTUSERDATA */
+    lua_Number number;      /* type: LUA_TNUMBER */
+    lua_Integer integer;    /* Otherwise */
+  };
 } rotable_Reg;
 
 #ifndef ROTABLE_EXPORT
