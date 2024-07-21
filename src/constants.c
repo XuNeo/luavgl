@@ -1,441 +1,597 @@
-#include "private.h"
 
-/* clang-format off */
-static void luavgl_event_code_init(lua_State* L)
-{
-  lua_newtable(L);
+#include <lvgl.h>
 
-  lua_pushstring(L, "ALL"); lua_pushinteger(L, LV_EVENT_ALL); lua_settable(L, -3);
-  lua_pushstring(L, "PRESSED"); lua_pushinteger(L, LV_EVENT_PRESSED); lua_settable(L, -3);
-  lua_pushstring(L, "PRESSING"); lua_pushinteger(L, LV_EVENT_PRESSING); lua_settable(L, -3);
-  lua_pushstring(L, "PRESS_LOST"); lua_pushinteger(L, LV_EVENT_PRESS_LOST); lua_settable(L, -3);
-  lua_pushstring(L, "SHORT_CLICKED"); lua_pushinteger(L, LV_EVENT_SHORT_CLICKED); lua_settable(L, -3);
-  lua_pushstring(L, "LONG_PRESSED"); lua_pushinteger(L, LV_EVENT_LONG_PRESSED); lua_settable(L, -3);
-  lua_pushstring(L, "LONG_PRESSED_REPEAT"); lua_pushinteger(L, LV_EVENT_LONG_PRESSED_REPEAT); lua_settable(L, -3);
-  lua_pushstring(L, "CLICKED"); lua_pushinteger(L, LV_EVENT_CLICKED); lua_settable(L, -3);
-  lua_pushstring(L, "RELEASED"); lua_pushinteger(L, LV_EVENT_RELEASED); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_BEGIN"); lua_pushinteger(L, LV_EVENT_SCROLL_BEGIN); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_END"); lua_pushinteger(L, LV_EVENT_SCROLL_END); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL"); lua_pushinteger(L, LV_EVENT_SCROLL); lua_settable(L, -3);
-  lua_pushstring(L, "GESTURE"); lua_pushinteger(L, LV_EVENT_GESTURE); lua_settable(L, -3);
-  lua_pushstring(L, "KEY"); lua_pushinteger(L, LV_EVENT_KEY); lua_settable(L, -3);
-  lua_pushstring(L, "FOCUSED"); lua_pushinteger(L, LV_EVENT_FOCUSED); lua_settable(L, -3);
-  lua_pushstring(L, "DEFOCUSED"); lua_pushinteger(L, LV_EVENT_DEFOCUSED); lua_settable(L, -3);
-  lua_pushstring(L, "LEAVE"); lua_pushinteger(L, LV_EVENT_LEAVE); lua_settable(L, -3);
-  lua_pushstring(L, "HIT_TEST"); lua_pushinteger(L, LV_EVENT_HIT_TEST); lua_settable(L, -3);
-  lua_pushstring(L, "COVER_CHECK"); lua_pushinteger(L, LV_EVENT_COVER_CHECK); lua_settable(L, -3);
-  lua_pushstring(L, "REFR_EXT_DRAW_SIZE"); lua_pushinteger(L, LV_EVENT_REFR_EXT_DRAW_SIZE); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_MAIN_BEGIN"); lua_pushinteger(L, LV_EVENT_DRAW_MAIN_BEGIN); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_MAIN"); lua_pushinteger(L, LV_EVENT_DRAW_MAIN); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_MAIN_END"); lua_pushinteger(L, LV_EVENT_DRAW_MAIN_END); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_POST_BEGIN"); lua_pushinteger(L, LV_EVENT_DRAW_POST_BEGIN); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_POST"); lua_pushinteger(L, LV_EVENT_DRAW_POST); lua_settable(L, -3);
-  lua_pushstring(L, "DRAW_POST_END"); lua_pushinteger(L, LV_EVENT_DRAW_POST_END); lua_settable(L, -3);
-  lua_pushstring(L, "VALUE_CHANGED"); lua_pushinteger(L, LV_EVENT_VALUE_CHANGED); lua_settable(L, -3);
-  lua_pushstring(L, "INSERT"); lua_pushinteger(L, LV_EVENT_INSERT); lua_settable(L, -3);
-  lua_pushstring(L, "REFRESH"); lua_pushinteger(L, LV_EVENT_REFRESH); lua_settable(L, -3);
-  lua_pushstring(L, "READY"); lua_pushinteger(L, LV_EVENT_READY); lua_settable(L, -3);
-  lua_pushstring(L, "CANCEL"); lua_pushinteger(L, LV_EVENT_CANCEL); lua_settable(L, -3);
-  lua_pushstring(L, "DELETE"); lua_pushinteger(L, LV_EVENT_DELETE); lua_settable(L, -3);
-  lua_pushstring(L, "CHILD_CHANGED"); lua_pushinteger(L, LV_EVENT_CHILD_CHANGED); lua_settable(L, -3);
-  lua_pushstring(L, "CHILD_CREATED"); lua_pushinteger(L, LV_EVENT_CHILD_CREATED); lua_settable(L, -3);
-  lua_pushstring(L, "CHILD_DELETED"); lua_pushinteger(L, LV_EVENT_CHILD_DELETED); lua_settable(L, -3);
-  lua_pushstring(L, "SCREEN_UNLOAD_START"); lua_pushinteger(L, LV_EVENT_SCREEN_UNLOAD_START); lua_settable(L, -3);
-  lua_pushstring(L, "SCREEN_LOAD_START"); lua_pushinteger(L, LV_EVENT_SCREEN_LOAD_START); lua_settable(L, -3);
-  lua_pushstring(L, "SCREEN_LOADED"); lua_pushinteger(L, LV_EVENT_SCREEN_LOADED); lua_settable(L, -3);
-  lua_pushstring(L, "SCREEN_UNLOADED"); lua_pushinteger(L, LV_EVENT_SCREEN_UNLOADED); lua_settable(L, -3);
-  lua_pushstring(L, "SIZE_CHANGED"); lua_pushinteger(L, LV_EVENT_SIZE_CHANGED); lua_settable(L, -3);
-  lua_pushstring(L, "STYLE_CHANGED"); lua_pushinteger(L, LV_EVENT_STYLE_CHANGED); lua_settable(L, -3);
-  lua_pushstring(L, "LAYOUT_CHANGED"); lua_pushinteger(L, LV_EVENT_LAYOUT_CHANGED); lua_settable(L, -3);
-  lua_pushstring(L, "GET_SELF_SIZE"); lua_pushinteger(L, LV_EVENT_GET_SELF_SIZE); lua_settable(L, -3);
-}
+#include "rotable.h"
 
-static void luavgl_obj_flag_init(lua_State* L)
-{
-  lua_newtable(L);
+#define rotable_setfiled(L, idx, field, reg)                                   \
+  do {                                                                         \
+    rotable_newlib(L, reg);                                                    \
+    lua_setfield(L, idx, field);                                               \
+  } while (0)
 
-  lua_pushstring(L, "PRESSED"); lua_pushinteger(L, LV_EVENT_PRESSED); lua_settable(L, -3);
-  lua_pushstring(L, "HIDDEN"); lua_pushinteger(L, LV_OBJ_FLAG_HIDDEN); lua_settable(L, -3);
-  lua_pushstring(L, "CLICKABLE"); lua_pushinteger(L, LV_OBJ_FLAG_CLICKABLE); lua_settable(L, -3);
-  lua_pushstring(L, "CLICK_FOCUSABLE"); lua_pushinteger(L, LV_OBJ_FLAG_CLICK_FOCUSABLE); lua_settable(L, -3);
-  lua_pushstring(L, "CHECKABLE"); lua_pushinteger(L, LV_OBJ_FLAG_CHECKABLE); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLLABLE"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLLABLE); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_ELASTIC"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLL_ELASTIC); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_MOMENTUM"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLL_MOMENTUM); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_ONE"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLL_ONE); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_CHAIN_HOR"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLL_CHAIN_HOR); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_CHAIN_VER"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLL_CHAIN_VER); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_CHAIN"); lua_pushinteger( L, LV_OBJ_FLAG_SCROLL_CHAIN_HOR | LV_OBJ_FLAG_SCROLL_CHAIN_VER); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_ON_FOCUS"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLL_ON_FOCUS); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLL_WITH_ARROW"); lua_pushinteger(L, LV_OBJ_FLAG_SCROLL_WITH_ARROW); lua_settable(L, -3);
-  lua_pushstring(L, "SNAPPABLE"); lua_pushinteger(L, LV_OBJ_FLAG_SNAPPABLE); lua_settable(L, -3);
-  lua_pushstring(L, "PRESS_LOCK"); lua_pushinteger(L, LV_OBJ_FLAG_PRESS_LOCK); lua_settable(L, -3);
-  lua_pushstring(L, "EVENT_BUBBLE"); lua_pushinteger(L, LV_OBJ_FLAG_EVENT_BUBBLE); lua_settable(L, -3);
-  lua_pushstring(L, "GESTURE_BUBBLE"); lua_pushinteger(L, LV_OBJ_FLAG_GESTURE_BUBBLE); lua_settable(L, -3);
-  lua_pushstring(L, "ADV_HITTEST"); lua_pushinteger(L, LV_OBJ_FLAG_ADV_HITTEST); lua_settable(L, -3);
-  lua_pushstring(L, "IGNORE_LAYOUT"); lua_pushinteger(L, LV_OBJ_FLAG_IGNORE_LAYOUT); lua_settable(L, -3);
-  lua_pushstring(L, "FLOATING"); lua_pushinteger(L, LV_OBJ_FLAG_FLOATING); lua_settable(L, -3);
-  lua_pushstring(L, "OVERFLOW_VISIBLE"); lua_pushinteger(L, LV_OBJ_FLAG_OVERFLOW_VISIBLE); lua_settable(L, -3);
-  lua_pushstring(L, "LAYOUT_1"); lua_pushinteger(L, LV_OBJ_FLAG_LAYOUT_1); lua_settable(L, -3);
-  lua_pushstring(L, "LAYOUT_2"); lua_pushinteger(L, LV_OBJ_FLAG_LAYOUT_2); lua_settable(L, -3);
-  lua_pushstring(L, "WIDGET_1"); lua_pushinteger(L, LV_OBJ_FLAG_WIDGET_1); lua_settable(L, -3);
-  lua_pushstring(L, "WIDGET_2"); lua_pushinteger(L, LV_OBJ_FLAG_WIDGET_2); lua_settable(L, -3);
-  lua_pushstring(L, "USER_1"); lua_pushinteger(L, LV_OBJ_FLAG_USER_1); lua_settable(L, -3);
-  lua_pushstring(L, "USER_2"); lua_pushinteger(L, LV_OBJ_FLAG_USER_2); lua_settable(L, -3);
-  lua_pushstring(L, "USER_3"); lua_pushinteger(L, LV_OBJ_FLAG_USER_3); lua_settable(L, -3);
-  lua_pushstring(L, "USER_4"); lua_pushinteger(L, LV_OBJ_FLAG_USER_4); lua_settable(L, -3);
-}
+static const rotable_Reg event_const_table[] = {
+    {.name = "ALL",                 .integer = LV_EVENT_ALL                },
+    {.name = "PRESSED",             .integer = LV_EVENT_PRESSED            },
+    {.name = "PRESSING",            .integer = LV_EVENT_PRESSING           },
+    {.name = "PRESS_LOST",          .integer = LV_EVENT_PRESS_LOST         },
+    {.name = "SHORT_CLICKED",       .integer = LV_EVENT_SHORT_CLICKED      },
+    {.name = "LONG_PRESSED",        .integer = LV_EVENT_LONG_PRESSED       },
+    {.name = "LONG_PRESSED_REPEAT", .integer = LV_EVENT_LONG_PRESSED_REPEAT},
+    {.name = "CLICKED",             .integer = LV_EVENT_CLICKED            },
+    {.name = "RELEASED",            .integer = LV_EVENT_RELEASED           },
+    {.name = "SCROLL_BEGIN",        .integer = LV_EVENT_SCROLL_BEGIN       },
+    {.name = "SCROLL_END",          .integer = LV_EVENT_SCROLL_END         },
+    {.name = "SCROLL",              .integer = LV_EVENT_SCROLL             },
+    {.name = "GESTURE",             .integer = LV_EVENT_GESTURE            },
+    {.name = "KEY",                 .integer = LV_EVENT_KEY                },
+    {.name = "FOCUSED",             .integer = LV_EVENT_FOCUSED            },
+    {.name = "DEFOCUSED",           .integer = LV_EVENT_DEFOCUSED          },
+    {.name = "LEAVE",               .integer = LV_EVENT_LEAVE              },
+    {.name = "HIT_TEST",            .integer = LV_EVENT_HIT_TEST           },
+    {.name = "COVER_CHECK",         .integer = LV_EVENT_COVER_CHECK        },
+    {.name = "REFR_EXT_DRAW_SIZE",  .integer = LV_EVENT_REFR_EXT_DRAW_SIZE },
+    {.name = "DRAW_MAIN_BEGIN",     .integer = LV_EVENT_DRAW_MAIN_BEGIN    },
+    {.name = "DRAW_MAIN",           .integer = LV_EVENT_DRAW_MAIN          },
+    {.name = "DRAW_MAIN_END",       .integer = LV_EVENT_DRAW_MAIN_END      },
+    {.name = "DRAW_POST_BEGIN",     .integer = LV_EVENT_DRAW_POST_BEGIN    },
+    {.name = "DRAW_POST",           .integer = LV_EVENT_DRAW_POST          },
+    {.name = "DRAW_POST_END",       .integer = LV_EVENT_DRAW_POST_END      },
+    {.name = "VALUE_CHANGED",       .integer = LV_EVENT_VALUE_CHANGED      },
+    {.name = "INSERT",              .integer = LV_EVENT_INSERT             },
+    {.name = "REFRESH",             .integer = LV_EVENT_REFRESH            },
+    {.name = "READY",               .integer = LV_EVENT_READY              },
+    {.name = "CANCEL",              .integer = LV_EVENT_CANCEL             },
+    {.name = "DELETE",              .integer = LV_EVENT_DELETE             },
+    {.name = "CHILD_CHANGED",       .integer = LV_EVENT_CHILD_CHANGED      },
+    {.name = "CHILD_CREATED",       .integer = LV_EVENT_CHILD_CREATED      },
+    {.name = "CHILD_DELETED",       .integer = LV_EVENT_CHILD_DELETED      },
+    {.name = "SCREEN_UNLOAD_START", .integer = LV_EVENT_SCREEN_UNLOAD_START},
+    {.name = "SCREEN_LOAD_START",   .integer = LV_EVENT_SCREEN_LOAD_START  },
+    {.name = "SCREEN_LOADED",       .integer = LV_EVENT_SCREEN_LOADED      },
+    {.name = "SCREEN_UNLOADED",     .integer = LV_EVENT_SCREEN_UNLOADED    },
+    {.name = "SIZE_CHANGED",        .integer = LV_EVENT_SIZE_CHANGED       },
+    {.name = "STYLE_CHANGED",       .integer = LV_EVENT_STYLE_CHANGED      },
+    {.name = "LAYOUT_CHANGED",      .integer = LV_EVENT_LAYOUT_CHANGED     },
+    {.name = "GET_SELF_SIZE",       .integer = LV_EVENT_GET_SELF_SIZE      },
+    {0,                             0                                      },
+};
 
-static void luavgl_state_init(lua_State* L)
-{
-  lua_newtable(L);
+static const rotable_Reg obj_flag_const_table[] = {
+    {.name = "PRESSED",           .integer = LV_EVENT_PRESSED              },
+    {.name = "HIDDEN",            .integer = LV_OBJ_FLAG_HIDDEN            },
+    {.name = "CLICKABLE",         .integer = LV_OBJ_FLAG_CLICKABLE         },
+    {.name = "CLICK_FOCUSABLE",   .integer = LV_OBJ_FLAG_CLICK_FOCUSABLE   },
+    {.name = "CHECKABLE",         .integer = LV_OBJ_FLAG_CHECKABLE         },
+    {.name = "SCROLLABLE",        .integer = LV_OBJ_FLAG_SCROLLABLE        },
+    {.name = "SCROLL_ELASTIC",    .integer = LV_OBJ_FLAG_SCROLL_ELASTIC    },
+    {.name = "SCROLL_MOMENTUM",   .integer = LV_OBJ_FLAG_SCROLL_MOMENTUM   },
+    {.name = "SCROLL_ONE",        .integer = LV_OBJ_FLAG_SCROLL_ONE        },
+    {.name = "SCROLL_CHAIN_HOR",  .integer = LV_OBJ_FLAG_SCROLL_CHAIN_HOR  },
+    {.name = "SCROLL_CHAIN_VER",  .integer = LV_OBJ_FLAG_SCROLL_CHAIN_VER  },
+    {.name = "SCROLL_CHAIN",
+     .integer = LV_OBJ_FLAG_SCROLL_CHAIN_HOR | LV_OBJ_FLAG_SCROLL_CHAIN_VER},
+    {.name = "SCROLL_ON_FOCUS",   .integer = LV_OBJ_FLAG_SCROLL_ON_FOCUS   },
+    {.name = "SCROLL_WITH_ARROW", .integer = LV_OBJ_FLAG_SCROLL_WITH_ARROW },
+    {.name = "SNAPPABLE",         .integer = LV_OBJ_FLAG_SNAPPABLE         },
+    {.name = "PRESS_LOCK",        .integer = LV_OBJ_FLAG_PRESS_LOCK        },
+    {.name = "EVENT_BUBBLE",      .integer = LV_OBJ_FLAG_EVENT_BUBBLE      },
+    {.name = "GESTURE_BUBBLE",    .integer = LV_OBJ_FLAG_GESTURE_BUBBLE    },
+    {.name = "ADV_HITTEST",       .integer = LV_OBJ_FLAG_ADV_HITTEST       },
+    {.name = "IGNORE_LAYOUT",     .integer = LV_OBJ_FLAG_IGNORE_LAYOUT     },
+    {.name = "FLOATING",          .integer = LV_OBJ_FLAG_FLOATING          },
+    {.name = "OVERFLOW_VISIBLE",  .integer = LV_OBJ_FLAG_OVERFLOW_VISIBLE  },
+    {.name = "LAYOUT_1",          .integer = LV_OBJ_FLAG_LAYOUT_1          },
+    {.name = "LAYOUT_2",          .integer = LV_OBJ_FLAG_LAYOUT_2          },
+    {.name = "WIDGET_1",          .integer = LV_OBJ_FLAG_WIDGET_1          },
+    {.name = "WIDGET_2",          .integer = LV_OBJ_FLAG_WIDGET_2          },
+    {.name = "USER_1",            .integer = LV_OBJ_FLAG_USER_1            },
+    {.name = "USER_2",            .integer = LV_OBJ_FLAG_USER_2            },
+    {.name = "USER_3",            .integer = LV_OBJ_FLAG_USER_3            },
+    {.name = "USER_4",            .integer = LV_OBJ_FLAG_USER_4            },
+    {0,                           0                                        },
+};
 
-  lua_pushstring(L, "DEFAULT"); lua_pushinteger(L, LV_STATE_DEFAULT); lua_settable(L, -3);
-  lua_pushstring(L, "CHECKED"); lua_pushinteger(L, LV_STATE_CHECKED); lua_settable(L, -3);
-  lua_pushstring(L, "FOCUSED"); lua_pushinteger(L, LV_STATE_FOCUSED); lua_settable(L, -3);
-  lua_pushstring(L, "FOCUS_KEY"); lua_pushinteger(L, LV_STATE_FOCUS_KEY); lua_settable(L, -3);
-  lua_pushstring(L, "EDITED"); lua_pushinteger(L, LV_STATE_EDITED); lua_settable(L, -3);
-  lua_pushstring(L, "HOVERED"); lua_pushinteger(L, LV_STATE_HOVERED); lua_settable(L, -3);
-  lua_pushstring(L, "PRESSED"); lua_pushinteger(L, LV_STATE_PRESSED); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLLED"); lua_pushinteger(L, LV_STATE_SCROLLED); lua_settable(L, -3);
-  lua_pushstring(L, "DISABLED"); lua_pushinteger(L, LV_STATE_DISABLED); lua_settable(L, -3);
-  lua_pushstring(L, "USER_1"); lua_pushinteger(L, LV_STATE_USER_1); lua_settable(L, -3);
-  lua_pushstring(L, "USER_2"); lua_pushinteger(L, LV_STATE_USER_2); lua_settable(L, -3);
-  lua_pushstring(L, "USER_3"); lua_pushinteger(L, LV_STATE_USER_3); lua_settable(L, -3);
-  lua_pushstring(L, "USER_4"); lua_pushinteger(L, LV_STATE_USER_4); lua_settable(L, -3);
-  lua_pushstring(L, "ANY"); lua_pushinteger(L, LV_STATE_ANY); lua_settable(L, -3);
-}
+static const rotable_Reg state_const_table[] = {
+    {.name = "DEFAULT",   .integer = LV_STATE_DEFAULT  },
+    {.name = "CHECKED",   .integer = LV_STATE_CHECKED  },
+    {.name = "FOCUSED",   .integer = LV_STATE_FOCUSED  },
+    {.name = "FOCUS_KEY", .integer = LV_STATE_FOCUS_KEY},
+    {.name = "EDITED",    .integer = LV_STATE_EDITED   },
+    {.name = "HOVERED",   .integer = LV_STATE_HOVERED  },
+    {.name = "PRESSED",   .integer = LV_STATE_PRESSED  },
+    {.name = "SCROLLED",  .integer = LV_STATE_SCROLLED },
+    {.name = "DISABLED",  .integer = LV_STATE_DISABLED },
+    {.name = "USER_1",    .integer = LV_STATE_USER_1   },
+    {.name = "USER_2",    .integer = LV_STATE_USER_2   },
+    {.name = "USER_3",    .integer = LV_STATE_USER_3   },
+    {.name = "USER_4",    .integer = LV_STATE_USER_4   },
+    {.name = "ANY",       .integer = LV_STATE_ANY      },
+    {0,                   0                            }
+};
 
-static void luavgl_part_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "MAIN"); lua_pushinteger(L, LV_PART_MAIN); lua_settable(L, -3);
-  lua_pushstring(L, "SCROLLBAR"); lua_pushinteger(L, LV_PART_SCROLLBAR); lua_settable(L, -3);
-  lua_pushstring(L, "INDICATOR"); lua_pushinteger(L, LV_PART_INDICATOR); lua_settable(L, -3);
-  lua_pushstring(L, "KNOB"); lua_pushinteger(L, LV_PART_KNOB); lua_settable(L, -3);
-  lua_pushstring(L, "SELECTED"); lua_pushinteger(L, LV_PART_SELECTED); lua_settable(L, -3);
-  lua_pushstring(L, "ITEMS"); lua_pushinteger(L, LV_PART_ITEMS); lua_settable(L, -3);
-  lua_pushstring(L, "CURSOR"); lua_pushinteger(L, LV_PART_CURSOR); lua_settable(L, -3);
-  lua_pushstring(L, "CUSTOM_FIRST"); lua_pushinteger(L, LV_PART_CUSTOM_FIRST); lua_settable(L, -3);
-  lua_pushstring(L, "ANY"); lua_pushinteger(L, LV_PART_ANY); lua_settable(L, -3);
-}
+static const rotable_Reg part_const_table[] = {
+    {.name = "MAIN",         .integer = LV_PART_MAIN        },
+    {.name = "SCROLLBAR",    .integer = LV_PART_SCROLLBAR   },
+    {.name = "INDICATOR",    .integer = LV_PART_INDICATOR   },
+    {.name = "KNOB",         .integer = LV_PART_KNOB        },
+    {.name = "SELECTED",     .integer = LV_PART_SELECTED    },
+    {.name = "ITEMS",        .integer = LV_PART_ITEMS       },
+    {.name = "CURSOR",       .integer = LV_PART_CURSOR      },
+    {.name = "CUSTOM_FIRST", .integer = LV_PART_CUSTOM_FIRST},
+    {.name = "ANY",          .integer = LV_PART_ANY         },
+    {0,                      0                              },
+};
 
-static void luavgl_align_init(lua_State* L)
-{
-  lua_newtable(L);
+static const rotable_Reg align_const_table[] = {
 
-  lua_pushstring(L, "DEFAULT"); lua_pushinteger(L, LV_ALIGN_DEFAULT); lua_settable(L, -3);
-  lua_pushstring(L, "TOP_LEFT"); lua_pushinteger(L, LV_ALIGN_TOP_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "TOP_MID"); lua_pushinteger(L, LV_ALIGN_TOP_MID); lua_settable(L, -3);
-  lua_pushstring(L, "TOP_RIGHT"); lua_pushinteger(L, LV_ALIGN_TOP_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "BOTTOM_LEFT"); lua_pushinteger(L, LV_ALIGN_BOTTOM_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "BOTTOM_MID"); lua_pushinteger(L, LV_ALIGN_BOTTOM_MID); lua_settable(L, -3);
-  lua_pushstring(L, "BOTTOM_RIGHT"); lua_pushinteger(L, LV_ALIGN_BOTTOM_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "LEFT_MID"); lua_pushinteger(L, LV_ALIGN_LEFT_MID); lua_settable(L, -3);
-  lua_pushstring(L, "RIGHT_MID"); lua_pushinteger(L, LV_ALIGN_RIGHT_MID); lua_settable(L, -3);
-  lua_pushstring(L, "CENTER"); lua_pushinteger(L, LV_ALIGN_CENTER); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_TOP_LEFT"); lua_pushinteger(L, LV_ALIGN_OUT_TOP_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_TOP_MID"); lua_pushinteger(L, LV_ALIGN_OUT_TOP_MID); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_TOP_RIGHT"); lua_pushinteger(L, LV_ALIGN_OUT_TOP_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_BOTTOM_LEFT"); lua_pushinteger(L, LV_ALIGN_OUT_BOTTOM_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_BOTTOM_MID"); lua_pushinteger(L, LV_ALIGN_OUT_BOTTOM_MID); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_BOTTOM_RIGHT"); lua_pushinteger(L, LV_ALIGN_OUT_BOTTOM_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_LEFT_TOP"); lua_pushinteger(L, LV_ALIGN_OUT_LEFT_TOP); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_LEFT_MID"); lua_pushinteger(L, LV_ALIGN_OUT_LEFT_MID); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_LEFT_BOTTOM"); lua_pushinteger(L, LV_ALIGN_OUT_LEFT_BOTTOM); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_RIGHT_TOP"); lua_pushinteger(L, LV_ALIGN_OUT_RIGHT_TOP); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_RIGHT_MID"); lua_pushinteger(L, LV_ALIGN_OUT_RIGHT_MID); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_RIGHT_BOTTOM"); lua_pushinteger(L, LV_ALIGN_OUT_RIGHT_BOTTOM); lua_settable(L, -3);
-}
+    {.name = "DEFAULT",          .integer = LV_ALIGN_DEFAULT         },
+    {.name = "TOP_LEFT",         .integer = LV_ALIGN_TOP_LEFT        },
+    {.name = "TOP_MID",          .integer = LV_ALIGN_TOP_MID         },
+    {.name = "TOP_RIGHT",        .integer = LV_ALIGN_TOP_RIGHT       },
+    {.name = "BOTTOM_LEFT",      .integer = LV_ALIGN_BOTTOM_LEFT     },
+    {.name = "BOTTOM_MID",       .integer = LV_ALIGN_BOTTOM_MID      },
+    {.name = "BOTTOM_RIGHT",     .integer = LV_ALIGN_BOTTOM_RIGHT    },
+    {.name = "LEFT_MID",         .integer = LV_ALIGN_LEFT_MID        },
+    {.name = "RIGHT_MID",        .integer = LV_ALIGN_RIGHT_MID       },
+    {.name = "CENTER",           .integer = LV_ALIGN_CENTER          },
+    {.name = "OUT_TOP_LEFT",     .integer = LV_ALIGN_OUT_TOP_LEFT    },
+    {.name = "OUT_TOP_MID",      .integer = LV_ALIGN_OUT_TOP_MID     },
+    {.name = "OUT_TOP_RIGHT",    .integer = LV_ALIGN_OUT_TOP_RIGHT   },
+    {.name = "OUT_BOTTOM_LEFT",  .integer = LV_ALIGN_OUT_BOTTOM_LEFT },
+    {.name = "OUT_BOTTOM_MID",   .integer = LV_ALIGN_OUT_BOTTOM_MID  },
+    {.name = "OUT_BOTTOM_RIGHT", .integer = LV_ALIGN_OUT_BOTTOM_RIGHT},
+    {.name = "OUT_LEFT_TOP",     .integer = LV_ALIGN_OUT_LEFT_TOP    },
+    {.name = "OUT_LEFT_MID",     .integer = LV_ALIGN_OUT_LEFT_MID    },
+    {.name = "OUT_LEFT_BOTTOM",  .integer = LV_ALIGN_OUT_LEFT_BOTTOM },
+    {.name = "OUT_RIGHT_TOP",    .integer = LV_ALIGN_OUT_RIGHT_TOP   },
+    {.name = "OUT_RIGHT_MID",    .integer = LV_ALIGN_OUT_RIGHT_MID   },
+    {.name = "OUT_RIGHT_BOTTOM", .integer = LV_ALIGN_OUT_RIGHT_BOTTOM},
+    {0,                          0                                   },
+};
 
-static void luavgl_label_const_init(lua_State* L)
-{
-  lua_newtable(L);
+static const rotable_Reg label_const_const_table[] = {
 
-  lua_pushstring(L, "LONG_WRAP"); lua_pushinteger(L, LV_LABEL_LONG_WRAP); lua_settable(L, -3);
-  lua_pushstring(L, "LONG_DOT"); lua_pushinteger(L, LV_LABEL_LONG_DOT); lua_settable(L, -3);
-  lua_pushstring(L, "LONG_SCROLL"); lua_pushinteger(L, LV_LABEL_LONG_SCROLL); lua_settable(L, -3);
-  lua_pushstring(L, "LONG_SCROLL_CIRCULAR"); lua_pushinteger(L, LV_LABEL_LONG_SCROLL_CIRCULAR); lua_settable(L, -3);
-  lua_pushstring(L, "LONG_CLIP"); lua_pushinteger(L, LV_LABEL_LONG_CLIP); lua_settable(L, -3);
+    {.name = "LONG_WRAP",            .integer = LV_LABEL_LONG_WRAP           },
+    {.name = "LONG_DOT",             .integer = LV_LABEL_LONG_DOT            },
+    {.name = "LONG_SCROLL",          .integer = LV_LABEL_LONG_SCROLL         },
+    {.name = "LONG_SCROLL_CIRCULAR", .integer = LV_LABEL_LONG_SCROLL_CIRCULAR},
+    {.name = "LONG_CLIP",            .integer = LV_LABEL_LONG_CLIP           },
+    {0,                              0                                       },
+};
 
-}
-static void luavgl_builtin_font_init(lua_State* L)
-{
-  lua_newtable(L);
-
-  lua_pushstring(L, "DEFAULT"); lua_pushlightuserdata(L, (void*)LV_FONT_DEFAULT); lua_settable(L, -3);
 #if LV_FONT_MONTSERRAT_8
-  LV_FONT_DECLARE(lv_font_montserrat_8)
-  lua_pushstring(L, "MONTSERRAT_8"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_8); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_8);
 #endif
 
 #if LV_FONT_MONTSERRAT_10
-  LV_FONT_DECLARE(lv_font_montserrat_10)
-  lua_pushstring(L, "MONTSERRAT_10"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_10); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_10);
 #endif
 
 #if LV_FONT_MONTSERRAT_12
-  LV_FONT_DECLARE(lv_font_montserrat_12)
-  lua_pushstring(L, "MONTSERRAT_12"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_12); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_12);
 #endif
 
 #if LV_FONT_MONTSERRAT_14
-  LV_FONT_DECLARE(lv_font_montserrat_14)
-  lua_pushstring(L, "MONTSERRAT_14"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_14); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_14);
 #endif
 
 #if LV_FONT_MONTSERRAT_16
-  LV_FONT_DECLARE(lv_font_montserrat_16)
-  lua_pushstring(L, "MONTSERRAT_16"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_16); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_16);
 #endif
 
 #if LV_FONT_MONTSERRAT_18
-  LV_FONT_DECLARE(lv_font_montserrat_18)
-  lua_pushstring(L, "MONTSERRAT_18"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_18); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_18);
 #endif
 
 #if LV_FONT_MONTSERRAT_20
-  LV_FONT_DECLARE(lv_font_montserrat_20)
-  lua_pushstring(L, "MONTSERRAT_20"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_20); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_20);
 #endif
 
 #if LV_FONT_MONTSERRAT_22
-  LV_FONT_DECLARE(lv_font_montserrat_22)
-  lua_pushstring(L, "MONTSERRAT_22"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_22); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_22);
 #endif
 
 #if LV_FONT_MONTSERRAT_24
-  LV_FONT_DECLARE(lv_font_montserrat_24)
-  lua_pushstring(L, "MONTSERRAT_24"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_24); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_24);
 #endif
 
 #if LV_FONT_MONTSERRAT_26
-  LV_FONT_DECLARE(lv_font_montserrat_26)
-  lua_pushstring(L, "MONTSERRAT_26"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_26); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_26);
 #endif
 
 #if LV_FONT_MONTSERRAT_28
-  LV_FONT_DECLARE(lv_font_montserrat_28)
-  lua_pushstring(L, "MONTSERRAT_28"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_28); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_28);
 #endif
 
 #if LV_FONT_MONTSERRAT_30
-  LV_FONT_DECLARE(lv_font_montserrat_30)
-  lua_pushstring(L, "MONTSERRAT_30"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_30); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_30);
 #endif
 
 #if LV_FONT_MONTSERRAT_32
-  LV_FONT_DECLARE(lv_font_montserrat_32)
-  lua_pushstring(L, "MONTSERRAT_32"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_32); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_32);
 #endif
 
 #if LV_FONT_MONTSERRAT_34
-  LV_FONT_DECLARE(lv_font_montserrat_34)
-  lua_pushstring(L, "MONTSERRAT_34"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_34); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_34);
 #endif
 
 #if LV_FONT_MONTSERRAT_36
-  LV_FONT_DECLARE(lv_font_montserrat_36)
-  lua_pushstring(L, "MONTSERRAT_36"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_36); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_36);
 #endif
 
 #if LV_FONT_MONTSERRAT_38
-  LV_FONT_DECLARE(lv_font_montserrat_38)
-  lua_pushstring(L, "MONTSERRAT_38"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_38); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_38);
 #endif
 
 #if LV_FONT_MONTSERRAT_40
-  LV_FONT_DECLARE(lv_font_montserrat_40)
-  lua_pushstring(L, "MONTSERRAT_40"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_40); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_40);
 #endif
 
 #if LV_FONT_MONTSERRAT_42
-  LV_FONT_DECLARE(lv_font_montserrat_42)
-  lua_pushstring(L, "MONTSERRAT_42"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_42); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_42);
 #endif
 
 #if LV_FONT_MONTSERRAT_44
-  LV_FONT_DECLARE(lv_font_montserrat_44)
-  lua_pushstring(L, "MONTSERRAT_44"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_44); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_44);
 #endif
 
 #if LV_FONT_MONTSERRAT_46
-  LV_FONT_DECLARE(lv_font_montserrat_46)
-  lua_pushstring(L, "MONTSERRAT_46"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_46); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_46);
 #endif
 
 #if LV_FONT_MONTSERRAT_48
-  LV_FONT_DECLARE(lv_font_montserrat_48)
-  lua_pushstring(L, "MONTSERRAT_48"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_48); lua_settable(L, -3);
+LV_FONT_DECLARE(lv_font_montserrat_48);
+#endif
+
+static const rotable_Reg builtin_font_const_table[] = {
+    {
+     .name = "DEFAULT",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = LV_FONT_DEFAULT,
+     },
+#if LV_FONT_MONTSERRAT_8
+    {
+     .name = "MONTSERRAT_8",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_8,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_10
+    {
+     .name = "MONTSERRAT_10",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_10,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_12
+    {
+     .name = "MONTSERRAT_12",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_12,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_14
+    {
+     .name = "MONTSERRAT_14",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_14,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_16
+    {
+     .name = "MONTSERRAT_16",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_16,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_18
+    {
+     .name = "MONTSERRAT_18",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_18,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_20
+    {
+     .name = "MONTSERRAT_20",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_20,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_22
+    {
+     .name = "MONTSERRAT_22",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_22,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_24
+    {
+     .name = "MONTSERRAT_24",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_24,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_26
+    {
+     .name = "MONTSERRAT_26",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_26,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_28
+    {
+     .name = "MONTSERRAT_28",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_28,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_30
+    {
+     .name = "MONTSERRAT_30",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_30,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_32
+    {
+     .name = "MONTSERRAT_32",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_32,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_34
+    {
+     .name = "MONTSERRAT_34",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_34,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_36
+    {
+     .name = "MONTSERRAT_36",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_36,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_38
+    {
+     .name = "MONTSERRAT_38",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_38,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_40
+    {
+     .name = "MONTSERRAT_40",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_40,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_42
+    {
+     .name = "MONTSERRAT_42",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_42,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_44
+    {
+     .name = "MONTSERRAT_44",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_44,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_46
+    {
+     .name = "MONTSERRAT_46",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_46,
+     },
+#endif
+
+#if LV_FONT_MONTSERRAT_48
+    {
+     .name = "MONTSERRAT_48",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_48,
+     },
 #endif
 
 #if LV_FONT_MONTSERRAT_12_SUBPX
-  LV_FONT_DECLARE(lv_font_montserrat_12_subpx)
-  lua_pushstring(L, "MONTSERRAT_12_SUBPX"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_12_subpx); lua_settable(L, -3);
+    {
+     .name = "MONTSERRAT_12_SUBPX",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_12_subpx,
+     },
 #endif
 
 #if LV_FONT_MONTSERRAT_28_COMPRESSED
-  LV_FONT_DECLARE(lv_font_montserrat_28_compressed)
-  lua_pushstring(L, "MONTSERRAT_28_COMPRESSED"); lua_pushlightuserdata(L, (void*)&lv_font_montserrat_28_compressed); lua_settable(L, -3);
+    {
+     .name = "MONTSERRAT_28_COMPRESSED",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_montserrat_28_compressed,
+     },
 #endif
 
 #if LV_FONT_DEJAVU_16_PERSIAN_HEBREW
-  LV_FONT_DECLARE(lv_font_dejavu_16_persian_hebrew)
-  lua_pushstring(L, "DEJAVU_16_PERSIAN_HEBREW"); lua_pushlightuserdata(L, (void*)&lv_font_dejavu_16_persian_hebrew); lua_settable(L, -3);
+    {
+     .name = "DEJAVU_16_PERSIAN_HEBREW",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_dejavu_16_persian_hebrew,
+     },
 #endif
 
 #if LV_FONT_SIMSUN_16_CJK
-  LV_FONT_DECLARE(lv_font_simsun_16_cjk)
-  lua_pushstring(L, "SIMSUN_16_CJK"); lua_pushlightuserdata(L, (void*)&lv_font_simsun_16_cjk); lua_settable(L, -3);
+    {
+     .name = "SIMSUN_16_CJK",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_simsun_16_cjk,
+     },
 #endif
 
 #if LV_FONT_UNSCII_8
-  LV_FONT_DECLARE(lv_font_unscii_8)
-  lua_pushstring(L, "UNSCII_8"); lua_pushlightuserdata(L, (void*)&lv_font_unscii_8); lua_settable(L, -3);
+    {
+     .name = "UNSCII_8",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_unscii_8,
+     },
 #endif
 
 #if LV_FONT_UNSCII_16
-  LV_FONT_DECLARE(lv_font_unscii_16)
-  lua_pushstring(L, "UNSCII_16"); lua_pushlightuserdata(L, (void*)&lv_font_unscii_16); lua_settable(L, -3);
+    {
+     .name = "UNSCII_16",
+     .type = LUA_TLIGHTUSERDATA,
+     .ptr = &lv_font_unscii_16,
+     },
 #endif
-}
+};
 
-static void luavgl_scr_load_anim_init(lua_State* L)
-{
-  lua_newtable(L);
-
-  lua_pushstring(L, "NONE"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_NONE); lua_settable(L, -3);
-  lua_pushstring(L, "OVER_LEFT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OVER_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "OVER_RIGHT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OVER_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "OVER_TOP"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OVER_TOP); lua_settable(L, -3);
-  lua_pushstring(L, "OVER_BOTTOM"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OVER_BOTTOM); lua_settable(L, -3);
-  lua_pushstring(L, "MOVE_LEFT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_MOVE_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "MOVE_RIGHT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_MOVE_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "MOVE_TOP"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_MOVE_TOP); lua_settable(L, -3);
-  lua_pushstring(L, "MOVE_BOTTOM"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_MOVE_BOTTOM); lua_settable(L, -3);
-  lua_pushstring(L, "FADE_ON"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_FADE_ON); lua_settable(L, -3);
+static const rotable_Reg scr_load_anim_const_table[] = {
+    {.name = "NONE",        .integer = LV_SCR_LOAD_ANIM_NONE       },
+    {.name = "OVER_LEFT",   .integer = LV_SCR_LOAD_ANIM_OVER_LEFT  },
+    {.name = "OVER_RIGHT",  .integer = LV_SCR_LOAD_ANIM_OVER_RIGHT },
+    {.name = "OVER_TOP",    .integer = LV_SCR_LOAD_ANIM_OVER_TOP   },
+    {.name = "OVER_BOTTOM", .integer = LV_SCR_LOAD_ANIM_OVER_BOTTOM},
+    {.name = "MOVE_LEFT",   .integer = LV_SCR_LOAD_ANIM_MOVE_LEFT  },
+    {.name = "MOVE_RIGHT",  .integer = LV_SCR_LOAD_ANIM_MOVE_RIGHT },
+    {.name = "MOVE_TOP",    .integer = LV_SCR_LOAD_ANIM_MOVE_TOP   },
+    {.name = "MOVE_BOTTOM", .integer = LV_SCR_LOAD_ANIM_MOVE_BOTTOM},
+    {.name = "FADE_ON",     .integer = LV_SCR_LOAD_ANIM_FADE_ON    },
 #if LV_VERSION_CHECK(8, 3, 0)
-  lua_pushstring(L, "FADE_IN"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_FADE_IN); lua_settable(L, -3);
-  lua_pushstring(L, "FADE_OUT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_FADE_OUT); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_LEFT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_RIGHT"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_TOP"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_TOP); lua_settable(L, -3);
-  lua_pushstring(L, "OUT_BOTTOM"); lua_pushinteger(L, LV_SCR_LOAD_ANIM_OUT_BOTTOM); lua_settable(L, -3);
+    {.name = "FADE_IN",     .integer = LV_SCR_LOAD_ANIM_FADE_IN    },
+    {.name = "FADE_OUT",    .integer = LV_SCR_LOAD_ANIM_FADE_OUT   },
+    {.name = "OUT_LEFT",    .integer = LV_SCR_LOAD_ANIM_OUT_LEFT   },
+    {.name = "OUT_RIGHT",   .integer = LV_SCR_LOAD_ANIM_OUT_RIGHT  },
+    {.name = "OUT_TOP",     .integer = LV_SCR_LOAD_ANIM_OUT_TOP    },
+    {.name = "OUT_BOTTOM",  .integer = LV_SCR_LOAD_ANIM_OUT_BOTTOM },
 #endif
-}
+    {0,                     0                                      },
+};
 
-static void luavgl_scrollbar_mode_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "OFF"); lua_pushinteger(L, LV_SCROLLBAR_MODE_OFF); lua_settable(L, -3);
-  lua_pushstring(L, "ON"); lua_pushinteger(L, LV_SCROLLBAR_MODE_ON); lua_settable(L, -3);
-  lua_pushstring(L, "ACTIVE"); lua_pushinteger(L, LV_SCROLLBAR_MODE_ACTIVE); lua_settable(L, -3);
-  lua_pushstring(L, "AUTO"); lua_pushinteger(L, LV_SCROLLBAR_MODE_AUTO); lua_settable(L, -3);
-}
+static const rotable_Reg scrollbar_mode_const_table[] = {
+    {.name = "OFF",    .integer = LV_SCROLLBAR_MODE_OFF   },
+    {.name = "ON",     .integer = LV_SCROLLBAR_MODE_ON    },
+    {.name = "ACTIVE", .integer = LV_SCROLLBAR_MODE_ACTIVE},
+    {.name = "AUTO",   .integer = LV_SCROLLBAR_MODE_AUTO  },
+    {0,                0                                  },
+};
 
-static void luavgl_dir_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "NONE"); lua_pushinteger(L, LV_DIR_NONE); lua_settable(L, -3);
-  lua_pushstring(L, "LEFT"); lua_pushinteger(L, LV_DIR_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "RIGHT"); lua_pushinteger(L, LV_DIR_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "TOP"); lua_pushinteger(L, LV_DIR_TOP); lua_settable(L, -3);
-  lua_pushstring(L, "BOTTOM"); lua_pushinteger(L, LV_DIR_BOTTOM); lua_settable(L, -3);
-  lua_pushstring(L, "HOR"); lua_pushinteger(L, LV_DIR_HOR); lua_settable(L, -3);
-  lua_pushstring(L, "VER"); lua_pushinteger(L, LV_DIR_VER); lua_settable(L, -3);
-  lua_pushstring(L, "ALL"); lua_pushinteger(L, LV_DIR_ALL); lua_settable(L, -3);
-}
+static const rotable_Reg dir_const_table[] = {
+    {.name = "NONE",   .integer = LV_DIR_NONE  },
+    {.name = "LEFT",   .integer = LV_DIR_LEFT  },
+    {.name = "RIGHT",  .integer = LV_DIR_RIGHT },
+    {.name = "TOP",    .integer = LV_DIR_TOP   },
+    {.name = "BOTTOM", .integer = LV_DIR_BOTTOM},
+    {.name = "HOR",    .integer = LV_DIR_HOR   },
+    {.name = "VER",    .integer = LV_DIR_VER   },
+    {.name = "ALL",    .integer = LV_DIR_ALL   },
+    {0,                0                       },
+};
 
 #if LV_USE_KEYBOARD
-static void luavgl_keyboard_mode_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "TEXT_LOWER"); lua_pushinteger(L, LV_KEYBOARD_MODE_TEXT_LOWER); lua_settable(L, -3);
-  lua_pushstring(L, "TEXT_UPPER"); lua_pushinteger(L, LV_KEYBOARD_MODE_TEXT_UPPER); lua_settable(L, -3);
-  lua_pushstring(L, "SPECIAL"); lua_pushinteger(L, LV_KEYBOARD_MODE_SPECIAL); lua_settable(L, -3);
-  lua_pushstring(L, "NUMBER"); lua_pushinteger(L, LV_KEYBOARD_MODE_NUMBER); lua_settable(L, -3);
-  lua_pushstring(L, "USER_1"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_1); lua_settable(L, -3);
-  lua_pushstring(L, "USER_2"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_2); lua_settable(L, -3);
-  lua_pushstring(L, "USER_3"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_3); lua_settable(L, -3);
-  lua_pushstring(L, "USER_4"); lua_pushinteger(L, LV_KEYBOARD_MODE_USER_4); lua_settable(L, -3);
+static const rotable_Reg keyboard_mode_const_table[] = {
+    {.name = "TEXT_LOWER",  .integer = LV_KEYBOARD_MODE_TEXT_LOWER },
+    {.name = "TEXT_UPPER",  .integer = LV_KEYBOARD_MODE_TEXT_UPPER },
+    {.name = "SPECIAL",     .integer = LV_KEYBOARD_MODE_SPECIAL    },
+    {.name = "NUMBER",      .integer = LV_KEYBOARD_MODE_NUMBER     },
+    {.name = "USER_1",      .integer = LV_KEYBOARD_MODE_USER_1     },
+    {.name = "USER_2",      .integer = LV_KEYBOARD_MODE_USER_2     },
+    {.name = "USER_3",      .integer = LV_KEYBOARD_MODE_USER_3     },
+    {.name = "USER_4",      .integer = LV_KEYBOARD_MODE_USER_4     },
 
 #if LV_USE_ARABIC_PERSIAN_CHARS == 1
-  lua_pushstring(L, "TEXT_ARABIC"); lua_pushinteger(L, LV_KEYBOARD_MODE_TEXT_ARABIC); lua_settable(L, -3);
+    {.name = "TEXT_ARABIC", .integer = LV_KEYBOARD_MODE_TEXT_ARABIC},
 #endif
-}
+    {0,                     0                                      },
+};
 #endif
 
-static void luavgl_flex_flow_init(lua_State* L)
-{
-  lua_newtable(L);
+static const rotable_Reg flex_flow_const_table[] = {
+    {.name = "ROW",                 .integer = LV_FLEX_FLOW_ROW             },
+    {.name = "COLUMN",              .integer = LV_FLEX_FLOW_COLUMN          },
+    {.name = "ROW_WRAP",            .integer = LV_FLEX_FLOW_ROW_WRAP        },
+    {.name = "ROW_REVERSE",         .integer = LV_FLEX_FLOW_ROW_REVERSE     },
+    {.name = "ROW_WRAP_REVERSE",    .integer = LV_FLEX_FLOW_ROW_WRAP_REVERSE},
+    {.name = "COLUMN_WRAP",         .integer = LV_FLEX_FLOW_COLUMN_WRAP     },
+    {.name = "COLUMN_REVERSE",      .integer = LV_FLEX_FLOW_COLUMN_REVERSE  },
+    {.name = "COLUMN_WRAP_REVERSE",
+     .integer = LV_FLEX_FLOW_COLUMN_WRAP_REVERSE                            },
+    {0,                             0                                       },
+};
 
-  lua_pushstring(L, "ROW"); lua_pushinteger(L, LV_FLEX_FLOW_ROW); lua_settable(L, -3);
-  lua_pushstring(L, "COLUMN"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN); lua_settable(L, -3);
-  lua_pushstring(L, "ROW_WRAP"); lua_pushinteger(L, LV_FLEX_FLOW_ROW_WRAP); lua_settable(L, -3);
-  lua_pushstring(L, "ROW_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_ROW_REVERSE); lua_settable(L, -3);
-  lua_pushstring(L, "ROW_WRAP_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_ROW_WRAP_REVERSE); lua_settable(L, -3);
-  lua_pushstring(L, "COLUMN_WRAP"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN_WRAP); lua_settable(L, -3);
-  lua_pushstring(L, "COLUMN_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN_REVERSE); lua_settable(L, -3);
-  lua_pushstring(L, "COLUMN_WRAP_REVERSE"); lua_pushinteger(L, LV_FLEX_FLOW_COLUMN_WRAP_REVERSE); lua_settable(L, -3);
-}
+static const rotable_Reg flex_align_const_table[] = {
+    {.name = "START",         .integer = LV_FLEX_ALIGN_START        },
+    {.name = "END",           .integer = LV_FLEX_ALIGN_END          },
+    {.name = "CENTER",        .integer = LV_FLEX_ALIGN_CENTER       },
+    {.name = "SPACE_EVENLY",  .integer = LV_FLEX_ALIGN_SPACE_EVENLY },
+    {.name = "SPACE_AROUND",  .integer = LV_FLEX_ALIGN_SPACE_AROUND },
+    {.name = "SPACE_BETWEEN", .integer = LV_FLEX_ALIGN_SPACE_BETWEEN},
+    {0,                       0                                     },
+};
 
-static void luavgl_flex_align_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "START"); lua_pushinteger(L, LV_FLEX_ALIGN_START); lua_settable(L, -3);
-  lua_pushstring(L, "END"); lua_pushinteger(L, LV_FLEX_ALIGN_END); lua_settable(L, -3);
-  lua_pushstring(L, "CENTER"); lua_pushinteger(L, LV_FLEX_ALIGN_CENTER); lua_settable(L, -3);
-  lua_pushstring(L, "SPACE_EVENLY"); lua_pushinteger(L, LV_FLEX_ALIGN_SPACE_EVENLY); lua_settable(L, -3);
-  lua_pushstring(L, "SPACE_AROUND"); lua_pushinteger(L, LV_FLEX_ALIGN_SPACE_AROUND); lua_settable(L, -3);
-  lua_pushstring(L, "SPACE_BETWEEN"); lua_pushinteger(L, LV_FLEX_ALIGN_SPACE_BETWEEN); lua_settable(L, -3);
-}
-
-static void luavgl_grid_align_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "START"); lua_pushinteger(L, LV_GRID_ALIGN_START); lua_settable(L, -3);
-  lua_pushstring(L, "CENTER"); lua_pushinteger(L, LV_GRID_ALIGN_CENTER); lua_settable(L, -3);
-  lua_pushstring(L, "END"); lua_pushinteger(L, LV_GRID_ALIGN_END); lua_settable(L, -3);
-  lua_pushstring(L, "STRETCH"); lua_pushinteger(L, LV_GRID_ALIGN_STRETCH); lua_settable(L, -3);
-  lua_pushstring(L, "SPACE_EVENLY"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_EVENLY); lua_settable(L, -3);
-  lua_pushstring(L, "SPACE_AROUND"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_AROUND); lua_settable(L, -3);
-  lua_pushstring(L, "SPACE_BETWEEN"); lua_pushinteger(L, LV_GRID_ALIGN_SPACE_BETWEEN); lua_settable(L, -3);
-}
+static const rotable_Reg grid_align_const_table[] = {
+    {.name = "START",         .integer = LV_GRID_ALIGN_START        },
+    {.name = "CENTER",        .integer = LV_GRID_ALIGN_CENTER       },
+    {.name = "END",           .integer = LV_GRID_ALIGN_END          },
+    {.name = "STRETCH",       .integer = LV_GRID_ALIGN_STRETCH      },
+    {.name = "SPACE_EVENLY",  .integer = LV_GRID_ALIGN_SPACE_EVENLY },
+    {.name = "SPACE_AROUND",  .integer = LV_GRID_ALIGN_SPACE_AROUND },
+    {.name = "SPACE_BETWEEN", .integer = LV_GRID_ALIGN_SPACE_BETWEEN},
+    {0,                       0                                     },
+};
 
 #if LV_USE_ROLLER
-static void luavgl_roller_mode_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "NORMAL"); lua_pushinteger(L, LV_ROLLER_MODE_NORMAL); lua_settable(L, -3);
-  lua_pushstring(L, "INFINITE"); lua_pushinteger(L, LV_ROLLER_MODE_INFINITE); lua_settable(L, -3);
-}
+static const rotable_Reg roller_mode_const_table[] = {
+    {.name = "NORMAL",   .integer = LV_ROLLER_MODE_NORMAL  },
+    {.name = "INFINITE", .integer = LV_ROLLER_MODE_INFINITE},
+    {0,                  0                                 },
+};
 #endif
 
-static void luavgl_key_init(lua_State* L)
-{
-  lua_newtable(L);
-  lua_pushstring(L, "UP"); lua_pushinteger(L, LV_KEY_UP); lua_settable(L, -3);
-  lua_pushstring(L, "DOWN"); lua_pushinteger(L, LV_KEY_DOWN); lua_settable(L, -3);
-  lua_pushstring(L, "RIGHT"); lua_pushinteger(L, LV_KEY_RIGHT); lua_settable(L, -3);
-  lua_pushstring(L, "LEFT"); lua_pushinteger(L, LV_KEY_LEFT); lua_settable(L, -3);
-  lua_pushstring(L, "ESC"); lua_pushinteger(L, LV_KEY_ESC); lua_settable(L, -3);
-  lua_pushstring(L, "DEL"); lua_pushinteger(L, LV_KEY_DEL); lua_settable(L, -3);
-  lua_pushstring(L, "BACKSPACE"); lua_pushinteger(L, LV_KEY_BACKSPACE); lua_settable(L, -3);
-  lua_pushstring(L, "ENTER"); lua_pushinteger(L, LV_KEY_ENTER); lua_settable(L, -3);
-  lua_pushstring(L, "NEXT"); lua_pushinteger(L, LV_KEY_NEXT); lua_settable(L, -3);
-  lua_pushstring(L, "PREV"); lua_pushinteger(L, LV_KEY_PREV); lua_settable(L, -3);
-  lua_pushstring(L, "HOME"); lua_pushinteger(L, LV_KEY_HOME); lua_settable(L, -3);
-  lua_pushstring(L, "END"); lua_pushinteger(L, LV_KEY_END); lua_settable(L, -3);
-}
+static const rotable_Reg key_const_table[] = {
+    {.name = "UP",        .integer = LV_KEY_UP       },
+    {.name = "DOWN",      .integer = LV_KEY_DOWN     },
+    {.name = "RIGHT",     .integer = LV_KEY_RIGHT    },
+    {.name = "LEFT",      .integer = LV_KEY_LEFT     },
+    {.name = "ESC",       .integer = LV_KEY_ESC      },
+    {.name = "DEL",       .integer = LV_KEY_DEL      },
+    {.name = "BACKSPACE", .integer = LV_KEY_BACKSPACE},
+    {.name = "ENTER",     .integer = LV_KEY_ENTER    },
+    {.name = "NEXT",      .integer = LV_KEY_NEXT     },
+    {.name = "PREV",      .integer = LV_KEY_PREV     },
+    {.name = "HOME",      .integer = LV_KEY_HOME     },
+    {.name = "END",       .integer = LV_KEY_END      },
+    {0,                   0                          },
+};
 
-static int luavgl_LV_PCT(lua_State*L)
+static int luavgl_LV_PCT(lua_State *L)
 {
   int pct = lua_tointeger(L, 1);
   lua_pushinteger(L, LV_PCT(pct));
   return 1;
 }
 
-static int luavgl_LV_OPA(lua_State*L)
+static int luavgl_LV_OPA(lua_State *L)
 {
   int opa = luavgl_tointeger(L, 1) * LV_OPA_100 / 100;
   if (opa > 255)
@@ -447,59 +603,45 @@ static int luavgl_LV_OPA(lua_State*L)
   return 1;
 }
 
-static int luavgl_LV_HOR_RES(lua_State*L)
+static int luavgl_LV_HOR_RES(lua_State *L)
 {
   lua_pushinteger(L, LV_HOR_RES);
   return 1;
 }
 
-static int luavgl_LV_VER_RES(lua_State*L)
+static int luavgl_LV_VER_RES(lua_State *L)
 {
   lua_pushinteger(L, LV_VER_RES);
   return 1;
 }
 
 /* clang-format on */
+
 static void luavgl_constants_init(lua_State *L)
 {
-  luavgl_event_code_init(L);
-  lua_setfield(L, -2, "EVENT");
-  luavgl_obj_flag_init(L);
-  lua_setfield(L, -2, "FLAG");
-  luavgl_state_init(L);
-  lua_setfield(L, -2, "STATE");
-  luavgl_part_init(L);
-  lua_setfield(L, -2, "PART");
-  luavgl_align_init(L);
-  lua_setfield(L, -2, "ALIGN");
-  luavgl_builtin_font_init(L);
-  lua_setfield(L, -2, "BUILTIN_FONT");
-  luavgl_label_const_init(L);
-  lua_setfield(L, -2, "LABEL");
-  luavgl_scr_load_anim_init(L);
-  lua_setfield(L, -2, "SCR_LOAD_ANIM");
-  luavgl_scrollbar_mode_init(L);
-  lua_setfield(L, -2, "SCROLLBAR_MODE");
-  luavgl_dir_init(L);
-  lua_setfield(L, -2, "DIR");
+  rotable_setfiled(L, -2, "EVENT", event_const_table);
+  rotable_setfiled(L, -2, "FLAG", obj_flag_const_table);
+  rotable_setfiled(L, -2, "STATE", state_const_table);
+  rotable_setfiled(L, -2, "PART", part_const_table);
+
+  rotable_setfiled(L, -2, "ALIGN", align_const_table);
+  rotable_setfiled(L, -2, "BUILTIN_FONT", builtin_font_const_table);
+  rotable_setfiled(L, -2, "LABEL_CONST", label_const_const_table);
+  rotable_setfiled(L, -2, "SCR_LOAD_ANIM", scr_load_anim_const_table);
+  rotable_setfiled(L, -2, "SCROLLBAR_MODE", scrollbar_mode_const_table);
+  rotable_setfiled(L, -2, "DIR", dir_const_table);
 
 #if LV_USE_KEYBOARD
-  luavgl_keyboard_mode_init(L);
-  lua_setfield(L, -2, "KEYBOARD_MODE");
+  rotable_setfiled(L, -2, "KEYBOARD_MODE", keyboard_mode_const_table);
 #endif
 
-  luavgl_flex_flow_init(L);
-  lua_setfield(L, -2, "FLEX_FLOW");
-  luavgl_flex_align_init(L);
-  lua_setfield(L, -2, "FLEX_ALIGN");
-  luavgl_grid_align_init(L);
-  lua_setfield(L, -2, "GRID_ALIGN");
+  rotable_setfiled(L, -2, "FLEX_FLOW", flex_flow_const_table);
+  rotable_setfiled(L, -2, "FLEX_ALIGN", flex_align_const_table);
+  rotable_setfiled(L, -2, "GRID_ALIGN", grid_align_const_table);
 #if LV_USE_ROLLER
-  luavgl_roller_mode_init(L);
-  lua_setfield(L, -2, "ROLLER_MODE");
+  rotable_setfiled(L, -2, "ROLLER_MODE", roller_mode_const_table);
 #endif
-  luavgl_key_init(L);
-  lua_setfield(L, -2, "KEY");
+  rotable_setfiled(L, -2, "KEY", key_const_table);
   /* miscellaneous. */
 
   lua_pushinteger(L, LV_ANIM_REPEAT_INFINITE);
