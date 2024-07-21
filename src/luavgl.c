@@ -12,6 +12,8 @@
 #include "timer.c"
 #include "util.c"
 
+#include "rotable.c"
+
 static const struct luaL_Reg luavgl_methods[] = {
     {"Timer", luavgl_timer_create}, /* timer.c */
     {"Font",  luavgl_font_create }, /* font.c */
