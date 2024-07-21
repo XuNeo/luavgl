@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 typedef struct luavgl_fs_s {
   lv_fs_file_t file;
@@ -310,23 +311,23 @@ static int luavgl_dir_gc(lua_State *L)
  * luavgl.fs lib
  *
  */
-static const luaL_Reg fs_lib[] = {
-    {"open_file", luavgl_fs_open },
-    {"open_dir",  luavgl_dir_open},
+static const rotable_Reg fs_lib[] = {
+    {"open_file", LUA_TFUNCTION, {luavgl_fs_open} },
+    {"open_dir",  LUA_TFUNCTION, {luavgl_dir_open}},
 
-    {NULL,        NULL           },
+    {0,           0,             {0}              },
 };
 
 /*
 ** methods for file handles
 */
-static const luaL_Reg fs_methods[] = {
-    {"read",  luavgl_fs_read },
-    {"write", luavgl_fs_write},
-    {"close", luavgl_fs_close},
-    {"seek",  luavgl_fs_seek },
+static const rotable_Reg fs_methods[] = {
+    {"read",  LUA_TFUNCTION, {luavgl_fs_read} },
+    {"write", LUA_TFUNCTION, {luavgl_fs_write}},
+    {"close", LUA_TFUNCTION, {luavgl_fs_close}},
+    {"seek",  LUA_TFUNCTION, {luavgl_fs_seek} },
 
-    {NULL,    NULL           },
+    {0,       0,             {0}              },
 };
 
 static const luaL_Reg fs_meta[] = {
@@ -341,11 +342,11 @@ static const luaL_Reg fs_meta[] = {
 /*
 ** methods for dir handles
 */
-static const luaL_Reg dir_methods[] = {
-    {"read",  luavgl_dir_read },
-    {"close", luavgl_dir_close},
+static const rotable_Reg dir_methods[] = {
+    {"read",  LUA_TFUNCTION, {luavgl_dir_read} },
+    {"close", LUA_TFUNCTION, {luavgl_dir_close}},
 
-    {NULL,    NULL            },
+    {0,       0,             {0}               },
 };
 
 static const luaL_Reg dir_meta[] = {
@@ -363,7 +364,7 @@ static void luavgl_fs_init(lua_State *L)
   luaL_newmetatable(L, "lv_fs");
   luaL_setfuncs(L, fs_meta, 0);
 
-  luaL_newlib(L, fs_methods);
+  rotable_newlib(L, fs_methods);
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop metatable */
@@ -372,12 +373,12 @@ static void luavgl_fs_init(lua_State *L)
   luaL_newmetatable(L, "lv_dir");
   luaL_setfuncs(L, dir_meta, 0);
 
-  luaL_newlib(L, dir_methods);
+  rotable_newlib(L, dir_methods);
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop metatable */
 
   /* luavgl.fs lib */
-  luaL_newlib(L, fs_lib);
+  rotable_newlib(L, fs_lib);
   lua_setfield(L, -2, "fs");
 }

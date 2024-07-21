@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 /**
  * Different to lvgl anim, anim in lua can be restarted after it's done.
@@ -319,15 +320,15 @@ static const luaL_Reg luavgl_anim_meta[] = {
     {NULL,         NULL                },
 };
 
-static const luaL_Reg luavgl_anim_methods[] = {
-    {"set",    luavgl_anim_set   },
-    {"start",  luavgl_anim_start },
+static const rotable_Reg luavgl_anim_methods[] = {
+    {"set",    LUA_TFUNCTION, {luavgl_anim_set}   },
+    {"start",  LUA_TFUNCTION, {luavgl_anim_start} },
 
- /* in lua anim, stopped anim can be restarted. */
-    {"stop",   luavgl_anim_stop  },
-    {"delete", luavgl_anim_delete},
+    /* in lua anim, stopped anim can be restarted. */
+    {"stop",   LUA_TFUNCTION, {luavgl_anim_stop}  },
+    {"delete", LUA_TFUNCTION, {luavgl_anim_delete}},
 
-    {NULL,     NULL              }
+    {0,        0,             {0}                 }
 };
 
 static void luavgl_anim_init(lua_State *L)
@@ -336,7 +337,7 @@ static void luavgl_anim_init(lua_State *L)
   luaL_newmetatable(L, "lv_anim");
   luaL_setfuncs(L, luavgl_anim_meta, 0);
 
-  luaL_newlib(L, luavgl_anim_methods);
+  rotable_newlib(L, luavgl_anim_methods);
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop metatable */
