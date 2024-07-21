@@ -55,4 +55,12 @@ ROTABLE_EXPORT void rotable_newlib( lua_State* L, void const* reg );
  * `rotable_Reg` array. */
 ROTABLE_EXPORT void rotable_newidx( lua_State* L, void const* reg );
 
+/**
+ * Since the rodata's metatable is used to simulate the table itself,
+ * we use userdata's uservalue to store an optional table as a
+ * metatable. It's used in the __index method when no match is found
+ * in the rotable.
+ */
+ROTABLE_EXPORT void rotable_setmetatable( lua_State* L, int idx);
+
 #endif /* ROTABLE_H_ */

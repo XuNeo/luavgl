@@ -134,8 +134,26 @@ static int rotable_udata_index( lua_State* L ) {
   p = find_key( p, t->n, s );
   if( p )
     rotable_pushvalue( L, p );
-  else
+  else {
+    int type = lua_getuservalue( L, 1 );
+    if( type == LUA_TTABLE ) {
+      type = lua_getfield( L, -1, "__index" );
+      if( type == LUA_TTABLE || type == LUA_TUSERDATA ) {
+        lua_pushvalue( L, 2 );
+        lua_gettable( L, -2 );
+        return 1;
+      }
+      else if( type == LUA_TFUNCTION ){
+        lua_pushvalue( L, -2 );
+        lua_pushvalue( L, 2 );
+        lua_call( L, 2, 1 );
+        return 1;
+      }
+    }
+
+    /* Otherwise, not found.*/
     lua_pushnil( L );
+  }
   return 1;
 }
 
@@ -218,12 +236,16 @@ ROTABLE_EXPORT void rotable_newlib( lua_State* L, void const* v ) {
   }
 }
 
+ROTABLE_EXPORT void rotable_setmetatable( lua_State* L, int idx) {
+  /* Store a table to uservalue as rotable's "metatable" */
+  lua_setuservalue( L, idx );
+}
 
 ROTABLE_EXPORT void rotable_newidx( lua_State* L, void const* v ) {
   rotable_Reg const* reg = (rotable_Reg const*)v;
-  int i = 0;
+  int i = 1;
   lua_pushlightuserdata( L, (void*)v);
-  for( ; reg[ i ].func; ++i ) {
+  for( ; reg[ i ].name; ++i ) {
     if( lv_strcmp( reg[ i-1 ].name, reg[ i ].name ) >= 0 ) {
       i = 0;
       break;
