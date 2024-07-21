@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 typedef struct luavgl_indev_s {
   lv_indev_t *indev;
@@ -294,36 +295,36 @@ static int luavgl_indev_gc(lua_State *L)
 /**
  * luavgl.indev lib
  */
-static const luaL_Reg indev_lib[] = {
-    {"get_act",     luavgl_indev_get_act    },
+static const rotable_Reg indev_lib[] = {
+    {"get_act",  LUA_TFUNCTION, {luavgl_indev_get_act} },
 #if 0
-    {"get_obj_act", luavgl_indev_get_obj_act},
+    {"get_obj_act", LUA_TFUNCTION, {luavgl_indev_get_obj_act}},
 #endif
-    {"get_next",    luavgl_indev_get_next   },
+    {"get_next", LUA_TFUNCTION, {luavgl_indev_get_next}},
 
-    {NULL,          NULL                    },
+    {0,          0,             {0}                    },
 };
 
 /*
 ** methods for file handles
 */
-static const luaL_Reg methods[] = {
-    {"get_type",         luavgl_indev_get_type        },
-    {"reset",            luavgl_indev_reset           },
-    {"reset_long_press", luavgl_indev_reset_long_press},
-    {"set_cursor",       luavgl_indev_set_cursor      },
-    {"set_group",        luavgl_indev_set_group       },
-    {"get_point",        luavgl_indev_get_point       },
-    {"get_gesture_dir",  luavgl_indev_get_gesture_dir },
-    {"get_key",          luavgl_indev_get_key         },
-    {"get_scroll_dir",   luavgl_indev_get_scroll_dir  },
-    {"get_scroll_obj",   luavgl_indev_get_scroll_obj  },
-    {"get_vect",         luavgl_indev_get_vect        },
-    {"wait_release",     luavgl_indev_wait_release    },
+static const rotable_Reg methods[] = {
+    {"get_type",         LUA_TFUNCTION, {luavgl_indev_get_type}        },
+    {"reset",            LUA_TFUNCTION, {luavgl_indev_reset}           },
+    {"reset_long_press", LUA_TFUNCTION, {luavgl_indev_reset_long_press}},
+    {"set_cursor",       LUA_TFUNCTION, {luavgl_indev_set_cursor}      },
+    {"set_group",        LUA_TFUNCTION, {luavgl_indev_set_group}       },
+    {"get_point",        LUA_TFUNCTION, {luavgl_indev_get_point}       },
+    {"get_gesture_dir",  LUA_TFUNCTION, {luavgl_indev_get_gesture_dir} },
+    {"get_key",          LUA_TFUNCTION, {luavgl_indev_get_key}         },
+    {"get_scroll_dir",   LUA_TFUNCTION, {luavgl_indev_get_scroll_dir}  },
+    {"get_scroll_obj",   LUA_TFUNCTION, {luavgl_indev_get_scroll_obj}  },
+    {"get_vect",         LUA_TFUNCTION, {luavgl_indev_get_vect}        },
+    {"wait_release",     LUA_TFUNCTION, {luavgl_indev_wait_release}    },
 #if 0
-    {"on_event",         luavgl_indev_on_event        },
+    {"on_event",         LUA_TFUNCTION, {luavgl_indev_on_event}        },
 #endif
-    {NULL,               NULL                         },
+    {0,                  0,             {0}                            },
 };
 
 static const luaL_Reg meta[] = {
@@ -340,12 +341,12 @@ static void luavgl_indev_init(lua_State *L)
   luaL_newmetatable(L, "lv_indev");
   luaL_setfuncs(L, meta, 0);
 
-  luaL_newlib(L, methods);
+  rotable_newlib(L, methods);
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop metatable */
 
   /* luavgl.indev lib */
-  luaL_newlib(L, indev_lib);
+  rotable_newlib(L, indev_lib);
   lua_setfield(L, -2, "indev");
 }

@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 typedef struct luavgl_disp_s {
   lv_disp_t *disp;
@@ -255,30 +256,29 @@ static int luavgl_disp_set_rotation(lua_State *L)
 /**
  * luavgl.disp lib
  */
-static const luaL_Reg disp_lib[] = {
-    {"get_default",  luavgl_disp_get_default },
-    {"get_scr_act",  luavgl_disp_get_scr_act },
-    {"get_scr_prev", luavgl_disp_get_scr_prev},
-    {"get_next",     luavgl_disp_get_next    },
-    {"load_scr",     luavgl_disp_load_scr    },
+static const rotable_Reg disp_lib[] = {
+    {"get_default",  LUA_TFUNCTION, {luavgl_disp_get_default} },
+    {"get_scr_act",  LUA_TFUNCTION, {luavgl_disp_get_scr_act} },
+    {"get_scr_prev", LUA_TFUNCTION, {luavgl_disp_get_scr_prev}},
+    {"get_next",     LUA_TFUNCTION, {luavgl_disp_get_next}    },
+    {"load_scr",     LUA_TFUNCTION, {luavgl_disp_load_scr}    },
 
-    {NULL,           NULL                    },
+    {0,              0,             {0}                       },
 };
 
 /*
 ** methods for disp handles
 */
-static const luaL_Reg disp_methods[] = {
-    {"get_layer_top", luavgl_disp_get_layer_top},
-    {"get_layer_sys", luavgl_disp_get_layer_sys},
-    {"get_next",      luavgl_disp_get_next     },
-    {"set_rotation",  luavgl_disp_set_rotation },
-    {"get_res",       luavgl_disp_get_res      },
+static const rotable_Reg disp_methods[] = {
+    {"get_layer_top", LUA_TFUNCTION, {luavgl_disp_get_layer_top}},
+    {"get_layer_sys", LUA_TFUNCTION, {luavgl_disp_get_layer_sys}},
+    {"get_next",      LUA_TFUNCTION, {luavgl_disp_get_next}     },
+    {"set_rotation",  LUA_TFUNCTION, {luavgl_disp_set_rotation} },
+    {"get_res",       LUA_TFUNCTION, {luavgl_disp_get_res}      },
+    {"get_scr_act",   LUA_TFUNCTION, {luavgl_disp_get_scr_act}  },
+    {"get_scr_prev",  LUA_TFUNCTION, {luavgl_disp_get_scr_prev} },
 
-    {"get_scr_act",   luavgl_disp_get_scr_act  },
-    {"get_scr_prev",  luavgl_disp_get_scr_prev },
-
-    {NULL,            NULL                     },
+    {0,               0,             {0}                        },
 };
 
 static const luaL_Reg disp_meta[] = {
@@ -293,12 +293,12 @@ static void luavgl_disp_init(lua_State *L)
   luaL_newmetatable(L, "lv_disp");
   luaL_setfuncs(L, disp_meta, 0);
 
-  luaL_newlib(L, disp_methods);
+  rotable_newlib(L, disp_methods);
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop metatable */
 
   /* luavgl.disp lib */
-  luaL_newlib(L, disp_lib);
+  rotable_newlib(L, disp_lib);
   lua_setfield(L, -2, "disp");
 }

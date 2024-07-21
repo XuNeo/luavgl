@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 typedef struct luavgl_group_s {
   lv_group_t *group;
@@ -288,39 +289,39 @@ static int luavgl_group_gc(lua_State *L)
 /**
  * luavgl.group lib
  */
-static const luaL_Reg group_lib[] = {
-    {"create",      luavgl_group_create     },
-    {"get_default", luavgl_group_get_default},
-    {"remove_obj",  luavgl_group_remove_obj },
-    {"remove_objs", luavgl_group_remove_objs},
+static const rotable_Reg group_lib[] = {
+    {"create",      LUA_TFUNCTION, {luavgl_group_create}     },
+    {"get_default", LUA_TFUNCTION, {luavgl_group_get_default}},
+    {"remove_obj",  LUA_TFUNCTION, {luavgl_group_remove_obj} },
+    {"remove_objs", LUA_TFUNCTION, {luavgl_group_remove_objs}},
 
-    {"focus_obj",   luavgl_group_focus_obj  },
-    {NULL,          NULL                    },
+    {"focus_obj",   LUA_TFUNCTION, {luavgl_group_focus_obj}  },
+    {0,             0,             {0}                       },
 };
 
 /*
 ** methods for file handles
 */
-static const luaL_Reg group_methods[] = {
-    {"delete",        luavgl_group_delete       },
-    {"set_default",   luavgl_group_set_default  },
-    {"add_obj",       luavgl_group_add_obj      },
-    {"remove_obj",    luavgl_group_remove_obj   },
-    {"focus_next",    luavgl_group_focus_next   },
-    {"focus_prev",    luavgl_group_focus_prev   },
-    {"focus_freeze",  luavgl_group_focus_freeze },
-    {"send_data",     luavgl_group_send_data    },
-    {"set_focus_cb",  luavgl_group_set_focus_cb },
-    {"set_edge_cb",   luavgl_group_set_edge_cb  },
-    {"get_focus_cb",  luavgl_group_get_focus_cb },
-    {"get_edge_cb",   luavgl_group_get_edge_cb  },
-    {"set_editing",   luavgl_group_set_editing  },
-    {"set_wrap",      luavgl_group_set_wrap     },
-    {"get_wrap",      luavgl_group_get_wrap     },
-    {"get_obj_count", luavgl_group_get_obj_count},
-    {"get_focused",   luavgl_group_get_focused  },
+static const rotable_Reg group_methods[] = {
+    {"delete",        LUA_TFUNCTION, {luavgl_group_delete}       },
+    {"set_default",   LUA_TFUNCTION, {luavgl_group_set_default}  },
+    {"add_obj",       LUA_TFUNCTION, {luavgl_group_add_obj}      },
+    {"remove_obj",    LUA_TFUNCTION, {luavgl_group_remove_obj}   },
+    {"focus_next",    LUA_TFUNCTION, {luavgl_group_focus_next}   },
+    {"focus_prev",    LUA_TFUNCTION, {luavgl_group_focus_prev}   },
+    {"focus_freeze",  LUA_TFUNCTION, {luavgl_group_focus_freeze} },
+    {"send_data",     LUA_TFUNCTION, {luavgl_group_send_data}    },
+    {"set_focus_cb",  LUA_TFUNCTION, {luavgl_group_set_focus_cb} },
+    {"set_edge_cb",   LUA_TFUNCTION, {luavgl_group_set_edge_cb}  },
+    {"get_focus_cb",  LUA_TFUNCTION, {luavgl_group_get_focus_cb} },
+    {"get_edge_cb",   LUA_TFUNCTION, {luavgl_group_get_edge_cb}  },
+    {"set_editing",   LUA_TFUNCTION, {luavgl_group_set_editing}  },
+    {"set_wrap",      LUA_TFUNCTION, {luavgl_group_set_wrap}     },
+    {"get_wrap",      LUA_TFUNCTION, {luavgl_group_get_wrap}     },
+    {"get_obj_count", LUA_TFUNCTION, {luavgl_group_get_obj_count}},
+    {"get_focused",   LUA_TFUNCTION, {luavgl_group_get_focused}  },
 
-    {NULL,            NULL                      },
+    {0,               0,             {0}                         },
 };
 
 static const luaL_Reg group_meta[] = {
@@ -336,12 +337,12 @@ static void luavgl_group_init(lua_State *L)
   luaL_newmetatable(L, "lv_group");
   luaL_setfuncs(L, group_meta, 0);
 
-  luaL_newlib(L, group_methods);
+  rotable_newlib(L, group_methods);
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop metatable */
 
   /* luavgl.indev lib */
-  luaL_newlib(L, group_lib);
+  rotable_newlib(L, group_lib);
   lua_setfield(L, -2, "group");
 }

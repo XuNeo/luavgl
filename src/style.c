@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 typedef struct {
   lv_style_t style;
@@ -727,12 +728,12 @@ static int luavgl_obj_remove_style_all(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg luavgl_style_methods[] = {
-    {"set",         luavgl_style_set        },
-    {"delete",      luavgl_style_delete     },
-    {"remove_prop", luavgl_style_remove_prop},
+static const rotable_Reg luavgl_style_methods[] = {
+    {"set",         LUA_TFUNCTION, {luavgl_style_set}        },
+    {"delete",      LUA_TFUNCTION, {luavgl_style_delete}     },
+    {"remove_prop", LUA_TFUNCTION, {luavgl_style_remove_prop}},
 
-    {NULL,          NULL                    }
+    {0,             0,             {0}                       }
 };
 
 static void luavgl_style_init(lua_State *L)
@@ -742,7 +743,7 @@ static void luavgl_style_init(lua_State *L)
   lua_pushcfunction(L, luavgl_style_gc);
   lua_setfield(L, -2, "__gc");
 
-  luaL_newlib(L, luavgl_style_methods); /* methods belong to this type */
+  rotable_newlib(L, luavgl_style_methods); /* methods belong to this type */
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop __index table */

@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 typedef struct luavgl_timer_s {
   lua_State *L;
@@ -198,14 +199,14 @@ static int luavgl_timer_gc(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg luavgl_timer_methods[] = {
-    {"set",    luavgl_timer_set   },
-    {"pause",  luavgl_timer_pause },
-    {"resume", luavgl_timer_resume},
-    {"delete", luavgl_timer_delete},
-    {"ready",  luavgl_timer_ready },
+static const rotable_Reg luavgl_timer_methods[] = {
+    {"set",    LUA_TFUNCTION, {luavgl_timer_set}   },
+    {"pause",  LUA_TFUNCTION, {luavgl_timer_pause} },
+    {"resume", LUA_TFUNCTION, {luavgl_timer_resume}},
+    {"delete", LUA_TFUNCTION, {luavgl_timer_delete}},
+    {"ready",  LUA_TFUNCTION, {luavgl_timer_ready} },
 
-    {NULL,     NULL               }
+    {0,        0,             {0}                  }
 };
 
 static void luavgl_timer_init(lua_State *L)
@@ -215,7 +216,7 @@ static void luavgl_timer_init(lua_State *L)
   lua_pushcfunction(L, luavgl_timer_gc);
   lua_setfield(L, -2, "__gc");
 
-  luaL_newlib(L, luavgl_timer_methods); /* methods belong to this type */
+  rotable_newlib(L, luavgl_timer_methods); /* methods belong to this type */
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop __index table */
