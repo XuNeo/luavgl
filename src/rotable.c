@@ -32,12 +32,8 @@
 
 
 typedef struct {
-#if LUA_VERSION_NUM < 503
-  /* on Lua 5.3 we use a lightuserdata in the uservalue of the
-   * userdata to hold the pointer to the luaL_Reg structure. Older
-   * Lua versions have to store it in the userdata payload. */
+  /* We use store it in the userdata payload. */
   rotable_Reg const* p;
-#endif
   /* number of elements in the luaL_Reg array *if* it is sorted by
    * name. We can use binary search in this case. Otherwise we need
    * linear searches anyway and we can scan for the final `{NULL,0}`
@@ -134,13 +130,7 @@ static int rotable_func_index( lua_State* L ) {
 static int rotable_udata_index( lua_State* L ) {
   rotable* t = (rotable*)lua_touserdata( L, 1 );
   char const* s = lua_tostring( L, 2 );
-#if LUA_VERSION_NUM < 503
   rotable_Reg const* p = t->p;
-#else
-  rotable_Reg const* p = 0;
-  lua_getuservalue( L, 1 );
-  p = (rotable_Reg const*)lua_touserdata( L, -1 );
-#endif
   p = find_key( p, t->n, s );
   if( p )
     rotable_pushvalue( L, p );
@@ -160,13 +150,7 @@ static int rotable_iter( lua_State* L ) {
   rotable* t = check_rotable( L, 1, "__pairs iterator" );
   char const* s = lua_tostring( L, 2 );
   rotable_Reg const* q = 0;
-#if LUA_VERSION_NUM < 503
   rotable_Reg const* p = t->p;
-#else
-  rotable_Reg const* p = 0;
-  lua_getuservalue( L, 1 );
-  p = (rotable_Reg const*)lua_touserdata( L, -1 );
-#endif
   if( s ) {
     if( t->n >= ROTABLE_BINSEARCH_MIN ) { /* binary search */
       q = (rotable_Reg const*)lv_utils_bsearch( s, p, t->n, sizeof( *p ), reg_compare );
@@ -222,12 +206,7 @@ ROTABLE_EXPORT void rotable_newlib( lua_State* L, void const* v ) {
     lua_rawset( L, LUA_REGISTRYINDEX );
   }
   lua_setmetatable( L, -2 );
-#if LUA_VERSION_NUM < 503
   t->p = reg;
-#else
-  lua_pushlightuserdata( L, (void*)reg );
-  lua_setuservalue( L, -2 );
-#endif
   t->n = 0;
   if( reg->name ) {
     int i = 1;
