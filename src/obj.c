@@ -768,26 +768,15 @@ static const luaL_Reg luavgl_obj_methods[] = {
 
 static void luavgl_obj_init(lua_State *L)
 {
+  luaL_newmetatable(L, "widgets");
+  luaL_newlib(L, widget_create_methods);
+  lua_setfield(L, -2, "__index");
+  lua_pop(L, 1);
+
   /* base lv_obj */
   luavgl_obj_newmetatable(L, &lv_obj_class, "lv_obj", luavgl_obj_methods);
   lua_pushcfunction(L, luavgl_obj_gc);
   lua_setfield(L, -2, "__gc");
-
-  /**
-   * Widget creation functions is a metatable, so we can add extended widget to
-   * it.
-   *
-   * widgets = {}
-   * lib = {widget_create_methods}
-   * widgets.__index = lib
-   * obj.__metatable = widgets
-   */
-  lua_getfield(L, -1, "__index");
-  luaL_newmetatable(L, "widgets");
-  luaL_newlib(L, widget_create_methods);
-  lua_setfield(L, -2, "__index");
-  lua_setmetatable(L, -2);
-  lua_pop(L, 1); /* remove obj.__index table */
 
   lua_pop(L, 1); /* remove obj metatable */
 }

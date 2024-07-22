@@ -159,6 +159,12 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
 
     /* setmetatable(t, b) */
     lua_setmetatable(L, -2);
+  } else {
+    /* For base obj, add widgets creation method as metatable. So we can use
+     * obj:Object{} to create widgets.
+     */
+    luaL_getmetatable(L, "widgets");
+    lua_setmetatable(L, -2);
   }
 
   lua_setfield(L, -2, "__index"); /* M.__index = t */
