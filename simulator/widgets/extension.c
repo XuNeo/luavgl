@@ -49,16 +49,16 @@ static int luavgl_extension_set(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg luavgl_extension_methods[] = {
-    {"set", luavgl_extension_set},
+static const rotable_Reg luavgl_extension_methods[] = {
+    {"set", LUA_TFUNCTION, {luavgl_extension_set}},
 
-    {NULL, NULL},
+    {0,     0,             {0}                   },
 };
 
 void luavgl_extension_init(lua_State *L)
 {
   luavgl_obj_newmetatable(L, &lv_button_class, "lv_extension",
-                        luavgl_extension_methods);
+                          luavgl_extension_methods);
   lua_pop(L, 1);
 
   luaL_getmetatable(L, "widgets");

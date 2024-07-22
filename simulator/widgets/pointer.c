@@ -37,8 +37,7 @@ static void _lv_pointer_set_range(void *obj, lua_State *L)
   angle_range = lua_tointeger(L, -1);
   lua_pop(L, 1);
 
-  lv_pointer_set_range(obj, value_start, value_range, angle_start,
-                        angle_range);
+  lv_pointer_set_range(obj, value_start, value_range, angle_start, angle_range);
 }
 
 /* clang-format off */
@@ -81,10 +80,10 @@ static int luavgl_pointer_set(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg luavgl_pointer_methods[] = {
-    {"set", luavgl_pointer_set},
+static const rotable_Reg luavgl_pointer_methods[] = {
+    {"set", LUA_TFUNCTION, luavgl_pointer_set},
 
-    {NULL,  NULL              },
+    {0,     0,             {0}               },
 };
 
 void luavgl_pointer_init(lua_State *L)

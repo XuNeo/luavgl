@@ -119,18 +119,19 @@ static int luavgl_roller_get_options_cnt(lua_State *L)
   return 1;
 }
 
-static const luaL_Reg luavgl_roller_methods[] = {
-    {"set",              luavgl_roller_set             },
-    {"get_options",      luavgl_roller_get_options     },
-    {"get_selected",     luavgl_roller_get_selected    },
-    {"get_selected_str", luavgl_roller_get_selected_str},
-    {"get_options_cnt",  luavgl_roller_get_options_cnt },
+static const rotable_Reg luavgl_roller_methods[] = {
+    {"set",              LUA_TFUNCTION, {luavgl_roller_set}             },
+    {"get_options",      LUA_TFUNCTION, {luavgl_roller_get_options}     },
+    {"get_selected",     LUA_TFUNCTION, {luavgl_roller_get_selected}    },
+    {"get_selected_str", LUA_TFUNCTION, {luavgl_roller_get_selected_str}},
+    {"get_options_cnt",  LUA_TFUNCTION, {luavgl_roller_get_options_cnt} },
 
-    {NULL,               NULL                        },
+    {0,                  0,             {0}                             },
 };
 
 static void luavgl_roller_init(lua_State *L)
 {
-  luavgl_obj_newmetatable(L, &lv_roller_class, "lv_roller", luavgl_roller_methods);
+  luavgl_obj_newmetatable(L, &lv_roller_class, "lv_roller",
+                          luavgl_roller_methods);
   lua_pop(L, 1);
 }

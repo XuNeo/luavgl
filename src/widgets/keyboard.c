@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 static int luavgl_keyboard_create(lua_State *L)
 {
@@ -56,21 +57,21 @@ static int luavgl_keyboard_set(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg luavgl_keyboard_methods[] = {
-    {"set", luavgl_keyboard_set},
+static const rotable_Reg luavgl_keyboard_methods[] = {
+    {"set", LUA_TFUNCTION, {luavgl_keyboard_set}},
 
-    {NULL,  NULL             },
+    {0,     0,             {0}                  },
 };
 
 static void luavgl_keyboard_init(lua_State *L)
 {
-  static const luaL_Reg btm_methods[] = {
-      {NULL, NULL},
+  static const rotable_Reg btm_methods[] = {
+      {0, 0, {0}},
   };
   luavgl_obj_newmetatable(L, &lv_buttonmatrix_class, "lv_btnm", btm_methods);
   lua_pop(L, 1);
 
   luavgl_obj_newmetatable(L, &lv_keyboard_class, "lv_keyboard",
-                        luavgl_keyboard_methods);
+                          luavgl_keyboard_methods);
   lua_pop(L, 1);
 }

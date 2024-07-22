@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 static int luavgl_img_create(lua_State *L)
 {
@@ -30,8 +31,8 @@ static const luavgl_value_setter_t img_property_table[] = {
      SETTER_TYPE_IMGSRC,             {.setter_pointer = (setter_pointer_t)lv_image_set_src}},
     {"offset_x",  0,                 {.setter = (setter_int_t)lv_image_set_offset_x}       },
     {"offset_y",  0,                 {.setter = (setter_int_t)lv_image_set_offset_y}       },
-    {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}          },
-    {"zoom",      0,                 {.setter = (setter_int_t)lv_img_set_zoom}           },
+    {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}            },
+    {"zoom",      0,                 {.setter = (setter_int_t)lv_img_set_zoom}             },
     {"antialias", 0,                 {.setter = (setter_int_t)lv_image_set_antialias}      },
     {"pivot",     SETTER_TYPE_STACK, {.setter_stack = lv_image_set_pivot_}                 },
 };
@@ -178,15 +179,14 @@ static int luavgl_get_img_size(lua_State *L)
   return 2;
 }
 
-static const luaL_Reg luavgl_img_methods[] = {
-    {"set",          luavgl_img_set       },
+static const rotable_Reg luavgl_img_methods[] = {
+    {"set",          LUA_TFUNCTION, {luavgl_img_set}       },
 
-    {"set_src",      luavgl_img_set_src   },
-    {"set_offset",   luavgl_img_set_offset},
-    {"set_pivot",    luavgl_img_set_pivot },
-    {"get_img_size", luavgl_get_img_size  },
-
-    {NULL,           NULL                 },
+    {"set_src",      LUA_TFUNCTION, {luavgl_img_set_src}   },
+    {"set_offset",   LUA_TFUNCTION, {luavgl_img_set_offset}},
+    {"set_pivot",    LUA_TFUNCTION, {luavgl_img_set_pivot} },
+    {"get_img_size", LUA_TFUNCTION, {luavgl_get_img_size}  },
+    {0,              0,             {0}                    },
 };
 
 static void luavgl_img_init(lua_State *L)

@@ -8,6 +8,8 @@
 #include <lauxlib.h>
 #include <lvgl.h>
 
+#include "rotable.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -58,7 +60,8 @@ struct event_callback_s {
 typedef struct luavgl_obj_s {
   lv_obj_t *obj;    /* NULL means obj deleted, but not gc'ed in lua */
   bool lua_created; /* this object is created from lua */
-  lv_array_t events;  /* events added from lua, need it to distinguish between lua */
+  /* events added from lua, need it to distinguish between lua */
+  lv_array_t events;
 } luavgl_obj_t;
 
 #define luavgl_obj_newmetatable(L, clz, name, l)                               \
@@ -143,8 +146,8 @@ LUALIB_API luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx);
  */
 LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
                                           const lv_obj_class_t *clz,
-                                          const char *name, const luaL_Reg *l,
-                                          int n);
+                                          const char *name,
+                                          const rotable_Reg *l, int n);
 
 /**
  * @brief Get user value of userdata of lua lvgl object, create if not exists
@@ -152,7 +155,6 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
  * @return type of the uservalue, LUA_TTABLE
  */
 LUALIB_API int luavgl_obj_getuserdatauv(lua_State *L, int idx);
-
 
 /* helper to get value from stack */
 
@@ -247,8 +249,6 @@ LUALIB_API int luavgl_list_set_property_kv(lua_State *L, void *data);
 LUALIB_API int luavgl_roller_set_property_kv(lua_State *L, void *data);
 
 LUALIB_API int luavgl_textarea_set_property_kv(lua_State *L, void *data);
-
-
 
 /**
  * @brief Protected call

@@ -72,14 +72,13 @@ static int luavgl_get_btn_text(lua_State *L)
   return 1;
 }
 
-static const luaL_Reg luavgl_list_methods[] = {
-    {"set",          luavgl_list_set     },
+static const rotable_Reg luavgl_list_methods[] = {
+    {"set",          LUA_TFUNCTION, {luavgl_list_set}     },
+    {"add_text",     LUA_TFUNCTION, {luavgl_list_add_text}},
+    {"add_btn",      LUA_TFUNCTION, {luavgl_list_add_btn} },
+    {"get_btn_text", LUA_TFUNCTION, {luavgl_get_btn_text} },
 
-    {"add_text",     luavgl_list_add_text},
-    {"add_btn",      luavgl_list_add_btn },
-    {"get_btn_text", luavgl_get_btn_text },
-
-    {NULL,           NULL              },
+    {0,              0,             {0}                   },
 };
 
 static void luavgl_list_init(lua_State *L)

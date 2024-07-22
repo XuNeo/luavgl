@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 static int luavgl_dropdown_create(lua_State *L)
 {
@@ -170,21 +171,21 @@ static int luavgl_dropdown_clear_option(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg luavgl_dropdown_methods[] = {
-    {"set",          luavgl_dropdown_set         },
-    {"get",          luavgl_dropdown_get         },
-    {"open",         luavgl_dropdown_open        },
-    {"close",        luavgl_dropdown_close       },
-    {"is_open",      luavgl_dropdown_is_open     },
-    {"add_option",   luavgl_dropdown_add_option  },
-    {"clear_option", luavgl_dropdown_clear_option},
+static const rotable_Reg luavgl_dropdown_methods[] = {
+    {"set",          LUA_TFUNCTION, {luavgl_dropdown_set}         },
+    {"get",          LUA_TFUNCTION, {luavgl_dropdown_get}         },
+    {"open",         LUA_TFUNCTION, {luavgl_dropdown_open}        },
+    {"close",        LUA_TFUNCTION, {luavgl_dropdown_close}       },
+    {"is_open",      LUA_TFUNCTION, {luavgl_dropdown_is_open}     },
+    {"add_option",   LUA_TFUNCTION, {luavgl_dropdown_add_option}  },
+    {"clear_option", LUA_TFUNCTION, {luavgl_dropdown_clear_option}},
 
-    {NULL,           NULL                      },
+    {0,              0,             {0}                           },
 };
 
 static void luavgl_dropdown_init(lua_State *L)
 {
   luavgl_obj_newmetatable(L, &lv_dropdown_class, "lv_dropdown",
-                        luavgl_dropdown_methods);
+                          luavgl_dropdown_methods);
   lua_pop(L, 1);
 }

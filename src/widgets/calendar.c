@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 static int luavgl_calendar_create(lua_State *L)
 {
@@ -149,16 +150,16 @@ static int luavgl_calendar_create_dropdown(lua_State *L)
   return luavgl_obj_create_helper(L, lv_calendar_header_dropdown_create);
 }
 
-static const luaL_Reg luavgl_calendar_methods[] = {
-    {"set",         luavgl_calendar_set            },
-    {"get_today",   luavgl_calendar_get_today      },
-    {"get_showed",  luavgl_calendar_get_showed     },
-    {"get_pressed", luavgl_calendar_get_pressed    },
-    {"get_btnm",    luavgl_calendar_get_btnm       },
-    {"Arrow",       luavgl_calendar_create_arrow   },
-    {"Dropdown",    luavgl_calendar_create_dropdown},
+static const rotable_Reg luavgl_calendar_methods[] = {
+    {"set",         LUA_TFUNCTION, {luavgl_calendar_set}            },
+    {"get_today",   LUA_TFUNCTION, {luavgl_calendar_get_today}      },
+    {"get_showed",  LUA_TFUNCTION, {luavgl_calendar_get_showed}     },
+    {"get_pressed", LUA_TFUNCTION, {luavgl_calendar_get_pressed}    },
+    {"get_btnm",    LUA_TFUNCTION, {luavgl_calendar_get_btnm}       },
+    {"Arrow",       LUA_TFUNCTION, {luavgl_calendar_create_arrow}   },
+    {"Dropdown",    LUA_TFUNCTION, {luavgl_calendar_create_dropdown}},
 
-    {NULL,          NULL                           },
+    {0,             0,             {0}                              },
 };
 
 static void luavgl_calendar_init(lua_State *L)
