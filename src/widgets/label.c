@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 static int luavgl_label_create(lua_State *L)
 {
@@ -126,21 +127,21 @@ static int luavgl_label_tostring(lua_State *L)
   return 1;
 }
 
-static const luaL_Reg luavgl_label_methods[] = {
-    {"set",             luavgl_label_set            },
-    {"set_text_static", luavgl_label_set_text_static},
-    {"get_text",        luavgl_label_get_text       },
-    {"get_long_mode",   luavgl_label_get_long_mode  },
-    {"ins_text",        luavgl_label_ins_text       },
-    {"cut_text",        luavgl_label_cut_text       },
+static const rotable_Reg luavgl_label_methods[] = {
+    {"set",             LUA_TFUNCTION, {luavgl_label_set}            },
+    {"set_text_static", LUA_TFUNCTION, {luavgl_label_set_text_static}},
+    {"get_text",        LUA_TFUNCTION, {luavgl_label_get_text}       },
+    {"get_long_mode",   LUA_TFUNCTION, {luavgl_label_get_long_mode}  },
+    {"ins_text",        LUA_TFUNCTION, {luavgl_label_ins_text}       },
+    {"cut_text",        LUA_TFUNCTION, {luavgl_label_cut_text}       },
 
-    {NULL,              NULL                      },
+    {0,                 0,             {0}                           },
 };
 
 static void luavgl_label_init(lua_State *L)
 {
-  luavgl_obj_newmetatable(L, &lv_label_class, "lv_label", luavgl_label_methods);
-  lua_pushcfunction(L, luavgl_label_tostring);
+  luavgl_obj_newmetatable(L, &lv_label_class, "lv_label",
+  luavgl_label_methods); lua_pushcfunction(L, luavgl_label_tostring);
   lua_setfield(L, -2, "__tostring");
   lua_pop(L, 1);
 }

@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 static int luavgl_led_create(lua_State *L)
 {
@@ -73,15 +74,14 @@ static int luavgl_led_get_brightness(lua_State *L)
   return 1;
 }
 
-static const luaL_Reg luavgl_led_methods[] = {
-    {"set",            luavgl_led_set           },
-    {"on",             luavgl_led_on            },
-    {"off",            luavgl_led_off           },
-    {"toggle",         luavgl_led_toggle        },
+static const rotable_Reg luavgl_led_methods[] = {
+    {"set",            LUA_TFUNCTION, {luavgl_led_set}           },
+    {"on",             LUA_TFUNCTION, {luavgl_led_on}            },
+    {"off",            LUA_TFUNCTION, {luavgl_led_off}           },
+    {"toggle",         LUA_TFUNCTION, {luavgl_led_toggle}        },
+    {"get_brightness", LUA_TFUNCTION, {luavgl_led_get_brightness}},
 
-    {"get_brightness", luavgl_led_get_brightness},
-
-    {NULL,             NULL                   },
+    {0,                0,             {0}                        },
 };
 
 static void luavgl_led_init(lua_State *L)

@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 static int luavgl_checkbox_create(lua_State *L)
 {
@@ -59,16 +60,16 @@ static int luavgl_checkbox_get_text(lua_State *L)
   return 1;
 }
 
-static const luaL_Reg luavgl_checkbox_methods[] = {
-    {"set",      luavgl_checkbox_set     },
-    {"get_text", luavgl_checkbox_get_text},
+static const rotable_Reg luavgl_checkbox_methods[] = {
+    {"set",      LUA_TFUNCTION, {luavgl_checkbox_set}     },
+    {"get_text", LUA_TFUNCTION, {luavgl_checkbox_get_text}},
 
-    {NULL,       NULL                  },
+    {0,          0,             {0}                       },
 };
 
 static void luavgl_checkbox_init(lua_State *L)
 {
   luavgl_obj_newmetatable(L, &lv_checkbox_class, "lv_checkbox",
-                        luavgl_checkbox_methods);
+                          luavgl_checkbox_methods);
   lua_pop(L, 1);
 }

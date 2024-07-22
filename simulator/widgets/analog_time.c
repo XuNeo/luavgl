@@ -91,12 +91,12 @@ static int luavgl_analog_time_resume(lua_State *L)
   return 0;
 }
 
-static const luaL_Reg luavgl_analog_time_methods[] = {
-    {"set",    luavgl_analog_time_set   },
-    {"pause",  luavgl_analog_time_pause },
-    {"resume", luavgl_analog_time_resume},
+static const rotable_Reg luavgl_analog_time_methods[] = {
+    {"set",    LUA_TFUNCTION, {luavgl_analog_time_set}   },
+    {"pause",  LUA_TFUNCTION, {luavgl_analog_time_pause} },
+    {"resume", LUA_TFUNCTION, {luavgl_analog_time_resume}},
 
-    {NULL,     NULL                     },
+    {0,        0,             {0}                        },
 };
 
 void luavgl_analog_time_init(lua_State *L)

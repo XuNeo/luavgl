@@ -1,5 +1,6 @@
 #include "luavgl.h"
 #include "private.h"
+#include "rotable.h"
 
 LUALIB_API luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx)
 {
@@ -117,7 +118,7 @@ static void dumpstack(lua_State *L)
  */
 LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
                                           const lv_obj_class_t *clz,
-                                          const char *name, const luaL_Reg *l,
+                                          const char *name, const rotable_Reg *l,
                                           int n)
 {
   if (luavgl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
@@ -149,8 +150,7 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
    * setmetatable(t, b)
    * M.__index = t
    */
-  lua_createtable(L, 0, n); /* t = {} */
-  luaL_setfuncs(L, l, 0);   /* set methods to t */
+  rotable_newlib(L, l); /* t = {l} */
   if (clz != &lv_obj_class) {
     /* b = getmatatable(clz.base_clz) */
     if (luavgl_obj_getmetatable(L, clz->base_class) == LUA_TNIL) {
@@ -158,13 +158,13 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
     }
 
     /* setmetatable(t, b) */
-    lua_setmetatable(L, -2);
+    rotable_setmetatable(L, -2);
   } else {
     /* For base obj, add widgets creation method as metatable. So we can use
      * obj:Object{} to create widgets.
      */
     luaL_getmetatable(L, "widgets");
-    lua_setmetatable(L, -2);
+    rotable_setmetatable(L, -2);
   }
 
   lua_setfield(L, -2, "__index"); /* M.__index = t */
