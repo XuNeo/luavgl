@@ -57,12 +57,6 @@ static int luavgl_pointer_set_property_kv(lua_State *L, void *data)
     return 0;
   }
 
-  /* a base obj property? */
-  ret = luavgl_img_set_property_kv(L, obj);
-  if (ret != 0) {
-    printf("unkown property for pointer: %s\n", lua_tostring(L, -2));
-  }
-
   return -1;
 }
 

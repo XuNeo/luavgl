@@ -7,81 +7,33 @@ static int luavgl_img_create(lua_State *L)
   return luavgl_obj_create_helper(L, lv_image_create);
 }
 
-static void lv_image_set_pivot_(void *obj, lua_State *L)
+static int image_set_pivot(lua_State *L, lv_obj_t *obj, bool set)
 {
-  if (!lua_istable(L, -1)) {
-    luaL_argerror(L, -1, "should be table.");
-    LV_LOG_ERROR("para should be table.");
-    return;
+  if (!set) {
+    /* Read pivot */
+    lv_point_t p;
+    lv_image_get_pivot(obj, &p);
+    lua_createtable(L, 0, 2);
+    lua_pushinteger(L, p.x);
+    lua_seti(L, -2, p.x);
+    lua_pushinteger(L, p.y);
+    lua_seti(L, -2, p.y);
+    return 1;
   }
 
-  lua_getfield(L, -1, "x");
-  lv_coord_t x = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lua_getfield(L, -1, "y");
-  lv_coord_t y = lua_tointeger(L, -1);
-  lua_pop(L, 1);
-
-  lv_image_set_pivot(obj, x, y);
+  lv_point_t point = luavgl_topoint(L, -1);
+  lv_image_set_pivot(obj, point.x, point.y);
+  return 1;
 }
 
-static const luavgl_value_setter_t img_property_table[] = {
-    {"src",
-     SETTER_TYPE_IMGSRC,             {.setter_pointer = (setter_pointer_t)lv_image_set_src}},
-    {"offset_x",  0,                 {.setter = (setter_int_t)lv_image_set_offset_x}       },
-    {"offset_y",  0,                 {.setter = (setter_int_t)lv_image_set_offset_y}       },
-    {"angle",     0,                 {.setter = (setter_int_t)lv_img_set_angle}            },
-    {"zoom",      0,                 {.setter = (setter_int_t)lv_img_set_zoom}             },
-    {"antialias", 0,                 {.setter = (setter_int_t)lv_image_set_antialias}      },
-    {"pivot",     SETTER_TYPE_STACK, {.setter_stack = lv_image_set_pivot_}                 },
+static const luavgl_property_ops_t img_property_ops[] = {
+    {.name = "pivot", .ops = image_set_pivot},
 };
 
-LUALIB_API int luavgl_img_set_property_kv(lua_State *L, void *data)
-{
-  lv_obj_t *obj = data;
-  int ret = luavgl_set_property(L, obj, img_property_table);
-
-  if (ret == 0) {
-    return 0;
-  }
-
-  /* a base obj property? */
-  ret = luavgl_obj_set_property_kv(L, obj);
-  if (ret != 0) {
-    LV_LOG_ERROR("unkown property for image");
-  }
-
-  return ret;
-}
-
-static int luavgl_img_set(lua_State *L)
-{
-  lv_obj_t *obj = luavgl_to_obj(L, 1);
-
-  if (!lua_istable(L, -1)) {
-    luaL_error(L, "expect a table on 2nd para.");
-    return 0;
-  }
-
-  /* lvgl requires img src should be set firstly */
-  lua_getfield(L, -1, "src");
-  if (!lua_isnoneornil(L, -1)) {
-    const char *src = NULL;
-    if (lua_isuserdata(L, -1)) {
-      src = lua_touserdata(L, -1);
-      LV_LOG_INFO("set img src to user data: %p", src);
-    } else {
-      src = lua_tostring(L, -1);
-    }
-    lv_image_set_src(obj, src);
-  }
-  lua_pop(L, 1);
-
-  luavgl_iterate(L, -1, luavgl_img_set_property_kv, obj);
-
-  return 0;
-}
+static const luavgl_table_t img_property_table = {
+    .len = sizeof(img_property_ops) / sizeof(img_property_ops[0]),
+    .array = img_property_ops,
+};
 
 /**
  * img.set_src(img, "path")
@@ -180,13 +132,12 @@ static int luavgl_get_img_size(lua_State *L)
 }
 
 static const rotable_Reg luavgl_img_methods[] = {
-    {"set",          LUA_TFUNCTION, {luavgl_img_set}       },
-
-    {"set_src",      LUA_TFUNCTION, {luavgl_img_set_src}   },
-    {"set_offset",   LUA_TFUNCTION, {luavgl_img_set_offset}},
-    {"set_pivot",    LUA_TFUNCTION, {luavgl_img_set_pivot} },
-    {"get_img_size", LUA_TFUNCTION, {luavgl_get_img_size}  },
-    {0,              0,             {0}                    },
+    {"set_src",      LUA_TFUNCTION,      {luavgl_img_set_src}        },
+    {"set_offset",   LUA_TFUNCTION,      {luavgl_img_set_offset}     },
+    {"set_pivot",    LUA_TFUNCTION,      {luavgl_img_set_pivot}      },
+    {"get_img_size", LUA_TFUNCTION,      {luavgl_get_img_size}       },
+    {"__property",   LUA_TLIGHTUSERDATA, {.ptr = &img_property_table}},
+    {0,              0,                  {0}                         },
 };
 
 static void luavgl_img_init(lua_State *L)

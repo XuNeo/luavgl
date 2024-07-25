@@ -388,7 +388,7 @@ local function Bird(parent, birdMovedCB)
 
     bird.setHead = function(self)
         bird.widget:set{
-            angle = self.head
+            rotation = self.head
         }
     end
 
@@ -605,7 +605,7 @@ local function entry()
             path = "bounce",
             exec_cb = function(obj, value)
                 obj:set{
-                    angle = value
+                    rotation = value
                 }
             end
         }
