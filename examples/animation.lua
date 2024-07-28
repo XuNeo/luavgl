@@ -18,7 +18,7 @@ root:Object():Image {
     path = "bounce",
     exec_cb = function(obj, value)
         obj:set {
-            angle = value
+            rotation = value
         }
     end,
     done_cb = function (anim, obj)
