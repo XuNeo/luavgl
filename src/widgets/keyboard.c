@@ -7,60 +7,15 @@ static int luavgl_keyboard_create(lua_State *L)
   return luavgl_obj_create_helper(L, lv_keyboard_create);
 }
 
-static void _lv_keyboard_set_textarea(void *obj, lua_State *L)
-{
-  lv_obj_t *ta = luavgl_to_obj(L, -1);
-  if (ta->class_p != &lv_textarea_class) {
-    luaL_argerror(L, -1, "expect textarea obj");
-    return;
-  }
-  lv_keyboard_set_textarea(obj, ta);
-}
-
-/* clang-format off */
-static const luavgl_value_setter_t keyboard_property_table[] = {
-    {"textarea", SETTER_TYPE_STACK, {.setter_stack = _lv_keyboard_set_textarea}},
-    {"mode", SETTER_TYPE_INT, {.setter = (setter_int_t)lv_keyboard_set_mode}},
-    {"popovers", SETTER_TYPE_INT, {.setter = (setter_int_t)lv_keyboard_set_popovers}},
+static const luavgl_table_t keyboard_property_table = {
+    .len = 0,
+    .array = NULL,
 };
-/* clang-format on */
-
-LUALIB_API int luavgl_keyboard_set_property_kv(lua_State *L, void *data)
-{
-  lv_obj_t *obj = data;
-  int ret = luavgl_set_property(L, obj, keyboard_property_table);
-
-  if (ret == 0) {
-    return 0;
-  }
-
-  /* a base obj property? */
-  ret = luavgl_obj_set_property_kv(L, obj);
-  if (ret != 0) {
-    LV_LOG_ERROR("unkown property for keyboard");
-  }
-
-  return ret;
-}
-
-static int luavgl_keyboard_set(lua_State *L)
-{
-  lv_obj_t *obj = luavgl_to_obj(L, 1);
-
-  if (!lua_istable(L, -1)) {
-    luaL_error(L, "expect a table on 2nd para.");
-    return 0;
-  }
-
-  luavgl_iterate(L, -1, luavgl_keyboard_set_property_kv, obj);
-
-  return 0;
-}
 
 static const rotable_Reg luavgl_keyboard_methods[] = {
-    {"set", LUA_TFUNCTION, {luavgl_keyboard_set}},
+    {"__property", LUA_TLIGHTUSERDATA, {.ptr = &img_property_table}},
 
-    {0,     0,             {0}                  },
+    {0,            0,                  {0}                         },
 };
 
 static void luavgl_keyboard_init(lua_State *L)
