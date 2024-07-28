@@ -4,7 +4,7 @@ local dd = lvgl.Dropdown {
     options = "Apple\nBanana\nOrange\nCherry\nGrape\nRaspberry\nMelon\nOrange\nLemon\nNuts",
     symbol = "\xEF\x81\x94",
     dir = lvgl.DIR.RIGHT,
-    highlight = false,
+    selected_highlight = false,
     text = nil,
     align = {
         type = lvgl.ALIGN.TOP_LEFT,
@@ -24,15 +24,15 @@ dd:onevent(lvgl.EVENT.VALUE_CHANGED,
     ---@param obj Dropdown
     ---@param code ObjEventCode
     function(obj, code)
-        obj:add_option(string.format("Option:%d", cnt), dd:get("option_cnt"))
+        obj:add_option(string.format("Option:%d", cnt), dd:get("option_count"))
         cnt = cnt + 1
-        print(obj:get("selected_str"), "option_cnt" .. obj:get("option_cnt"))
+        print(obj:get("selected_str"), "option_count" .. obj:get("option_count"))
     end
 )
 
 -- another dropdown on top left
 local dd = lvgl.Dropdown {
-    options = "Apple\nBanana\nOrange\nCherry\nGrape\nRaspberry\nMelon\nOrange\nLemon\nNuts",
+    options = "apple\nBanana\nOrange\nCherry\nGrape\nRaspberry\nMelon\nOrange\nLemon\nNuts",
     symbol = "\xEF\x81\xB7",
     dir = lvgl.DIR.BOTTOM,
     text = "SetText",
@@ -50,7 +50,7 @@ dd:get("list"):set { text_font = lvgl.Font("montserrat", 24) }
 dd:onevent(lvgl.EVENT.VALUE_CHANGED, function(obj, code)
     print(obj:get("selected_str") .. ":" .. obj:get("selected"),
         "dir:" .. obj:get("dir"),
-        "option_index" .. dd:get("option_index", obj:get("selected_str")))
+        "option_index" .. dd:option_index(obj:get("selected_str")))
 end)
 
 
@@ -60,7 +60,7 @@ lvgl.Timer {
     cb = function(t)
         t:delete()
         dd:open()
-        print("now dd should be opened: " .. (dd:is_open() and "open" or "closed"))
+        print("now dd should be opened: " .. (dd.is_open and "open" or "closed"))
     end
 }
 
@@ -69,6 +69,6 @@ lvgl.Timer {
     cb = function(t)
         t:delete()
         dd:close()
-        print("now dd should be closed: " .. (dd:is_open() and "open" or "closed"))
+        print("now dd should be closed: " .. (dd.is_open and "open" or "closed"))
     end
 }
