@@ -954,9 +954,8 @@ static const rotable_Reg luavgl_obj_methods[] = {
 static void luavgl_obj_init(lua_State *L)
 {
   luaL_newmetatable(L, "widgets");
-  luaL_newlib(L, widget_create_methods);
-  lua_setfield(L, -2, "__index");
-  lua_pop(L, 1);
+  luaL_setfuncs(L, widget_create_methods, 0);
+  lua_setfield(L, -1, "__index");
 
   /* base lv_obj */
   luavgl_obj_newmetatable(L, &lv_obj_class, "lv_obj", luavgl_obj_methods);
