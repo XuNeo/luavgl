@@ -142,6 +142,24 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj);
 LUALIB_API luavgl_obj_t *luavgl_to_lobj(lua_State *L, int idx);
 
 /**
+ * @brief Create metatable using lightuserdata as key.
+ * @param L
+ * @param key lightuserdata key
+ * @param name optional name for this metatable
+ * @return 1
+ */
+LUALIB_API int luavgl_createmetatable(lua_State *L, const void *key,
+                                      const char *name);
+
+/**
+  * @brief Get metatable using lightuserdata as key.
+  * @param L
+  * @param key lightuserdata key
+  * @return 1
+ */
+LUALIB_API int luavgl_getmetatable(lua_State *L, const void *key);
+
+/**
  * @brief Create metatable for specified object class
  *
  * @param L
