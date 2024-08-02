@@ -106,12 +106,39 @@ static void dumpstack(lua_State *L)
     case LUA_TNIL:
       LV_LOG_USER("%s: %s", luaL_typename(L, i), "nil");
       break;
+    case LUA_TUSERDATA:
+      LV_LOG_USER("%s: %p", luaL_typename(L, i), lua_touserdata(L, i));
+      break;
     default:
       LV_LOG_USER("%s: %p", luaL_typename(L, i), lua_topointer(L, i));
       break;
     }
   }
   fflush(stdout);
+}
+
+LUALIB_API int luavgl_createmetatable(lua_State *L, const void *key,
+                                      const char *name)
+{
+  /* create metatable, 3 elements, normally for, __index, __gc and
+   * __name. */
+  lua_createtable(L, 0, 4);
+  if (name) {
+    lua_pushstring(L, name);
+    lua_setfield(L, -2, "__name"); /* metatable.__name = tname */
+  }
+
+  /* add to registry */
+  lua_pushlightuserdata(L, (void *)key);
+  lua_pushvalue(L, -2);
+  lua_rawset(L, LUA_REGISTRYINDEX); /* registry[key] = metatable */
+  return 1;
+}
+
+LUALIB_API int luavgl_getmetatable(lua_State *L, const void *key)
+{
+  lua_pushlightuserdata(L, (void *)key);
+  return lua_rawget(L, LUA_REGISTRYINDEX);
 }
 
 /**
@@ -130,14 +157,11 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
   /* create metatable, 4 elements, normally for __magic, __index, __gc and
    * __name. */
   lua_createtable(L, 0, 4);
+  LV_LOG_INFO("create metatable for %s: %p", clz->name, lua_topointer(L, -1));
   if (name) {
     lua_pushstring(L, name);
     lua_setfield(L, -2, "__name"); /* metatable.__name = tname */
   }
-
-  /** A magic string we used to check if userdata is a luavgl object. */
-  lua_pushstring(L, "luavglObj");
-  lua_setfield(L, -2, "__magic");
 
   /* add to registry */
   lua_pushlightuserdata(L, (void *)clz);
@@ -252,9 +276,9 @@ LUALIB_API int luavgl_pcall(lua_State *L, int nargs, int nresult)
 LUALIB_API void *luavgl_test_obj(lua_State *L, int ud)
 {
   void *p = lua_touserdata(L, ud);
-  if (p != NULL) {                    /* value is a userdata? */
-    if (lua_getmetatable(L, ud)) {    /* does it have a metatable? */
-      lua_getfield(L, -1, "__magic"); /* get the magic string */
+  if (p != NULL) {                   /* value is a userdata? */
+    if (lua_getmetatable(L, ud)) {   /* does it have a metatable? */
+      lua_getfield(L, -1, "__name"); /* get the name string */
       lua_pushstring(L, "luavglObj");
       /* strings are interned, so no need to use strcmp. */
       if (!lua_rawequal(L, -1, -2)) /* not the same? */
@@ -367,7 +391,7 @@ LUALIB_API lv_point_t luavgl_topoint(lua_State *L, int idx)
 LUALIB_API lv_property_t luavgl_toproperty(lua_State *L, int idx,
                                            lv_prop_id_t id)
 {
-  lv_property_t prop;
+  lv_property_t prop = {0};
   prop.id = id;
   prop.num = 0;
 
