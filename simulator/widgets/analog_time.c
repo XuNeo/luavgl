@@ -1,9 +1,3 @@
-#include <lauxlib.h>
-#include <lua.h>
-
-#include <lvgl.h>
-#include <stdlib.h>
-
 #include <luavgl.h>
 
 #include "lv_analog_time.h"
@@ -13,11 +7,14 @@ static int luavgl_analog_time_create(lua_State *L)
   return luavgl_obj_create_helper(L, lv_analog_time_create);
 }
 
-static void _lv_analog_time_set_hands(void *obj, lua_State *L)
+static int analog_time_set_hands(lua_State *L, lv_obj_t *obj, bool set)
 {
+  if (!set)
+    return 0;
+
   if (!lua_istable(L, -1)) {
     luaL_argerror(L, -1, "expect date table.");
-    return;
+    return 1;
   }
 
   const void *hour, *minute, *second;
@@ -35,47 +32,17 @@ static void _lv_analog_time_set_hands(void *obj, lua_State *L)
   lua_pop(L, 1);
 
   lv_analog_time_set_hands(obj, hour, minute, second);
+  return 1;
 }
 
-/* clang-format off */
-static const luavgl_value_setter_t analog_time_property_table[] = {
-    {"hands", SETTER_TYPE_STACK, {.setter_stack = _lv_analog_time_set_hands}},
-    {"period", SETTER_TYPE_INT, {.setter = (setter_int_t)lv_analog_time_set_period}},
+static const luavgl_property_ops_t analog_time_property_ops[] = {
+    {.name = "hands", .ops = analog_time_set_hands},
 };
 
-/* clang-format on */
-
-static int luavgl_analog_time_set_property_kv(lua_State *L, void *data)
-{
-  lv_obj_t *obj = data;
-  int ret = luavgl_set_property(L, obj, analog_time_property_table);
-
-  if (ret == 0) {
-    return 0;
-  }
-
-  /* a base obj property? */
-  ret = luavgl_obj_set_property_kv(L, obj);
-  if (ret != 0) {
-    printf("unkown property for analog_time: %s\n", lua_tostring(L, -2));
-  }
-
-  return -1;
-}
-
-static int luavgl_analog_time_set(lua_State *L)
-{
-  lv_obj_t *obj = luavgl_to_obj(L, 1);
-
-  if (!lua_istable(L, -1)) {
-    luaL_error(L, "expect a table on 2nd para.");
-    return 0;
-  }
-
-  luavgl_iterate(L, -1, luavgl_analog_time_set_property_kv, obj);
-
-  return 0;
-}
+static const luavgl_table_t analog_time_property_table = {
+    .len = sizeof(analog_time_property_ops) / sizeof(luavgl_property_ops_t),
+    .array = analog_time_property_ops,
+};
 
 static int luavgl_analog_time_pause(lua_State *L)
 {
@@ -92,11 +59,11 @@ static int luavgl_analog_time_resume(lua_State *L)
 }
 
 static const rotable_Reg luavgl_analog_time_methods[] = {
-    {"set",    LUA_TFUNCTION, {luavgl_analog_time_set}   },
-    {"pause",  LUA_TFUNCTION, {luavgl_analog_time_pause} },
-    {"resume", LUA_TFUNCTION, {luavgl_analog_time_resume}},
+    {"pause",      LUA_TFUNCTION,      {luavgl_analog_time_pause}          },
+    {"resume",     LUA_TFUNCTION,      {luavgl_analog_time_resume}         },
+    {"__property", LUA_TLIGHTUSERDATA, {.ptr = &analog_time_property_table}},
 
-    {0,        0,             {0}                        },
+    {0,            0,                  {0}                                 },
 };
 
 void luavgl_analog_time_init(lua_State *L)
@@ -106,8 +73,7 @@ void luavgl_analog_time_init(lua_State *L)
   lua_pop(L, 1);
 
   luaL_getmetatable(L, "widgets");
-  lua_getfield(L, -1, "__index");
   lua_pushcfunction(L, luavgl_analog_time_create);
   lua_setfield(L, -2, "AnalogTime");
-  lua_pop(L, 2);
+  lua_pop(L, 1);
 }

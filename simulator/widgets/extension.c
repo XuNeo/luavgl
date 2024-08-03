@@ -62,8 +62,7 @@ void luavgl_extension_init(lua_State *L)
   lua_pop(L, 1);
 
   luaL_getmetatable(L, "widgets");
-  lua_getfield(L, -1, "__index");
   lua_pushcfunction(L, luavgl_extension_create);
   lua_setfield(L, -2, "Extension");
-  lua_pop(L, 2);
+  lua_pop(L, 1);
 }
