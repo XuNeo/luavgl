@@ -4,6 +4,8 @@
 #include <lua.h>
 #include <lvgl.h>
 
+#include "src/lvgl_private.h"
+
 #include <stdbool.h>
 #include <stdint.h>
 

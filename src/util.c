@@ -151,7 +151,7 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
                                           const rotable_Reg *l, int n)
 {
   if (luavgl_obj_getmetatable(L, clz) != LUA_TNIL) /* meta already exists */
-    return 0; /* leave previous value on top, but return 0 */
+    return 1;
   lua_pop(L, 1);
 
   /* create metatable, 4 elements, normally for __magic, __index, __gc and

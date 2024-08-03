@@ -18,7 +18,7 @@ typedef enum {
 } style_type_t;
 
 enum {
-  LV_STYLE_SIZE = _LV_STYLE_LAST_BUILT_IN_PROP + 1,
+  LV_STYLE_SIZE = LV_STYLE_LAST_BUILT_IN_PROP + 1,
   LV_STYLE_PAD_ALL,
   LV_STYLE_PAD_VER,
   LV_STYLE_PAD_HOR,
@@ -269,7 +269,7 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
 
     /* if reverse presents */
     if (luavgl_strstr(str, "-reverse")) {
-      flow |= _LV_FLEX_REVERSE;
+      flow |= LV_FLEX_REVERSE;
     }
   }
   lua_pop(L, 1);
@@ -282,9 +282,9 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
   if (lua_type(L, -1) == LUA_TSTRING) {
     str = lua_tostring(L, -1);
     if (lv_strcmp("wrap", str) == 0) {
-      flow |= _LV_FLEX_WRAP;
+      flow |= LV_FLEX_WRAP;
     } else if (lv_strcmp("wrap-reverse", str) == 0) {
-      flow |= _LV_FLEX_WRAP | _LV_FLEX_REVERSE;
+      flow |= LV_FLEX_WRAP | LV_FLEX_REVERSE;
     }
     /* else: normal */
   }
@@ -479,7 +479,7 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     default:
       break;
     }
-  } else if ((prop & mask) <= _LV_STYLE_LAST_BUILT_IN_PROP) {
+  } else if ((prop & mask) <= LV_STYLE_LAST_BUILT_IN_PROP) {
     cb(prop & mask, value, args);
   } else {
     return luaL_error(L, "unknown style");

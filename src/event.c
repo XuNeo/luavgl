@@ -48,7 +48,7 @@ static int luavgl_obj_on_event(lua_State *L)
   }
 
   lv_event_code_t code = lua_tointeger(L, 2);
-  if (code >= _LV_EVENT_LAST) {
+  if (code >= LV_EVENT_LAST) {
     luaL_argerror(L, 2, "event code illegal");
     return 0;
   }
@@ -68,7 +68,7 @@ static int luavgl_obj_on_event(lua_State *L)
         event->dsc = NULL;
         event->L = NULL;
         event->ref = LUA_NOREF;
-        event->code = _LV_EVENT_LAST;
+        event->code = LV_EVENT_LAST;
         if (res != LV_RESULT_OK) {
           return luaL_error(L, "Failed to remove event dsc: %d\n", res);
         }
@@ -88,7 +88,7 @@ static int luavgl_obj_on_event(lua_State *L)
       break;
     }
 
-    if (events[i]->code == _LV_EVENT_LAST) {
+    if (events[i]->code == LV_EVENT_LAST) {
       /* code marked as _LV_EVENT_LAST means this event has been removed, we can
        * reuse it. */
       event = events[i];
