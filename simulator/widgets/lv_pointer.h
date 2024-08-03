@@ -11,6 +11,8 @@ extern "C" {
 
 #include <lvgl.h>
 
+#include "src/lvgl_private.h"
+
 #if LV_USE_POINTER
 
 /*********************

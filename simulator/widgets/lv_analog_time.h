@@ -11,6 +11,8 @@ extern "C" {
 
 #include <lvgl.h>
 
+#include "src/lvgl_private.h"
+
 #include "lv_property_extend.h"
 
 #if LV_USE_ANALOG_TIME
