@@ -12,44 +12,13 @@ static const luavgl_value_setter_t list_property_table[] = {
 };
 /* clang-format on */
 
-LUALIB_API int luavgl_list_set_property_kv(lua_State *L, void *data)
-{
-  lv_obj_t *obj = data;
-  int ret = luavgl_set_property(L, obj, list_property_table);
-
-  if (ret == 0) {
-    return 0;
-  }
-
-  /* a base obj property? */
-  ret = luavgl_obj_set_property_kv(L, obj);
-  if (ret != 0) {
-    LV_LOG_ERROR("unkown property for list");
-  }
-
-  return ret;
-}
-
-static int luavgl_list_set(lua_State *L)
-{
-  lv_obj_t *obj = luavgl_to_obj(L, 1);
-
-  if (!lua_istable(L, -1)) {
-    luaL_error(L, "expect a table on 2nd para.");
-    return 0;
-  }
-
-  luavgl_iterate(L, -1, luavgl_list_set_property_kv, obj);
-
-  return 0;
-}
-
 static int luavgl_list_add_text(lua_State *L)
 {
   lv_obj_t *list = luavgl_to_obj(L, 1);
   const char *str = lua_tostring(L, 2);
   lv_obj_t *obj = lv_list_add_text(list, str);
   luavgl_add_lobj(L, obj)->lua_created = true;
+  lua_settop(L, 1);
   return 1;
 }
 
@@ -73,12 +42,11 @@ static int luavgl_get_btn_text(lua_State *L)
 }
 
 static const rotable_Reg luavgl_list_methods[] = {
-    {"set",          LUA_TFUNCTION, {luavgl_list_set}     },
-    {"add_text",     LUA_TFUNCTION, {luavgl_list_add_text}},
-    {"add_btn",      LUA_TFUNCTION, {luavgl_list_add_btn} },
-    {"get_btn_text", LUA_TFUNCTION, {luavgl_get_btn_text} },
+    {"add_text",     LUA_TFUNCTION,      {luavgl_list_add_text}      },
+    {"add_btn",      LUA_TFUNCTION,      {luavgl_list_add_btn}       },
+    {"get_btn_text", LUA_TFUNCTION,      {luavgl_get_btn_text}       },
 
-    {0,              0,             {0}                   },
+    {0,              0,                  {0}                         },
 };
 
 static void luavgl_list_init(lua_State *L)
