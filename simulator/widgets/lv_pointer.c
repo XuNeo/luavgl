@@ -20,6 +20,7 @@
 static void lv_pointer_constructor(const lv_obj_class_t* class_p,
                                     lv_obj_t* obj);
 static void angle_update(lv_obj_t* obj);
+static void ext_draw_size_event_cb(lv_event_t * e);
 
 /**********************
  *  STATIC VARIABLES
@@ -46,6 +47,7 @@ lv_obj_t* lv_pointer_create(lv_obj_t* parent)
 
     /* pointer can rotate out of parent's area. */
     lv_obj_add_flag(parent, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+    lv_obj_add_event_cb(parent, ext_draw_size_event_cb, LV_EVENT_REFR_EXT_DRAW_SIZE, NULL);
     return obj;
 }
 
@@ -76,6 +78,11 @@ void lv_pointer_set_range(lv_obj_t* obj, int value_start, int value_range,
 /**********************
  *   STATIC FUNCTIONS
  **********************/
+static void ext_draw_size_event_cb(lv_event_t * e)
+{
+    lv_coord_t * cur_size = lv_event_get_param(e);
+    *cur_size = LV_MAX(*cur_size, LV_HOR_RES);
+}
 
 static void lv_pointer_constructor(const lv_obj_class_t* class_p,
                                     lv_obj_t* obj)

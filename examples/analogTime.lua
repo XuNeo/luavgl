@@ -1,5 +1,6 @@
 local analogTime = lvgl.AnalogTime {
-    border_width = 0,
+    border_width = 1,
+    border_color = "#F00",
     x = lvgl.HOR_RES() // 2,
     y = lvgl.VER_RES() // 2,
     hands = {

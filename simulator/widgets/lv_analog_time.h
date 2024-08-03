@@ -11,6 +11,8 @@ extern "C" {
 
 #include <lvgl.h>
 
+#include "lv_property_extend.h"
+
 #if LV_USE_ANALOG_TIME
 
 /*********************
@@ -20,6 +22,13 @@ extern "C" {
 /**********************
  *      TYPEDEFS
  **********************/
+
+#if LV_USE_OBJ_PROPERTY
+enum {
+    LV_PROPERTY_ID(ANALOG_TIME,     PERIOD, LV_PROPERTY_TYPE_INT,      0),
+    LV_PROPERTY_ANALOG_TIME_END,
+};
+#endif
 
 typedef struct {
     lv_obj_t obj;
@@ -50,6 +59,7 @@ void lv_analog_time_set_hands(lv_obj_t* obj, const void* hour,
 void lv_analog_time_pause(lv_obj_t* obj);
 void lv_analog_time_resume(lv_obj_t* obj);
 void lv_analog_time_set_period(lv_obj_t* obj, uint32_t period);
+uint32_t lv_analog_time_get_period(lv_obj_t* obj);
 
 /**********************
  *      MACROS

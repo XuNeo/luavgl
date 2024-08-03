@@ -1,14 +1,16 @@
 local root = lvgl.Object {
-    w = 0,
+    w = 1,
     h = 0,
     pad_all = 0,
     align = lvgl.ALIGN.CENTER,
     border_width = 1,
     border_color = "#F00",
+    flag_scrollable = false,
 }
 
 local pointer = root:Pointer {
     src = SCRIPT_PATH .. "/assets/second.png",
+    pivot = { 20, 233 },
     x = -20,
     y = -233,
     border_width = 1,
@@ -19,12 +21,6 @@ local pointer = root:Pointer {
         angleStart = 0,
         angleRange = -3600
     },
-}
-
--- lvgl requires src set firstly, since lua cannot guarantee table order,
--- we set pivot after image src is set.
-pointer:set {
-    pivot = { x = 20, y = 233 },
 }
 
 print("img w,h: ", pointer:get_img_size())

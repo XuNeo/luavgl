@@ -4,6 +4,9 @@
 #include "lv_analog_time.h"
 #include "lv_pointer.h"
 
+#include "lv_obj_property_names.h"
+
+#include <stdint.h>
 #include <time.h>
 
 #if LV_USE_ANALOG_TIME
@@ -37,11 +40,35 @@ static lv_obj_t* create_hand(lv_obj_t* obj, const char* img);
  *  STATIC VARIABLES
  **********************/
 
+#if LV_USE_OBJ_PROPERTY
+static const lv_property_ops_t properties[] = {
+    {
+        .id = LV_PROPERTY_ANALOG_TIME_PERIOD,
+        .setter = lv_analog_time_set_period,
+        .getter = lv_analog_time_get_period,
+    },
+};
+#endif
+
 const lv_obj_class_t lv_analog_time_class = {
     .constructor_cb = lv_analog_time_constructor,
     .destructor_cb = lv_analog_time_destructor,
     .instance_size = sizeof(lv_analog_time_t),
     .base_class = &lv_obj_class,
+    .name = "analogtime",
+
+#if LV_USE_OBJ_PROPERTY
+    .prop_index_start = LV_PROPERTY_ANALOG_TIME_START,
+    .prop_index_end = LV_PROPERTY_ANALOG_TIME_END,
+    .properties = properties,
+    .properties_count = sizeof(properties) / sizeof(properties[0]),
+
+#if LV_USE_OBJ_PROPERTY_NAME
+    .property_names = lv_analog_time_property_names,
+    .names_count = sizeof(lv_analog_time_property_names) / sizeof(lv_property_name_t),
+#endif
+
+#endif
 };
 
 /**********************
@@ -149,9 +176,21 @@ void lv_analog_time_set_period(lv_obj_t* obj, uint32_t period)
     lv_timer_set_period(analog->timer, period);
 }
 
+uint32_t lv_analog_time_get_period(lv_obj_t* obj)
+{
+    lv_analog_time_t* analog = (lv_analog_time_t*)obj;
+    return analog->period;
+}
+
 /**********************
  *   STATIC FUNCTIONS
  **********************/
+
+static void ext_draw_size_event_cb(lv_event_t * e)
+{
+    lv_coord_t * cur_size = lv_event_get_param(e);
+    *cur_size = LV_MAX(*cur_size, LV_HOR_RES);
+}
 
 static void lv_analog_time_constructor(const lv_obj_class_t* class_p,
                                         lv_obj_t* obj)
@@ -160,12 +199,14 @@ static void lv_analog_time_constructor(const lv_obj_class_t* class_p,
     LV_TRACE_OBJ_CREATE("begin");
 
     lv_analog_time_t* analog = (lv_analog_time_t*)obj;
+    lv_obj_t * parent = lv_obj_get_parent(obj);
     analog->period = 60 * 60 * 1000; /* default to 1Hour = 60min*60sec*1000ms*/
-    lv_obj_add_flag(lv_obj_get_parent(obj), LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+    lv_obj_add_flag(parent, LV_OBJ_FLAG_OVERFLOW_VISIBLE);
+    lv_obj_add_event_cb(parent, ext_draw_size_event_cb, LV_EVENT_REFR_EXT_DRAW_SIZE, NULL);
 
     /* hands pivot is place to 0, 0 */
     lv_obj_remove_style_all(obj);
-    lv_obj_set_size(obj, 0, 0);
+    lv_obj_set_size(obj, 1, 0);
 
     analog->timer = lv_timer_create(timer_cb, UNIT_ONE_MINUTE, obj);
     lv_timer_pause(analog->timer);
@@ -275,7 +316,7 @@ static void update_time(lv_obj_t* obj)
 static void timer_cb(lv_timer_t* t)
 {
     /* timeup */
-    update_time(t->user_data);
+    update_time(lv_timer_get_user_data(t));
 }
 
 /* examples */
