@@ -178,13 +178,6 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
                                           const char *name,
                                           const rotable_Reg *l, int n);
 
-/**
- * @brief Get user value of userdata of lua lvgl object, create if not exists
- *
- * @return type of the uservalue, LUA_TTABLE
- */
-LUALIB_API int luavgl_obj_getuserdatauv(lua_State *L, int idx);
-
 /* helper to get value from stack */
 
 /**

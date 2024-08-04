@@ -27,25 +27,6 @@ static int luavgl_label_cut_text(lua_State *L)
   return 0;
 }
 
-/* demo purpose, there is no need to use set_text_static */
-static int luavgl_label_set_text_static(lua_State *L)
-{
-  const char *str = lua_tostring(L, 2);
-  luavgl_obj_t *lobj = luavgl_to_lobj(L, 1);
-  if (lobj->obj == NULL) {
-    return luaL_error(L, "obj null.");
-  }
-
-  luavgl_obj_getuserdatauv(L, 1);
-
-  /* uservalue is on top */
-  lua_pushvalue(L, 2);
-  lua_setfield(L, -2, "text_static");
-
-  lv_label_set_text_static(lobj->obj, str);
-  return 0;
-}
-
 static int luavgl_label_tostring(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
@@ -54,7 +35,6 @@ static int luavgl_label_tostring(lua_State *L)
 }
 
 static const rotable_Reg luavgl_label_methods[] = {
-    {"set_text_static", LUA_TFUNCTION, {luavgl_label_set_text_static}},
     {"ins_text",        LUA_TFUNCTION, {luavgl_label_ins_text}       },
     {"cut_text",        LUA_TFUNCTION, {luavgl_label_cut_text}       },
 
