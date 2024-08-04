@@ -43,6 +43,9 @@ static void obj_delete_cb(lv_event_t *e)
     goto pop_exit;
   }
 
+  lua_pushnil(L);
+  lua_setuservalue(L, -2);
+
   luavgl_obj_t *lobj = luavgl_to_lobj(L, -1);
   if (lobj->lua_created)
     goto pop_exit;
@@ -79,31 +82,6 @@ static void obj_delete_cb(lv_event_t *e)
 pop_exit:
   lua_pop(L, 1);
   return;
-}
-
-/**
- * get the obj userdata and uservalue, if uservalue is not a table, then add
- * one. result stack: table(from uservalue)
- * return uservalue type: LUA_TTABLE
- */
-LUALIB_API int luavgl_obj_getuserdatauv(lua_State *L, int idx)
-{
-  int type = lua_getuservalue(L, idx);
-  if (type == LUA_TTABLE)
-    return type;
-
-  lua_pop(L, 1);
-  /* initial element: 1 */
-  lua_createtable(L, 0, 1);
-
-#if 0 /* reserved slot, not used for now */
-  lua_pushinteger(L, 1);
-  lua_pushnil(L);
-  lua_rawset(L, -3);
-#endif
-  lua_pushvalue(L, -1); /* leave one on stack */
-  lua_setuservalue(L, idx > 0 ? idx : idx - 3);
-  return LUA_TTABLE;
 }
 
 static int luavgl_obj_create(lua_State *L)
@@ -831,10 +809,22 @@ static int obj_property_h(lua_State *L, lv_obj_t *obj, bool set)
   return 1;
 }
 
+static int obj_property_user_data(lua_State *L, lv_obj_t *obj, bool set)
+{
+  if (set) {
+    lua_pushvalue(L, -1);
+    lua_setuservalue(L, 1);
+  } else {
+    lua_getuservalue(L, 1);
+  }
+  return 1;
+}
+
 static const luavgl_property_ops_t obj_property_ops[] = {
-    {.name = "align", .ops = obj_property_align},
-    {.name = "h",     .ops = obj_property_h    },
-    {.name = "w",     .ops = obj_property_w    },
+    {.name = "align",     .ops = obj_property_align    },
+    {.name = "h",         .ops = obj_property_h        },
+    {.name = "w",         .ops = obj_property_w        },
+    {.name = "user_data", .ops = obj_property_user_data},
 };
 
 static const luavgl_table_t luavgl_obj_property_table = {
