@@ -1053,8 +1053,11 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
   lv_obj_t *parent;
 
   int type = lua_type(L, 1);
-  if (type == LUA_TTABLE || type == LUA_TNONE || type == LUA_TNIL) {
+  if (type == LUA_TTABLE) {
     parent = ctx->root;
+  } else if (type == LUA_TNONE || type == LUA_TNIL) {
+    parent = ctx->root;
+    lua_remove(L, 1); /* Remove nil from stack */
   } else {
     parent = luavgl_to_obj(L, 1);
     lua_remove(L, 1); /* Remove parent from stack */
