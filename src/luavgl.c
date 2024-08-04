@@ -9,6 +9,7 @@
 #include "group.c"
 #include "indev.c"
 #include "obj.c"
+#include "palette.c"
 #include "timer.c"
 #include "util.c"
 
@@ -137,7 +138,7 @@ LUALIB_API int luaopen_lvgl(lua_State *L)
   luavgl_indev_init(L);
   luavgl_group_init(L);
   luavgl_disp_init(L);
-
+  luavgl_palette_init(L);
   luavgl_constants_init(L);
 
   /* Methods to create widget locate in widgets table, check `luavgl_obj_init`

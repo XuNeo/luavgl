@@ -431,6 +431,12 @@ LUALIB_API lv_property_t luavgl_toproperty(lua_State *L, int idx,
   return prop;
 }
 
+LUALIB_API int luavgl_pushcolor(lua_State *L, lv_color_t color)
+{
+  lua_pushinteger(L, lv_color_to_int(color));
+  return 1;
+}
+
 LUALIB_API int luavgl_pushproperty(lua_State *L, const lv_property_t *prop)
 {
   lv_prop_id_t id = prop->id;
@@ -444,7 +450,7 @@ LUALIB_API int luavgl_pushproperty(lua_State *L, const lv_property_t *prop)
     lua_pushnumber(L, prop->precise);
     return 1;
   case LV_PROPERTY_TYPE_COLOR:
-    lua_pushinteger(L, lv_color_to_int(prop->color));
+    luavgl_pushcolor(L, prop->color);
     return 1;
   case LV_PROPERTY_TYPE_POINT:
     /* table of {x, y} */

@@ -11,6 +11,9 @@ local container = lvgl.Object {
     }
 }
 
+-- change color directly using property
+container.bg_color = lvgl.palette.main(lvgl.palette.BLUE_GREY)
+
 print("created container", container)
 
 local function createBtn(parent, name)
