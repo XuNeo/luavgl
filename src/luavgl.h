@@ -233,6 +233,11 @@ LUALIB_API lv_property_t luavgl_toproperty(lua_State *L, int idx,
 LUALIB_API int luavgl_pushproperty(lua_State *L, const lv_property_t *prop);
 
 /**
+ * @brief Push lvgl color to stack
+ */
+LUALIB_API int luavgl_pushcolor(lua_State *L, lv_color_t color);
+
+/**
  * @brief Helper function to iterate through table
  *
  * @param L
