@@ -154,9 +154,8 @@ LUALIB_API int luavgl_obj_createmetatable(lua_State *L,
     return 1;
   lua_pop(L, 1);
 
-  /* create metatable, 4 elements, normally for __magic, __index, __gc and
-   * __name. */
-  lua_createtable(L, 0, 4);
+  /* create metatable, 3 elements, normally for __index, __gc and __name. */
+  lua_createtable(L, 0, 3);
   LV_LOG_INFO("create metatable for %s: %p", clz->name, lua_topointer(L, -1));
   if (name) {
     lua_pushstring(L, name);
@@ -421,6 +420,9 @@ LUALIB_API lv_property_t luavgl_toproperty(lua_State *L, int idx,
   case LV_PROPERTY_TYPE_FONT:
     prop.ptr = lua_touserdata(L, idx);
     return prop;
+  case LV_PROPERTY_TYPE_BOOL:
+    prop.enable = lua_toboolean(L, idx);
+    return prop;
   case LV_PROPERTY_TYPE_POINTER:
     break;
   default:
@@ -474,6 +476,9 @@ LUALIB_API int luavgl_pushproperty(lua_State *L, const lv_property_t *prop)
   case LV_PROPERTY_TYPE_FONT:
   case LV_PROPERTY_TYPE_POINTER:
     lua_pushlightuserdata(L, (void *)prop->ptr);
+    return 1;
+  case LV_PROPERTY_TYPE_BOOL:
+    lua_pushboolean(L, prop->enable);
     return 1;
   default:
     return luaL_error(L, "unsupported property type: %d", type);
