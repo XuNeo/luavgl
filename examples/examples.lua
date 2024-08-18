@@ -41,6 +41,7 @@ end
 
 createBtn(container, "keyboard")
 createBtn(container, "animation")
+createBtn(container, "declarative")
 createBtn(container, "pointer")
 createBtn(container, "analogTime")
 createBtn(container, "userdata")
