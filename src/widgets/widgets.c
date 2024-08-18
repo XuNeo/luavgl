@@ -41,6 +41,10 @@
 #include "textarea.c"
 #endif
 
+#if LV_USE_BUTTON
+#include "button.c"
+#endif
+
 static int luavgl_obj_create(lua_State *L);
 
 static const luaL_Reg widget_create_methods[] = {
@@ -84,6 +88,10 @@ static const luaL_Reg widget_create_methods[] = {
 
 #if LV_USE_TEXTAREA
     {"Textarea", luavgl_textarea_create},
+#endif
+
+#if LV_USE_TEXTAREA
+    {"Button",   luavgl_button_create  },
 #endif
     {NULL,       NULL                  }
 };
@@ -130,4 +138,7 @@ static void luavgl_widgets_init(lua_State *L)
   luavgl_dropdown_init(L);
 #endif
 
+#if LV_USE_DROPDOWN
+  luavgl_button_init(L);
+#endif
 }
