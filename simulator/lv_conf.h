@@ -303,7 +303,7 @@
 #define LV_USE_OBJ_ID           1
 
 /* Use lvgl builtin method for obj ID */
-#define LV_USE_OBJ_ID_BUILTIN   1
+#define LV_USE_OBJ_ID_BUILTIN   0
 
 /*Use obj property set/get API*/
 #define LV_USE_OBJ_PROPERTY 1

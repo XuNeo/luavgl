@@ -608,6 +608,33 @@ static int luavgl_obj_get_pos(lua_State *L)
   return 1;
 }
 
+static int luavgl_obj_get_child_by_id(lua_State *L)
+{
+  lv_obj_t *obj;
+  const char *id;
+  if (lua_type(L, 1) == LUA_TSTRING) {
+    obj = NULL;
+    id = lua_tostring(L, 1);
+  } else {
+    obj = luavgl_to_obj(L, 1);
+    id = luaL_checkstring(L, 2);
+  }
+
+  lv_obj_t *child = lv_obj_get_child_by_id(obj, id);
+  if (child == NULL) {
+    lua_pushnil(L);
+    return 1;
+  }
+
+  lua_pushlightuserdata(L, child);
+  lua_rawget(L, LUA_REGISTRYINDEX);
+  if (lua_isnil(L, -1)) {
+    luavgl_add_lobj(L, child)->lua_created = false;
+  }
+
+  return 1;
+}
+
 /**
  * Remove all animations associates to this object
  */
@@ -719,6 +746,52 @@ LUALIB_API int luavgl_obj_get_property(lua_State *L)
   return obj_property(L, obj);
 }
 
+#if LV_USE_OBJ_ID_BUILTIN == 0
+/* For luavgl, we only support string as ID. */
+void lv_obj_assign_id(const lv_obj_class_t *class_p, lv_obj_t *obj) {}
+
+void lv_obj_free_id(lv_obj_t *obj)
+{
+  if (obj->id) {
+    lv_free(obj->id);
+    obj->id = NULL;
+  }
+}
+
+const char *lv_obj_stringify_id(lv_obj_t *obj, char *buf, uint32_t len)
+{
+  if (obj->id == NULL)
+    return NULL;
+  lv_strlcpy(buf, (const char *)obj->id, len);
+  return buf;
+}
+
+int lv_obj_id_compare(const void *id1, const void *id2)
+{
+  if (id1 == NULL || id2 == NULL)
+    return -1;
+  return lv_strcmp(id1, id2);
+}
+
+#endif
+
+static int obj_property_id(lua_State *L, lv_obj_t *obj, bool set)
+{
+  if (set) {
+    if (!lua_isstring(L, -1)) {
+      return luaL_error(L, "id should be string");
+    }
+
+    lv_obj_set_id(obj, lv_strdup(lua_tostring(L, -1)));
+    return 0;
+  } else {
+    /* get property */
+    void *id = lv_obj_get_id(obj);
+    id == NULL ? lua_pushnil(L) : lua_pushstring(L, id);
+    return 1;
+  }
+}
+
 static int obj_property_align(lua_State *L, lv_obj_t *obj, bool set)
 {
   if (set) {
@@ -790,6 +863,7 @@ static int obj_property_user_data(lua_State *L, lv_obj_t *obj, bool set)
 
 static const luavgl_property_ops_t obj_property_ops[] = {
     {.name = "align",     .ops = obj_property_align    },
+    {.name = "id",        .ops = obj_property_id       },
     {.name = "h",         .ops = obj_property_h        },
     {.name = "w",         .ops = obj_property_w        },
     {.name = "user_data", .ops = obj_property_user_data},
@@ -844,6 +918,7 @@ static const rotable_Reg luavgl_obj_methods[] = {
     {"indev_search",             LUA_TFUNCTION,      {luavgl_obj_indev_search}            },
     {"get_coords",               LUA_TFUNCTION,      {luavgl_obj_get_coords}              },
     {"get_pos",                  LUA_TFUNCTION,      {luavgl_obj_get_pos}                 },
+    {"get_child_by_id",          LUA_TFUNCTION,      {luavgl_obj_get_child_by_id}         },
 
     {"onevent",                  LUA_TFUNCTION,      {luavgl_obj_on_event}                },
     {"onPressed",                LUA_TFUNCTION,      {luavgl_obj_on_pressed}              },
@@ -958,6 +1033,10 @@ static void luavgl_obj_init(lua_State *L)
   /* 3. Base lv_obj metatable */
   luavgl_obj_newmetatable(L, &lv_obj_class, "lv_obj", luavgl_obj_methods);
   lua_pop(L, 1); /* remove obj metatable */
+
+  /* Register to global function */
+  lua_pushcfunction(L, luavgl_obj_get_child_by_id);
+  lua_setfield(L, -2, "get_child_by_id");
 }
 
 /**
