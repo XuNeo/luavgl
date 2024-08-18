@@ -11,28 +11,7 @@ static int luavgl_anim_create(lua_State *L);
 static int luavgl_obj_delete(lua_State *L);
 static int luavgl_obj_clean(lua_State *L);
 
-struct setprop_para {
-  lv_obj_t *obj;
-  const luavgl_table_t *table;
-};
-
 static const int obj_meta_key;
-
-/**
- * @brief Set obj properties based on property table on stack top
- *
- * Internally used.
- */
-static inline void luavgl_setup_obj(lua_State *L, lv_obj_t *obj,
-                                    const luavgl_table_t *properties)
-{
-  struct setprop_para para = {
-      .obj = obj,
-      .table = properties,
-  };
-
-  luavgl_iterate(L, -1, luavgl_obj_set_property_kv, &para);
-}
 
 static void obj_delete_cb(lv_event_t *e)
 {
@@ -167,21 +146,11 @@ static int luavgl_obj_set(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
 
   if (!lua_istable(L, -1)) {
-    luaL_error(L, "expect a table on 2nd para");
-    lua_settop(L, 1);
-    return 1;
+    return luaL_error(L, "expect a table on 2nd para");
   }
 
-  const luavgl_table_t *properties;
-
-  int t = lua_getfield(L, 1, "__property");
-  if (t != LUA_TLIGHTUSERDATA) {
-    return luaL_argerror(L, 1, "has no __property");
-  }
-
-  properties = lua_touserdata(L, -1);
-  lua_pop(L, 1); /* Get rid of the property userdata from stack */
-  luavgl_setup_obj(L, obj, properties);
+  /* Iterate the table and set property */
+  luavgl_iterate(L, -1, luavgl_obj_set_property_kv, obj);
 
   lua_settop(L, 1);
   return 1;
@@ -269,17 +238,6 @@ static int luavgl_obj_get_parent(lua_State *L)
   }
 
   return 1;
-}
-
-static int luavgl_obj_set_get_parent(lua_State *L)
-{
-  lv_obj_t *obj = luavgl_to_obj(L, 1);
-  if (!lua_isnoneornil(L, 2)) {
-    lv_obj_t *parent = luavgl_to_obj(L, 2);
-    lv_obj_set_parent(obj, parent);
-  }
-
-  return luavgl_obj_get_parent(L);
 }
 
 static int luavgl_obj_get_child(lua_State *L)
@@ -661,94 +619,104 @@ static int luavgl_obj_remove_anim_all(lua_State *L)
 }
 
 /**
- * Set object property. The property is distinguished by name, the same name
- * such as width is both a widget property and style. We treat widget property
- * has higher priority than style. For some special property, even lvgl has
- * corresponding property API, the value is not easy for lua to deal with,
- * these properties are also handled by lua callback directly.
- *
- * On stack, -2: property name, -1: propery value
+ * Use lvgl property API to get or set property.
+ * stack layout:
+ * 1: obj,
+ * -2 property name, -1: property value if set is true
+ * Return negative value if not found.
  */
-static int obj_set_property_stack(lua_State *L, lv_obj_t *obj,
-                                  const luavgl_table_t *table)
+static int obj_property_lvgl(lua_State *L, lv_obj_t *obj, lv_prop_id_t id,
+                             bool set, const char *name)
 {
-  const char *key = lua_tostring(L, -2);
-
-  if (table && table->array) {
-    const luavgl_property_ops_t *ops = table->array;
-
-    /* 1. Try the luavgl property table for this specific class. */
-    for (int i = 0; i < table->len; i++) {
-      if (lv_strcmp(ops[i].name, key) == 0) {
-        return ops[i].ops(L, obj, true);
-      }
+  lv_property_t prop;
+  /* A valid lvgl property, it must success. */
+  if (set) {
+    prop = luavgl_toproperty(L, -1, id);
+    lv_result_t res = lv_obj_set_property(obj, &prop);
+    if (res == LV_RESULT_OK) {
+      return 0;
     }
-  }
-
-  /* 2. Try lvgl property */
-  lv_prop_id_t id = lv_obj_property_get_id(obj, key);
-  if (id != LV_PROPERTY_ID_INVALID) {
-    lv_property_t prop = luavgl_toproperty(L, -1, id);
+  } else {
+    prop = lv_obj_get_property(obj, id);
     if (prop.id != LV_PROPERTY_ID_INVALID) {
-      if (lv_obj_set_property(obj, &prop) == LV_RESULT_OK) {
-        return 0;
-      }
+      luavgl_pushproperty(L, &prop);
+      return 1;
     }
   }
 
-  /* 3. Try luavgl obj style */
-  if (luavgl_obj_set_style_kv(L, obj, LV_STATE_DEFAULT) == 0) {
+  return luaL_error(L, "%s property failed: %s", set ? "set" : "get", name);
+}
+
+/**
+ * Keep stack unchanged, get the ops for specified property name
+ * stack layout:
+ * 1: obj,
+ * -2 property name, -1: property value if set is true
+ * Return negative value if not found.
+ */
+int obj_property(lua_State *L, lv_obj_t *obj)
+{
+  /* -2 must be property name. */
+  luaL_argcheck(L, lua_type(L, -2) == LUA_TSTRING, -2,
+                "property name must be string");
+
+  bool set = lua_type(L, -1) != LUA_TNIL;
+  int top = lua_gettop(L);
+  const char *name = luaL_checkstring(L, -2);
+  const lv_obj_class_t *clz = obj->class_p;
+  lv_prop_id_t id = LV_PROPERTY_ID_INVALID;
+
+  for (; clz; clz = clz->base_class) {
+    int t = luavgl_obj_getmetatable(L, clz);
+    /* Does this class have metatable? */
+    if (t == LUA_TTABLE) {
+      /* If it has metatable, it must have field __index, which is a rotable */
+      t = lua_getfield(L, -1, "__index");
+      t = lua_getfield(L, -1, "__property");
+      /* Does it provides __property ops table, which must be a ligthuserdata */
+      if (t == LUA_TLIGHTUSERDATA) {
+        const luavgl_table_t *table = lua_touserdata(L, -1);
+        const luavgl_property_ops_t *ops = table->array;
+        /* @todo, use bsearch and force property table in order. */
+        for (int i = 0; i < table->len; i++) {
+          if (lv_strcmp(ops[i].name, name) == 0) {
+            lua_settop(L, top);
+            /* Stack: 1, obj, -2, property name, -1, value if set is true */
+            return ops[i].ops(L, obj, set);
+          }
+        }
+      }
+    }
+
+    /* Restore the original stack. */
+    lua_settop(L, top);
+
+    /* Try lvgl base class */
+    id = lv_obj_class_property_get_id(clz, name);
+    if (id != LV_PROPERTY_ID_INVALID) {
+      return obj_property_lvgl(L, obj, id, set, name);
+    }
+  }
+
+  /* Try style, only set method supported. */
+  if (set && luavgl_obj_set_style_kv(L, obj, LV_STATE_DEFAULT) == 0) {
     return 0;
   }
 
-  LV_LOG_ERROR("property not found: %s", key);
-  return luaL_error(L, "property not found: %s", key);
-}
-
-static int obj_get_property_stack(lua_State *L, lv_obj_t *obj,
-                                  const luavgl_table_t *table)
-{
-  const char *key = lua_tostring(L, -1);
-
-  if (table && table->array) {
-    const luavgl_property_ops_t *ops = table->array;
-
-    /* 1. Try the luavgl property table for this specific class. */
-    for (int i = 0; i < table->len; i++) {
-      if (lv_strcmp(ops[i].name, key) == 0) {
-        return ops[i].ops(L, obj, false);
-      }
-    }
-  }
-
-  /* 2. Try lvgl property */
-  lv_prop_id_t id = lv_obj_property_get_id(obj, key);
-  lv_property_t prop = {};
+  /* Try lvgl style property */
+  id = lv_style_property_get_id(name);
   if (id != LV_PROPERTY_ID_INVALID) {
-    prop = lv_obj_get_property(obj, id);
-    if (prop.id != LV_PROPERTY_ID_INVALID) {
-      return luavgl_pushproperty(L, &prop);
-    }
+    return obj_property_lvgl(L, obj, id, set, name);
   }
 
-  return 0;
+  return -1;
 }
 
 LUALIB_API int luavgl_obj_get_property(lua_State *L)
 {
-  int t;
-  const luavgl_table_t *table;
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-
-  t = lua_getfield(L, 1, "__property");
-  if (t != LUA_TLIGHTUSERDATA) {
-    return luaL_argerror(L, 1, "has no __property");
-  }
-
-  table = lua_touserdata(L, -1);
-  lua_pop(L, 1); /* Get rid of the property userdata from stack */
-
-  return obj_get_property_stack(L, obj, table);
+  lua_pushnil(L); /* 1: obj, -2: property name, -1: value(nil for get method) */
+  return obj_property(L, obj);
 }
 
 static int obj_property_align(lua_State *L, lv_obj_t *obj, bool set)
@@ -840,8 +808,6 @@ static const rotable_Reg luavgl_obj_methods[] = {
     {"align_to",                 LUA_TFUNCTION,      {luavgl_obj_align_to}                },
     {"delete",                   LUA_TFUNCTION,      {luavgl_obj_delete}                  },
     {"clean",                    LUA_TFUNCTION,      {luavgl_obj_clean}                   },
-    /* misc. functions */
-    {"parent",                   LUA_TFUNCTION,      {luavgl_obj_set_get_parent}          },
     {"set_parent",               LUA_TFUNCTION,      {luavgl_obj_set_parent}              },
     {"get_parent",               LUA_TFUNCTION,      {luavgl_obj_get_parent}              },
     {"get_child",                LUA_TFUNCTION,      {luavgl_obj_get_child}               },
@@ -890,62 +856,52 @@ static const rotable_Reg luavgl_obj_methods[] = {
     {0,                          0,                  {0}                                  },
 };
 
+/**
+ * On stack: 1: obj, 2: key to get
+ */
 static int obj_meta__index(lua_State *L)
 {
+  int t;
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   const char *key = lua_tostring(L, 2);
 
-  int t = luavgl_obj_getmetatable(L, obj->class_p);
+  t = luavgl_obj_getmetatable(L, obj->class_p);
   if (t == LUA_TNIL || t == LUA_TNONE) {
     lua_pop(L, 1);
     /* This class has no metatable, use base class instead. */
-    luavgl_obj_getmetatable(L, &lv_obj_class);
+    t = luavgl_obj_getmetatable(L, &lv_obj_class);
   }
+
   lua_getfield(L, -1, "__index");
 
-  /* Check firstly if it's a property. */
-  t = lua_getfield(L, -1, "__property");
-  if (t == LUA_TLIGHTUSERDATA) {
-    /* If __property table is wanted, here you go. */
-    if (lv_strcmp(key, "__property") == 0) {
-      return 1;
-    }
+  /* Try to get from table directly. */
+  lua_pushvalue(L, 2);
+  t = lua_gettable(L, -2);
+  if (t != LUA_TNIL) {
+    return 1;
+  }
+  lua_pop(L, 1); /* Get rid of the nil value */
 
-    const luavgl_table_t *table = lua_touserdata(L, -1);
-    lua_pop(L, 1); /* Get rid of the property userdata from stack */
+  /* push key to stack */
+  lua_pushvalue(L, 2);
+  lua_pushnil(L); /* Property value is nil for get method. */
 
-    /* push key to stack top */
-    lua_pushvalue(L, 2);
-
-    /* Try property */
-    int ret = obj_get_property_stack(L, obj, table);
-    if (ret > 0) {
-      return ret;
-    }
+  /* Try property */
+  int ret = obj_property(L, obj);
+  if (ret >= 0) {
+    return ret;
   }
 
-  /* Not a propety, try others. */
-  lua_gettable(L, -2);
-  return 1;
+  return luaL_error(L, "property not found: %s", key);
 }
 
+/**
+ * On stack: 1: obj, 2: key to set, 3: value
+ */
 static int obj_meta__newindex(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-
-  luavgl_obj_getmetatable(L, obj->class_p);
-  lua_getfield(L, -1, "__index");
-
-  const luavgl_table_t *table = NULL;
-  int t = lua_getfield(L, -1, "__property");
-  if (t == LUA_TLIGHTUSERDATA) {
-    table = lua_touserdata(L, -1);
-  }
-  lua_pop(L, 1);
-
-  lua_settop(L, 3); /* Keep only the obj, key, value */
-
-  return obj_set_property_stack(L, obj, table);
+  return obj_property(L, obj);
 }
 
 static int obj_meta__tostring(lua_State *L)
@@ -1017,8 +973,7 @@ static void luavgl_obj_init(lua_State *L)
  */
 LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data)
 {
-  struct setprop_para *para = data;
-  lv_obj_t *obj = para->obj;
+  lv_obj_t *obj = data;
 
   /* Check for integer key with userdata as value */
   if (lua_type(L, -2) == LUA_TNUMBER && lua_type(L, -1) == LUA_TUSERDATA) {
@@ -1027,7 +982,7 @@ LUALIB_API int luavgl_obj_set_property_kv(lua_State *L, void *data)
     return 0;
   }
 
-  return obj_set_property_stack(L, obj, para->table);
+  return obj_property(L, obj);
 }
 
 /**
@@ -1060,19 +1015,15 @@ LUALIB_API int luavgl_obj_create_helper(lua_State *L,
     return 1;
   }
 
-  /* Get the property table */
-  int t = lua_getfield(L, -1, "__property"); /* obj on stack top */
-  if (t != LUA_TLIGHTUSERDATA) {
-    return luaL_error(L, "obj %p has no property table\n", obj);
-  }
-  const luavgl_table_t *table = lua_touserdata(L, -1);
-  lua_pop(L, 1); /* Get rid of the property userdata from stack */
+  int top = lua_gettop(L);
 
-  /* On stack: obj, property */
-  lua_insert(L, -2); /* -2: obj, -1: prop */
+  /* Prepare a new stack for set property.  */
+  lua_pushcfunction(L, luavgl_obj_set);
+  lua_pushvalue(L, -2); /* obj */
+  lua_pushvalue(L, 1);  /* prop table */
+  lua_call(L, 2, 0);
 
-  luavgl_setup_obj(L, obj, table);
-  lua_settop(L, 1); /* Keep only the obj */
+  lua_settop(L, top); /* Keep only the obj */
   return 1;
 }
 
