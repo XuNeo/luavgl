@@ -146,6 +146,18 @@ LUALIB_API int luaopen_lvgl(lua_State *L)
   luaL_getmetatable(L, "widgets");
   lua_setmetatable(L, -2);
 
+#ifdef LUAVGL_EXPOSE_WIDGET_API
+  const luaL_Reg *reg;
+  for (int i = 0; ;i++) {
+    reg = &widget_create_methods[i];
+    if (reg->name == NULL)
+      break;
+
+    lua_pushcfunction(L, reg->func);
+    lua_setglobal(L, reg->name);
+  }
+#endif
+
   (void)dumpstack;
   (void)dumptable;
   (void)dumpvalue;
