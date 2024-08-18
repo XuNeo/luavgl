@@ -319,6 +319,10 @@ int main(int argc, char **argv)
   lv_label_set_text(label, "RELOAD");
   lv_obj_center(label);
 
+  void lua_c_lvgl_mix_example(lua_State *L);
+  lua_c_lvgl_mix_example(lua_ctx->L);
+
+
   while (1) {
     /* Periodically call the lv_task handler.
      * It could be done in a timer interrupt or an OS task too.*/

@@ -5,7 +5,7 @@ project(simulator)
 add_custom_target(run COMMAND simulator USES_TERMINAL)
 
 file(GLOB_RECURSE WIDGETS ${CMAKE_CURRENT_SOURCE_DIR}/widgets/*.c)
-add_executable(simulator main.c mouse_cursor_icon.c ${WIDGETS})
+add_executable(simulator main.c lua_in_C.c mouse_cursor_icon.c ${WIDGETS})
 target_include_directories(simulator PRIVATE widgets)
 # add_subdirectory(widgets)
 
