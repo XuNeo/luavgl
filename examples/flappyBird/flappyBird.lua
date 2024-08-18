@@ -22,30 +22,19 @@ IMAGE_PATH = IMAGE_PATH .. "/flappyBird/"
 print("IMAGE_PATH:", IMAGE_PATH)
 
 local function randomY()
-    return math.random(TOP_Y + 30, BOTTOM_Y - 50 - 50)
+    return math.random(TOP_Y + 30, BOTTOM_Y - 100)
 end
 
 local function screenCreate(parent)
     local property = {
-        w = 480,
-        h = 480,
-        bg_opa = 0,
+        w = lvgl.HOR_RES(),
+        h = lvgl.VER_RES(),
+        bg_opa = lvgl.OPA(0),
         border_width = 0,
         pad_all = 0
     }
 
-    local scr
-    if parent then
-        scr = parent:Object{
-            w = 480,
-            h = 480,
-            bg_opa = 0,
-            border_width = 0,
-            pad_all = 0
-        }
-    else
-        scr = lvgl.Object(property)
-    end
+    local scr = lvgl.Object(parent, property)
     scr:clear_flag(lvgl.FLAG.SCROLLABLE)
     scr:clear_flag(lvgl.FLAG.CLICKABLE)
     return scr
@@ -510,20 +499,25 @@ local function Background(root, bgEventCB)
 end
 
 local function SysLayer(root)
-    local sysLayer = screenCreate(root) -- upper layer
-    return sysLayer
+    return screenCreate(root) -- upper layer
 end
 
 local function createPlayBtn(sysLayer, onEvent)
     local playBtn = Image(sysLayer, IMAGE_PATH .. "button_play.png").widget
     playBtn:add_flag(lvgl.FLAG.CLICKABLE)
-    playBtn:set{
-        align = {
+    playBtn.align = {
             type = lvgl.ALIGN.CENTER,
             y_ofs = 80
         }
-    }
 
+    playBtn.border_width = 0
+    playBtn.border_color = "#F00"
+    playBtn.parent.border_width = 1
+    playBtn.parent.border_color = "#0F0"
+    playBtn.align = {
+        type = lvgl.ALIGN.CENTER,
+        y_ofs = 80,
+    }
     playBtn:onevent(lvgl.EVENT.PRESSED, onEvent)
 
     return playBtn
@@ -615,7 +609,6 @@ local function entry()
             align = {
                 type = lvgl.ALIGN.CENTER,
                 y_ofs = -20,
-                x_ofs = 0
             }
         }
         scoreImg:Anim{
