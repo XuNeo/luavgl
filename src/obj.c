@@ -758,6 +758,14 @@ void lv_obj_free_id(lv_obj_t *obj)
   }
 }
 
+void lv_obj_set_id(lv_obj_t *obj, void *id)
+{
+  lv_obj_free_id(obj);
+  if (id != NULL) {
+    obj->id = lv_strdup(id);
+  }
+}
+
 const char *lv_obj_stringify_id(lv_obj_t *obj, char *buf, uint32_t len)
 {
   if (obj->id == NULL)
@@ -782,7 +790,7 @@ static int obj_property_id(lua_State *L, lv_obj_t *obj, bool set)
       return luaL_error(L, "id should be string");
     }
 
-    lv_obj_set_id(obj, lv_strdup(lua_tostring(L, -1)));
+    lv_obj_set_id(obj, (void *)lua_tostring(L, -1));
     return 0;
   } else {
     /* get property */
