@@ -125,7 +125,7 @@ Make sure clone the submodules, luavgl simulator comes directly from lvgl simula
 git clone --recursive https://github.com/XuNeo/luavgl.git
 
 # or
-git sudmodule update --init
+git submodule update --init
 ```
 
 #### Dependencies
