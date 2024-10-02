@@ -417,14 +417,6 @@ static const rotable_Reg builtin_font_const_table[] = {
      },
 #endif
 
-#if LV_FONT_MONTSERRAT_12_SUBPX
-    {
-     .name = "MONTSERRAT_12_SUBPX",
-     .type = LUA_TLIGHTUSERDATA,
-     .ptr = &lv_font_montserrat_12_subpx,
-     },
-#endif
-
 #if LV_FONT_MONTSERRAT_28_COMPRESSED
     {
      .name = "MONTSERRAT_28_COMPRESSED",
