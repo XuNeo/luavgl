@@ -38,6 +38,7 @@ end
 
 createBtn(container, "keyboard")
 createBtn(container, "animation")
+createBtn(container, "canvas")
 createBtn(container, "pointer")
 createBtn(container, "analogTime")
 createBtn(container, "flappyBird/flappyBird")

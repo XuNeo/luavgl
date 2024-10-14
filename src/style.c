@@ -574,8 +574,8 @@ static int luavgl_style_gc(lua_State *L)
 {
   luavgl_style_t *s = luavgl_check_style(L, 1);
   lv_style_reset(&s->style);
-  free(s);
   debug("gc style:%p\n", s);
+  free(s);
   return 0;
 }
 
