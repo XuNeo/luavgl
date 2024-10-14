@@ -9,8 +9,7 @@
 #include <stdlib.h>
 
 /* clang-format off */
-#define debug(format, ...)
-// fprintf(stderr, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
+#define debug(format, ...) fprintf(stderr, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 // syslog(LOG_DEBUG, "[luavgl] %s: " format, __FUNCTION__, ##__VA_ARGS__)
 /* clang-format on */
 

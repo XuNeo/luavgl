@@ -5,6 +5,10 @@
 #include "calendar.c"
 #endif
 
+#if LV_USE_CANVAS
+#include "canvas.c"
+#endif
+
 #if LV_USE_CHECKBOX
 #include "checkbox.c"
 #endif
@@ -48,6 +52,10 @@ static const luaL_Reg widget_create_methods[] = {
 
 #if LV_USE_CALENDAR
     {"Calendar", luavgl_calendar_create},
+#endif
+
+#if LV_USE_CANVAS
+    {"Canvas",   luavgl_canvas_create},
 #endif
 
 #if LV_USE_CHECKBOX
@@ -130,4 +138,7 @@ static void luavgl_widgets_init(lua_State *L)
   luavgl_dropdown_init(L);
 #endif
 
+#if LV_USE_CALENDAR
+  luavgl_canvas_init(L);
+#endif
 }
