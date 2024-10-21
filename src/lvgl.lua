@@ -332,8 +332,10 @@ end
 --- @param parent? Object | nil
 --- @param property? StyleProp
 --- @return Object
-function lvgl.Object(parent, property)
+function Object(parent, property)
 end
+
+lvgl.Object = Object
 
 --- Create Calendar widget on parent
 --- @param parent? Object | nil
@@ -364,16 +366,20 @@ end
 --- @param parent? Object | nil
 --- @param property? ImageStyle
 --- @return Image
-function lvgl.Image(parent, property)
+function Image(parent, property)
 end
+
+lvgl.Image = Image
 
 ---
 --- Create Label on parent
 --- @param parent? Object | nil
 --- @param property? LabelStyle
 --- @return Label
-function lvgl.Label(parent, property)
+function Label(parent, property)
 end
+
+lvgl.Label = Label
 
 ---
 --- Create Textarea Widget on parent
