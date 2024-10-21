@@ -1,10 +1,6 @@
 #include "lua.h"
 #include <luavgl.h>
 #include <lvgl.h>
-#include <src/core/lv_obj.h>
-#include <src/core/lv_obj_event.h>
-#include <src/lv_api_map_v8.h>
-#include <src/misc/lv_event.h>
 
 #define _STRINGIZE(...) #__VA_ARGS__
 #define STRINGIZE(...) _STRINGIZE(__VA_ARGS__)
