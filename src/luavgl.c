@@ -87,8 +87,15 @@ static int root_clean(lua_State *L)
 {
   LV_LOG_INFO("enter");
   luavgl_ctx_t *ctx = luavgl_context(L);
-  lv_obj_clean(ctx->root);
+  if (ctx->root)
+    lv_obj_clean(ctx->root);
   return 0;
+}
+
+static void root_delete_cb(lv_event_t *e)
+{
+  luavgl_ctx_t *ctx = e->user_data;
+  ctx->root = NULL;
 }
 
 LUALIB_API int luaopen_lvgl(lua_State *L)
@@ -148,7 +155,7 @@ LUALIB_API int luaopen_lvgl(lua_State *L)
 
 #ifdef LUAVGL_EXPOSE_WIDGET_API
   const luaL_Reg *reg;
-  for (int i = 0; ;i++) {
+  for (int i = 0;; i++) {
     reg = &widget_create_methods[i];
     if (reg->name == NULL)
       break;
@@ -157,6 +164,8 @@ LUALIB_API int luaopen_lvgl(lua_State *L)
     lua_setglobal(L, reg->name);
   }
 #endif
+
+  lv_obj_add_event_cb(root, root_delete_cb, LV_EVENT_DELETE, ctx);
 
   (void)dumpstack;
   (void)dumptable;
