@@ -679,7 +679,8 @@ static int luavgl_obj_set_style(lua_State *L)
     lua_pop(L, 1); /* remove value, keep the key to continue. */
   }
 
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 /**
@@ -697,7 +698,8 @@ static int luavgl_obj_add_style(lua_State *L)
 
   lv_obj_add_style(obj, &s->style, selector);
 
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 /**
@@ -714,7 +716,9 @@ static int luavgl_obj_remove_style(lua_State *L)
   }
 
   lv_obj_remove_style(obj, &s->style, selector);
-  return 0;
+
+  lua_settop(L, 1);
+  return 1;
 }
 
 /**
@@ -725,7 +729,8 @@ static int luavgl_obj_remove_style_all(lua_State *L)
   lv_obj_t *obj = luavgl_to_obj(L, 1);
 
   lv_obj_remove_style_all(obj);
-  return 0;
+  lua_settop(L, 1);
+  return 1;
 }
 
 static const rotable_Reg luavgl_style_methods[] = {
