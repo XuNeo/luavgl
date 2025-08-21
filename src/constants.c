@@ -456,6 +456,9 @@ static const rotable_Reg builtin_font_const_table[] = {
      .ptr = &lv_font_unscii_16,
      },
 #endif
+    {
+     .name = 0,
+     },
 };
 
 static const rotable_Reg scr_load_anim_const_table[] = {
