@@ -1,4 +1,3 @@
-#include "lua.h"
 #include "luavgl.h"
 #include "private.h"
 
@@ -27,7 +26,7 @@ static void obj_delete_cb(lv_event_t *e)
   lua_pushnil(L);
   lua_setuservalue(L, -2);
 #else
-  lua_getglobal(L, "_G");
+  lua_pushglobaltable(L);
   lua_setuservalue(L, -2);
 #endif
 
@@ -1174,8 +1173,6 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj)
   lua_rawset(L, LUA_REGISTRYINDEX);
 
 #if (LUA_VERSION_NUM == 501)
-  lua_pushlightuserdata(L, obj);
-  lua_rawget(L, LUA_REGISTRYINDEX);
   lua_newtable(L);
   lua_setuservalue(L, -2);
 #endif
