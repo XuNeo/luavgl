@@ -15,9 +15,9 @@ static int image_set_pivot(lua_State *L, lv_obj_t *obj, bool set)
     lv_image_get_pivot(obj, &p);
     lua_createtable(L, 0, 2);
     lua_pushinteger(L, p.x);
-    lua_seti(L, -2, p.x);
+    lua_setfield(L, -2, "x");
     lua_pushinteger(L, p.y);
-    lua_seti(L, -2, p.y);
+    lua_setfield(L, -2, "y");
     return 1;
   }
 

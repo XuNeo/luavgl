@@ -373,11 +373,11 @@ LUALIB_API lv_point_t luavgl_topoint(lua_State *L, int idx)
 {
   lv_point_t point = {0};
   if (lua_istable(L, idx)) {
-    lua_rawgeti(L, idx, 1);
+    lua_getfield(L, idx, "x");
     point.x = lua_tointeger(L, -1);
     lua_pop(L, 1);
 
-    lua_rawgeti(L, idx, 2);
+    lua_getfield(L, idx, "y");
     point.y = lua_tointeger(L, -1);
     lua_pop(L, 1);
   } else {
