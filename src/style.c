@@ -746,14 +746,18 @@ static int luavgl_obj_add_style(lua_State *L)
 static int luavgl_obj_remove_style(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  luavgl_style_t *s = luavgl_check_style(L, 2);
 
   int selector = 0;
   if (!lua_isnoneornil(L, 3)) {
     selector = lua_tointeger(L, 3);
   }
 
-  lv_obj_remove_style(obj, &s->style, selector);
+  if (lua_isnil(L, 2)) {
+    lv_obj_remove_style(obj, NULL, selector);
+  } else {
+    luavgl_style_t *s = luavgl_check_style(L, 2);
+    lv_obj_remove_style(obj, &s->style, selector);
+  }
 
   lua_settop(L, 1);
   return 1;
