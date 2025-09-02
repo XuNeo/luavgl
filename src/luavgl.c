@@ -4,6 +4,7 @@
 #include "anim.c"
 #include "constants.c"
 #include "disp.c"
+#include "draw_buf.c"
 #include "font.c"
 #include "fs.c"
 #include "group.c"
@@ -147,6 +148,7 @@ LUALIB_API int luaopen_lvgl(lua_State *L)
   luavgl_disp_init(L);
   luavgl_palette_init(L);
   luavgl_constants_init(L);
+  luavgl_draw_buf_init(L);
 
   /* Methods to create widget locate in widgets table, check `luavgl_obj_init`
    */
