@@ -2,6 +2,8 @@
 #include "private.h"
 #include "rotable.h"
 
+static const int style_imgsrc_key;
+
 typedef struct {
   lv_style_t style;
 } luavgl_style_t;
@@ -35,7 +37,7 @@ enum {
 
 /* callback made when style matched. */
 typedef void (*style_set_cb_t)(lv_style_prop_t prop, lv_style_value_t value,
-                               void *args);
+                               lua_State *L, style_type_t type, void *args);
 
 static const struct style_map_s {
   const char *name;
@@ -164,9 +166,21 @@ static luavgl_style_t *luavgl_check_style(lua_State *L, int index)
 }
 
 static void lv_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
-                            void *args)
+                            lua_State *L, style_type_t type, void *args)
 {
   lv_style_t *s = args;
+  if (type == STYLE_TYPE_IMGSRC) {
+    if (lua_type(L, -1) == LUA_TSTRING) {
+      lua_pushlightuserdata(L, (void *)&style_imgsrc_key);
+      lua_rawget(L, LUA_REGISTRYINDEX);
+      lua_pushvalue(L, 1);
+      void *str = lua_newuserdata(L, lv_strlen(value.ptr) + 1);
+      lv_strcpy(str, value.ptr);
+      lua_rawset(L, -3);
+      lua_pop(L, 1);
+      value.ptr = str;
+    }
+  }
   lv_style_set_prop(s, prop, value);
 }
 
@@ -292,9 +306,9 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
 
   lv_style_value_t value = {0};
   value.num = LV_LAYOUT_FLEX;
-  cb(LV_STYLE_LAYOUT, value, args);
+  cb(LV_STYLE_LAYOUT, value, L, 0, args);
   value.num = flow;
-  cb(LV_STYLE_FLEX_FLOW, value, args);
+  cb(LV_STYLE_FLEX_FLOW, value, L, 0, args);
 
   /**
    * justify-content
@@ -305,7 +319,7 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
   if (lua_type(L, -1) == LUA_TSTRING) {
     align = luavgl_to_flex_align(L, -1);
     value.num = align;
-    cb(LV_STYLE_FLEX_MAIN_PLACE, value, args);
+    cb(LV_STYLE_FLEX_MAIN_PLACE, value, L, 0, args);
   }
   lua_pop(L, 1);
 
@@ -318,7 +332,7 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
   if (lua_type(L, -1) == LUA_TSTRING) {
     align = luavgl_to_flex_align(L, -1);
     value.num = align;
-    cb(LV_STYLE_FLEX_CROSS_PLACE, value, args);
+    cb(LV_STYLE_FLEX_CROSS_PLACE, value, L, 0, args);
   }
   lua_pop(L, 1);
 
@@ -331,7 +345,7 @@ static int luavgl_set_flex_layout_kv(lua_State *L, style_set_cb_t cb,
   if (lua_type(L, -1) == LUA_TSTRING) {
     align = luavgl_to_flex_align(L, -1);
     value.num = align;
-    cb(LV_STYLE_FLEX_TRACK_PLACE, value, args);
+    cb(LV_STYLE_FLEX_TRACK_PLACE, value, L, 0, args);
   }
   lua_pop(L, 1);
 
@@ -415,30 +429,30 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
     switch ((int)prop) {
       /* style combinations */
     case LV_STYLE_SIZE:
-      cb(LV_STYLE_WIDTH, value, args);
-      cb(LV_STYLE_HEIGHT, value, args);
+      cb(LV_STYLE_WIDTH, value, L, type, args);
+      cb(LV_STYLE_HEIGHT, value, L, type, args);
       break;
 
     case LV_STYLE_PAD_ALL:
-      cb(LV_STYLE_PAD_TOP, value, args);
-      cb(LV_STYLE_PAD_BOTTOM, value, args);
-      cb(LV_STYLE_PAD_LEFT, value, args);
-      cb(LV_STYLE_PAD_RIGHT, value, args);
+      cb(LV_STYLE_PAD_TOP, value, L, type, args);
+      cb(LV_STYLE_PAD_BOTTOM, value, L, type, args);
+      cb(LV_STYLE_PAD_LEFT, value, L, type, args);
+      cb(LV_STYLE_PAD_RIGHT, value, L, type, args);
       break;
 
     case LV_STYLE_PAD_VER:
-      cb(LV_STYLE_PAD_TOP, value, args);
-      cb(LV_STYLE_PAD_BOTTOM, value, args);
+      cb(LV_STYLE_PAD_TOP, value, L, type, args);
+      cb(LV_STYLE_PAD_BOTTOM, value, L, type, args);
       break;
 
     case LV_STYLE_PAD_HOR:
-      cb(LV_STYLE_PAD_LEFT, value, args);
-      cb(LV_STYLE_PAD_RIGHT, value, args);
+      cb(LV_STYLE_PAD_LEFT, value, L, type, args);
+      cb(LV_STYLE_PAD_RIGHT, value, L, type, args);
       break;
 
     case LV_STYLE_PAD_GAP:
-      cb(LV_STYLE_PAD_ROW, value, args);
-      cb(LV_STYLE_PAD_COLUMN, value, args);
+      cb(LV_STYLE_PAD_ROW, value, L, type, args);
+      cb(LV_STYLE_PAD_COLUMN, value, L, type, args);
       break;
 
       /* pointers needs to build from lua stack table */
@@ -456,19 +470,19 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
 
     /* layout styles that not constant */
     case _LV_STYLE_FLEX_FLOW:
-      cb(LV_STYLE_FLEX_FLOW, value, args);
+      cb(LV_STYLE_FLEX_FLOW, value, L, type, args);
       break;
     case _LV_STYLE_FLEX_MAIN_PLACE:
-      cb(LV_STYLE_FLEX_MAIN_PLACE, value, args);
+      cb(LV_STYLE_FLEX_MAIN_PLACE, value, L, type, args);
       break;
     case _LV_STYLE_FLEX_CROSS_PLACE:
-      cb(LV_STYLE_FLEX_CROSS_PLACE, value, args);
+      cb(LV_STYLE_FLEX_CROSS_PLACE, value, L, type, args);
       break;
     case _LV_STYLE_FLEX_TRACK_PLACE:
-      cb(LV_STYLE_FLEX_TRACK_PLACE, value, args);
+      cb(LV_STYLE_FLEX_TRACK_PLACE, value, L, type, args);
       break;
     case _LV_STYLE_FLEX_GROW:
-      cb(LV_STYLE_FLEX_GROW, value, args);
+      cb(LV_STYLE_FLEX_GROW, value, L, type, args);
       break;
 
     case _LV_STYLE_FLEX: {
@@ -480,7 +494,7 @@ static int luavgl_set_style_kv(lua_State *L, style_set_cb_t cb, void *args)
       break;
     }
   } else if ((prop & mask) <= LV_STYLE_LAST_BUILT_IN_PROP) {
-    cb(prop & mask, value, args);
+    cb(prop & mask, value, L, type, args);
   } else {
     return luaL_error(L, "unknown style");
   }
@@ -609,9 +623,33 @@ struct obj_style_s {
 };
 
 static void obj_style_set_cb(lv_style_prop_t prop, lv_style_value_t value,
-                             void *args)
+                             lua_State *L, style_type_t type, void *args)
 {
   struct obj_style_s *info = args;
+  if (type == STYLE_TYPE_IMGSRC) {
+    if (lua_type(L, -1) == LUA_TSTRING) {
+      lua_pushlightuserdata(L, (void *)&style_imgsrc_key);
+      lua_rawget(L, LUA_REGISTRYINDEX);
+      lua_pushvalue(L, 1);
+      lua_rawget(L, -2);
+      if (lua_isnoneornil(L, -1)) {
+        lua_pop(L, 1);
+        lua_newtable(L);
+      }
+
+      lua_pushinteger(L, info->selector);
+      void *str = lua_newuserdata(L, lv_strlen(value.ptr) + 1);
+      lv_strcpy(str, value.ptr);
+      lua_rawset(L, -3);
+
+      lua_pushvalue(L, 1);
+      lua_pushvalue(L, -2);
+      lua_rawset(L, -4);
+      lua_pop(L, 2);
+
+      value.ptr = str;
+    }
+  }
   lv_obj_set_local_style_prop(info->obj, prop, value, info->selector);
 }
 
@@ -752,4 +790,12 @@ static void luavgl_style_init(lua_State *L)
   lua_setfield(L, -2, "__index");
 
   lua_pop(L, 1); /* pop __index table */
+
+  lua_pushlightuserdata(L, (void *)&style_imgsrc_key);
+  lua_newtable(L);
+  lua_newtable(L);
+  lua_pushstring(L, "k");
+  lua_setfield(L, -2, "__mode");
+  lua_setmetatable(L, -2);
+  lua_rawset(L, LUA_REGISTRYINDEX);
 }
