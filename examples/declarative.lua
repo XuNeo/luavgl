@@ -1,5 +1,9 @@
 local lvgl = require("lvgl")
 
+local Object = lvgl.Object
+local Button = lvgl.Button
+local Label = lvgl.Label
+
 Object {
     flex = {
         flex_direction = "row",
