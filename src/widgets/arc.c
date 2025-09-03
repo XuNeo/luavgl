@@ -135,8 +135,23 @@ static const luavgl_table_t arc_property_table = {
     .array = arc_property_ops,
 };
 
+static int luavgl_arc_rotate_obj_to_angle(lua_State *L)
+{
+  lv_obj_t *obj = luavgl_to_obj(L, 1), *obj_to_rotate = luavgl_to_obj(L, 2);
+
+  int32_t r_offset = 0;
+  if (lua_isinteger(L, 3)) {
+    r_offset = lua_tointeger(L, 3);
+  }
+  lv_arc_rotate_obj_to_angle(obj, obj_to_rotate, r_offset);
+  return 0;
+}
+
 static const rotable_Reg luavgl_arc_methods[] = {
     {"__property", LUA_TLIGHTUSERDATA, {.ptr = &arc_property_table}},
+
+    {"rotate_obj_to_angle",
+     LUA_TFUNCTION, {.ptr = luavgl_arc_rotate_obj_to_angle}},
     {},
 };
 
