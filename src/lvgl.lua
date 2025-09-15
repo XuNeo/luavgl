@@ -109,6 +109,19 @@ lvgl.STATE = {
     ANY = 0,
 }
 
+--- @enum ObjPart
+lvgl.PART = {
+    MAIN = 0,
+    SCROLLBAR = 0,
+    INDICATOR = 0,
+    KNOB = 0,
+    SELECTOR = 0,
+    ITEMS = 0,
+    CURSOR = 0,
+    CURSOR_FIRST = 0,
+    ANY = 0 ,
+}
+
 --- @enum ObjAlignType
 lvgl.ALIGN = {
     DEFAULT = 0,
@@ -552,9 +565,9 @@ end
 ---
 --- Set object property
 --- @param p StyleProp
---- @param state ObjState
+--- @param selector? integer
 ---
-function obj:set_style(p, state)
+function obj:set_style(p, selector)
 end
 
 ---
