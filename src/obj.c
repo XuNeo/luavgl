@@ -22,8 +22,13 @@ static void obj_delete_cb(lv_event_t *e)
     goto pop_exit;
   }
 
+#if (LUA_VERSION_NUM >= 502)
   lua_pushnil(L);
   lua_setuservalue(L, -2);
+#else
+  lua_pushglobaltable(L);
+  lua_setuservalue(L, -2);
+#endif
 
   luavgl_obj_t *lobj = luavgl_to_lobj(L, -1);
   if (lobj->lua_created)
@@ -860,6 +865,7 @@ static int obj_property_h(lua_State *L, lv_obj_t *obj, bool set)
 
 static int obj_property_user_data(lua_State *L, lv_obj_t *obj, bool set)
 {
+#if (LUA_VERSION_NUM >= 502)
   if (set) {
     lua_pushvalue(L, -1);
     lua_setuservalue(L, 1);
@@ -867,6 +873,17 @@ static int obj_property_user_data(lua_State *L, lv_obj_t *obj, bool set)
     lua_getuservalue(L, 1);
   }
   return 1;
+#else
+  if (set) {
+    lua_getuservalue(L, 1);
+    lua_pushvalue(L, -1);
+    lua_rawseti(L, -2, 1);
+  } else {
+    lua_getuservalue(L, 1);
+    lua_rawgeti(L, -1, 1);
+  }
+  return 1;
+#endif
 }
 
 static const luavgl_property_ops_t obj_property_ops[] = {
@@ -1154,6 +1171,11 @@ LUALIB_API luavgl_obj_t *luavgl_add_lobj(lua_State *L, lv_obj_t *obj)
   lua_pushlightuserdata(L, obj);
   lua_pushvalue(L, -2);
   lua_rawset(L, LUA_REGISTRYINDEX);
+
+#if (LUA_VERSION_NUM == 501)
+  lua_newtable(L);
+  lua_setuservalue(L, -2);
+#endif
 
   LV_LOG_INFO("add obj: %p to lua, lobj: %p", obj, lua_touserdata(L, -1));
   return lobj;
