@@ -1277,11 +1277,11 @@ end
 --- @field bg_main_stop integer
 --- @field bg_grad_stop integer
 --- @field bg_dither_mode integer
---- @field bg_img_src integer
---- @field bg_img_opa integer
---- @field bg_img_recolor integer
---- @field bg_img_recolor_opa integer
---- @field bg_img_tiled integer
+--- @field bg_image_src integer
+--- @field bg_image_opa integer
+--- @field bg_image_recolor integer
+--- @field bg_image_recolor_opa integer
+--- @field bg_image_tiled integer
 --- @field border_color integer | string
 --- @field border_opa integer
 --- @field border_width integer
