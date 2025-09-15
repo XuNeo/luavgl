@@ -1,5 +1,4 @@
 #include "luavgl.h"
-#include "private.h"
 #include "rotable.h"
 
 static int luavgl_img_create(lua_State *L)
@@ -41,7 +40,23 @@ static const luavgl_table_t img_property_table = {
 static int luavgl_img_set_src(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
-  const char *src = luavgl_toimgsrc(L, 2);
+
+  const void *src = NULL;
+  luavgl_draw_buf_t *db = luaL_checkudata(L, 2, "lv_draw_buf");
+  if (db) {
+    src = db->buf;
+    luaL_getmetatable(L, "lv_img_src");
+    lua_pushvalue(L, 1);
+    lua_pushvalue(L, 2);
+    lua_rawset(L, -3);
+  } else {
+    src = luavgl_toimgsrc(L, 2);
+    luaL_getmetatable(L, "lv_img_src");
+    lua_pushvalue(L, 1);
+    lua_pushnil(L);
+    lua_rawset(L, -3);
+  }
+
   if (src != NULL) {
     lv_image_set_src(obj, src);
   }
@@ -143,5 +158,12 @@ static const rotable_Reg luavgl_img_methods[] = {
 static void luavgl_img_init(lua_State *L)
 {
   luavgl_obj_newmetatable(L, &lv_image_class, "lv_img", luavgl_img_methods);
+  lua_pop(L, 1);
+
+  luaL_newmetatable(L, "lv_img_src");
+  lua_newtable(L);
+  lua_pushstring(L, "k");
+  lua_setfield(L, -2, "__mode");
+  lua_setmetatable(L, -2);
   lua_pop(L, 1);
 }

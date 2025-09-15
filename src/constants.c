@@ -579,6 +579,23 @@ static const rotable_Reg key_const_table[] = {
     {0,                   0                          },
 };
 
+static const rotable_Reg color_format_const_table[] = {
+    {.name = "UNKNOWN",   .integer = LV_COLOR_FORMAT_UNKNOWN  },
+    {.name = "RAW",       .integer = LV_COLOR_FORMAT_RAW      },
+    {.name = "RAW_ALPHA", .integer = LV_COLOR_FORMAT_RAW_ALPHA},
+    {.name = "L8",        .integer = LV_COLOR_FORMAT_L8       },
+    {.name = "I1",        .integer = LV_COLOR_FORMAT_I1       },
+    {.name = "I2",        .integer = LV_COLOR_FORMAT_I2       },
+    {.name = "I4",        .integer = LV_COLOR_FORMAT_I4       },
+    {.name = "I8",        .integer = LV_COLOR_FORMAT_I8       },
+    {.name = "A8",        .integer = LV_COLOR_FORMAT_A8       },
+    {.name = "RGB565",    .integer = LV_COLOR_FORMAT_RGB565   },
+    {.name = "RGB888",    .integer = LV_COLOR_FORMAT_RGB888   },
+    {.name = "XRGB8888",  .integer = LV_COLOR_FORMAT_XRGB8888 },
+    {.name = "ARGB8888",  .integer = LV_COLOR_FORMAT_ARGB8888 },
+    {0,                   0                                   },
+};
+
 static int luavgl_LV_PCT(lua_State *L)
 {
   int pct = lua_tointeger(L, 1);
@@ -637,6 +654,7 @@ static void luavgl_constants_init(lua_State *L)
   rotable_setfiled(L, -2, "ROLLER_MODE", roller_mode_const_table);
 #endif
   rotable_setfiled(L, -2, "KEY", key_const_table);
+  rotable_setfiled(L, -2, "COLOR_FORMAT", color_format_const_table);
   /* miscellaneous. */
 
   lua_pushinteger(L, LV_ANIM_REPEAT_INFINITE);
