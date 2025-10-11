@@ -690,6 +690,15 @@ static void luavgl_constants_init(lua_State *L)
   lua_setfield(L, -2, "TEXTAREA_CURSOR_LAST");
 #endif
 
+#if LV_USE_ARC
+  lua_pushinteger(L, LV_ARC_MODE_NORMAL);
+  lua_setfield(L, -2, "ARC_MODE_NORMAL");
+  lua_pushinteger(L, LV_ARC_MODE_SYMMETRICAL);
+  lua_setfield(L, -2, "ARC_MODE_SYMMETRICAL");
+  lua_pushinteger(L, LV_ARC_MODE_REVERSE);
+  lua_setfield(L, -2, "ARC_MODE_REVERSE");
+#endif
+
   lua_pushinteger(L, LV_LAYOUT_FLEX);
   lua_setfield(L, -2, "LAYOUT_FLEX");
 
