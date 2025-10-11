@@ -68,7 +68,7 @@ static const struct style_map_s {
     {"pad_right",            LV_STYLE_PAD_RIGHT,            STYLE_TYPE_INT                       },
     {"pad_row",              LV_STYLE_PAD_ROW,              STYLE_TYPE_INT                       },
     {"pad_column",           LV_STYLE_PAD_COLUMN,           STYLE_TYPE_INT                       },
-    {"pad_gap",              LV_STYLE_PAD_GAP,              STYLE_TYPE_INT                       },
+    {"pad_gap",              LV_STYLE_PAD_GAP,              STYLE_TYPE_SPECIAL | STYLE_TYPE_INT  },
     {"bg_color",             LV_STYLE_BG_COLOR,             STYLE_TYPE_COLOR                     },
     {"bg_opa",               LV_STYLE_BG_OPA,               STYLE_TYPE_INT                       },
     {"bg_grad_color",        LV_STYLE_BG_GRAD_COLOR,        STYLE_TYPE_COLOR                     },
