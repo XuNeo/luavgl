@@ -7,6 +7,10 @@
 #include "style.c"
 #include "widgets/widgets.c"
 
+#if LV_USE_SNAPSHOT
+#include "snapshot.c"
+#endif
+
 static int luavgl_anim_create(lua_State *L);
 static int luavgl_obj_delete(lua_State *L);
 static int luavgl_obj_clean(lua_State *L);
@@ -953,6 +957,9 @@ static const rotable_Reg luavgl_obj_methods[] = {
     {"Anim",                     LUA_TFUNCTION,      {luavgl_anim_create}                 },
     {"remove_all_anim",          LUA_TFUNCTION,      {luavgl_obj_remove_anim_all}         },
     {"__property",               LUA_TLIGHTUSERDATA, {.ptr = &luavgl_obj_property_table}  },
+#if LV_USE_SNAPSHOT
+    {"snapshot",                 LUA_TFUNCTION,      {luavgl_obj_snapshot}                },
+#endif
     {0,                          0,                  {0}                                  },
 };
 
