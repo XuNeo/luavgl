@@ -109,6 +109,11 @@ static int luavgl_obj_delete(lua_State *L)
   /* delete obj firstly, then cleanup memory */
   if (lobj->lua_created) {
     lv_obj_del(lobj->obj);
+  } else {
+    /* Obj not created by lua (from get_parent/get_screen/get_child...) may
+     * outlive this lua_State, e.g. host calls lua_close() before deleting it.
+     * Detach obj_delete_cb, otherwise it will be called with a dangling L. */
+    lv_obj_remove_event_cb_with_user_data(lobj->obj, obj_delete_cb, L);
   }
 
   lua_checkstack(L, 2);
