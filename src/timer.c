@@ -95,6 +95,12 @@ static int luavgl_timer_create(lua_State *L)
   data->L = L;
 
   lv_timer_t *t = lv_timer_create(luavgl_timer_cb, 0, data);
+#if LVGL_VERSION_MAJOR >= 9
+  /* LVGL 9 deletes a timer whose repeat_count runs out, under the handle
+   * Lua still holds: __gc would then free it again. Pause it instead; its
+   * handle frees it as usual. */
+  lv_timer_set_auto_delete(t, false);
+#endif
 
   *(void **)lua_newuserdata(L, sizeof(void *)) = t;
   luaL_getmetatable(L, "lv_timer");
