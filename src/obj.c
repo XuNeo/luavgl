@@ -236,6 +236,11 @@ static int luavgl_obj_get_parent(lua_State *L)
 {
   lv_obj_t *obj = luavgl_to_obj(L, 1);
   lv_obj_t *parent = lv_obj_get_parent(obj);
+  if (parent == NULL) {
+    /* a screen has no parent */
+    lua_pushnil(L);
+    return 1;
+  }
 
   /* check if userdata is added to this obj, so lua can access it. */
   lua_pushlightuserdata(L, parent);
