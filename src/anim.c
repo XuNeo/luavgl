@@ -54,12 +54,8 @@ static void luavgl_anim_exec_cb(void *var, int32_t value)
   luavgl_pcall_int(L, 2, 0);
 }
 
-/* callback when anim is deleted by lvgl */
-static void luavgl_anim_delete_cb(lv_anim_t *_a)
+static void luavgl_anim_call_done_cb(luavgl_anim_t *a)
 {
-  luavgl_anim_t *a = _a->var;
-  a->aa = NULL; /* handler deleted by lvgl */
-
   lua_State *L = a->L;
 
   if (a->done_cb != LUA_NOREF) {
@@ -69,11 +65,49 @@ static void luavgl_anim_delete_cb(lv_anim_t *_a)
     lua_rawgeti(L, LUA_REGISTRYINDEX, a->obj_ref);
     luavgl_pcall_int(L, 2, 0);
   }
+}
 
-  /* it's paused or deleted, thus can be gc'ed */
-  luaL_unref(L, LUA_REGISTRYINDEX, a->self_ref);
+/* An anim that is no longer running can be gc'ed. */
+static void luavgl_anim_unpin(luavgl_anim_t *a)
+{
+  luaL_unref(a->L, LUA_REGISTRYINDEX, a->self_ref);
   a->self_ref = LUA_NOREF;
 }
+
+#if LVGL_VERSION_MAJOR >= 9
+/* LVGL 9 calls completed_cb when an anim plays to its end, then deleted_cb;
+ * lv_anim_delete (anim:stop()) calls deleted_cb alone. So done_cb runs on
+ * completion only, and deleted_cb releases the anim however it ended. */
+static void luavgl_anim_completed_cb(lv_anim_t *_a)
+{
+  luavgl_anim_t *a = _a->var;
+  a->aa = NULL; /* handler deleted by lvgl */
+  luavgl_anim_call_done_cb(a);
+}
+
+static void luavgl_anim_deleted_cb(lv_anim_t *_a)
+{
+  luavgl_anim_t *a = _a->var;
+  /* done_cb restarted it (the usual way to loop an anim): it is running
+   * again as a new handler, and must stay pinned */
+  if (a->aa != NULL && a->aa != _a)
+    return;
+  a->aa = NULL;
+  luavgl_anim_unpin(a);
+}
+#else
+/* callback when anim is deleted by lvgl */
+static void luavgl_anim_delete_cb(lv_anim_t *_a)
+{
+  luavgl_anim_t *a = _a->var;
+  a->aa = NULL; /* handler deleted by lvgl */
+  luavgl_anim_call_done_cb(a);
+
+  /* done_cb may have restarted the anim; it must then stay pinned */
+  if (a->aa == NULL)
+    luavgl_anim_unpin(a);
+}
+#endif
 
 static void _lv_anim_set_start_value(lv_anim_t *a, int32_t v)
 {
@@ -272,7 +306,13 @@ static int luavgl_anim_create(lua_State *L)
   lv_anim_t *cfg = &a->cfg;
   lv_anim_init(cfg);
   cfg->var = a;
-#if LV_VERSION_CHECK(8, 3, 0)
+  /* LV_VERSION_CHECK matches its major version exactly, so LVGL 9 needs its
+   * own branch: with completed_cb alone, which lv_anim_delete never calls,
+   * a stopped anim would stay pinned with its callbacks. */
+#if LVGL_VERSION_MAJOR >= 9
+  cfg->completed_cb = luavgl_anim_completed_cb;
+  cfg->deleted_cb = luavgl_anim_deleted_cb;
+#elif LV_VERSION_CHECK(8, 3, 0)
   cfg->deleted_cb = luavgl_anim_delete_cb;
 #else
   cfg->completed_cb = luavgl_anim_delete_cb;
