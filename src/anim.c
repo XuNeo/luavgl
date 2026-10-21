@@ -40,9 +40,11 @@ static void luavgl_anim_exec_cb(void *var, int32_t value)
   luavgl_anim_t *a = var;
   lua_State *L = a->L;
 
+  /* Called from lv_timer_handler, outside any protected call: raising here
+   * would be an unprotected Lua error, which aborts. luavgl_anim_start
+   * refuses an anim without exec_cb, so this only guards a stale anim. */
   if (a->exec_cb == LUA_NOREF || a->obj_ref == LUA_NOREF) {
     LV_LOG_ERROR("anim error, callback or obj not found");
-    luaL_error(L, "anim founds no callback or obj");
     return;
   }
 
@@ -178,6 +180,10 @@ static int luavgl_anim_delete(lua_State *L)
 static int luavgl_anim_start(lua_State *L)
 {
   luavgl_anim_t *a = luavgl_check_anim(L, 1);
+
+  if (a->exec_cb == LUA_NOREF) {
+    return luaL_error(L, "anim has no exec_cb");
+  }
 
   if (a->aa) {
     LV_LOG_INFO("we have an anim ongoing, stop it");
